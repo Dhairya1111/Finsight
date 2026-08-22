@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="780" viewBox="0 0 1400 780" role="img" aria-label="FinSight dashboard preview">
+  <rect width="1400" height="780" fill="#020617" rx="24"/>
+  <rect x="28" y="28" width="260" height="724" rx="28" fill="#0f172a" stroke="#1e293b"/>
+  <text x="64" y="86" fill="#7dd3fc" font-size="18" font-family="Inter, Arial" letter-spacing="5">FINSIGHT</text>
+  <text x="64" y="126" fill="#ffffff" font-size="30" font-family="Inter, Arial" font-weight="700">Financial intelligence</text>
+  <rect x="56" y="176" width="204" height="54" rx="22" fill="#0ea5e915" stroke="#38bdf8"/>
+  <text x="84" y="210" fill="#ffffff" font-size="18" font-family="Inter, Arial">Overview</text>
+  <text x="84" y="266" fill="#94a3b8" font-size="18" font-family="Inter, Arial">Personal Finance</text>
+  <text x="84" y="318" fill="#94a3b8" font-size="18" font-family="Inter, Arial">Markets</text>
+  <text x="84" y="370" fill="#94a3b8" font-size="18" font-family="Inter, Arial">Economics</text>
+  <text x="84" y="422" fill="#94a3b8" font-size="18" font-family="Inter, Arial">Events</text>
+  <text x="84" y="474" fill="#94a3b8" font-size="18" font-family="Inter, Arial">Simulator</text>
+  <text x="84" y="526" fill="#94a3b8" font-size="18" font-family="Inter, Arial">AI Analyst</text>
+  <rect x="330" y="40" width="1042" height="700" rx="28" fill="#020617"/>
+  <text x="360" y="96" fill="#7dd3fc" font-size="16" font-family="Inter, Arial" letter-spacing="4">DASHBOARD</text>
+  <text x="360" y="142" fill="#ffffff" font-size="42" font-family="Inter, Arial" font-weight="700">Welcome to FinSight</text>
+  <rect x="360" y="190" width="220" height="130" rx="24" fill="#0f172a" stroke="#1e293b"/>
+  <rect x="606" y="190" width="220" height="130" rx="24" fill="#0f172a" stroke="#1e293b"/>
+  <rect x="852" y="190" width="220" height="130" rx="24" fill="#0f172a" stroke="#1e293b"/>
+  <rect x="1098" y="190" width="220" height="130" rx="24" fill="#0f172a" stroke="#1e293b"/>
+  <text x="386" y="228" fill="#94a3b8" font-size="18" font-family="Inter, Arial">Savings rate</text>
+  <text x="386" y="278" fill="#ffffff" font-size="34" font-family="Inter, Arial" font-weight="700">33.8%</text>
+  <text x="632" y="228" fill="#94a3b8" font-size="18" font-family="Inter, Arial">Apple demo price</text>
+  <text x="632" y="278" fill="#ffffff" font-size="34" font-family="Inter, Arial" font-weight="700">$309</text>
+  <text x="878" y="228" fill="#94a3b8" font-size="18" font-family="Inter, Arial">India CPI</text>
+  <text x="878" y="278" fill="#ffffff" font-size="34" font-family="Inter, Arial" font-weight="700">4.7%</text>
+  <text x="1124" y="228" fill="#94a3b8" font-size="18" font-family="Inter, Arial">Net savings</text>
+  <text x="1124" y="278" fill="#ffffff" font-size="34" font-family="Inter, Arial" font-weight="700">₹7.9L</text>
+  <rect x="360" y="354" width="650" height="340" rx="26" fill="#0f172a" stroke="#1e293b"/>
+  <rect x="1040" y="354" width="278" height="160" rx="26" fill="#0f172a" stroke="#1e293b"/>
+  <rect x="1040" y="534" width="278" height="160" rx="26" fill="#0f172a" stroke="#1e293b"/>
+  <text x="390" y="394" fill="#ffffff" font-size="24" font-family="Inter, Arial" font-weight="700">Monthly net savings</text>
+  <path d="M404 620 C470 570, 520 600, 590 520 S730 510, 804 450 S910 470, 964 420" fill="none" stroke="#22c55e" stroke-width="5" stroke-linecap="round"/>
+  <text x="1070" y="394" fill="#ffffff" font-size="22" font-family="Inter, Arial" font-weight="700">Source notes</text>
+  <text x="1070" y="434" fill="#94a3b8" font-size="16" font-family="Inter, Arial">Demo finance dataset</text>
+  <text x="1070" y="574" fill="#ffffff" font-size="22" font-family="Inter, Arial" font-weight="700">Public macro data</text>
+  <text x="1070" y="614" fill="#94a3b8" font-size="16" font-family="Inter, Arial">World Bank snapshot</text>
+</svg>

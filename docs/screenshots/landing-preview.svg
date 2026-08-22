@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="780" viewBox="0 0 1400 780" role="img" aria-label="FinSight landing preview">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1400" height="780" fill="url(#bg)" rx="24"/>
+  <text x="80" y="86" fill="#7dd3fc" font-size="18" font-family="Inter, Arial" letter-spacing="5">FINSIGHT</text>
+  <text x="80" y="180" fill="#ffffff" font-size="62" font-family="Inter, Arial" font-weight="700">Financial intelligence</text>
+  <text x="80" y="248" fill="#ffffff" font-size="62" font-family="Inter, Arial" font-weight="700">without the spreadsheet chaos.</text>
+  <text x="80" y="320" fill="#cbd5e1" font-size="24" font-family="Inter, Arial">Analyze markets, explore economic trends, and understand financial data.</text>
+  <rect x="80" y="370" width="210" height="56" rx="28" fill="#ffffff"/>
+  <text x="124" y="406" fill="#020617" font-size="20" font-family="Inter, Arial" font-weight="700">Explore Dashboard</text>
+  <rect x="308" y="370" width="190" height="56" rx="28" fill="none" stroke="#334155"/>
+  <text x="360" y="406" fill="#e2e8f0" font-size="20" font-family="Inter, Arial" font-weight="600">View GitHub</text>
+  <rect x="840" y="130" width="470" height="510" rx="30" fill="#0f172a" stroke="#1e293b"/>
+  <rect x="880" y="190" width="180" height="150" rx="24" fill="#111827" stroke="#1e293b"/>
+  <rect x="1090" y="190" width="180" height="150" rx="24" fill="#111827" stroke="#1e293b"/>
+  <rect x="880" y="370" width="390" height="210" rx="24" fill="#111827" stroke="#1e293b"/>
+  <text x="908" y="230" fill="#94a3b8" font-size="18" font-family="Inter, Arial">Markets</text>
+  <text x="908" y="266" fill="#ffffff" font-size="28" font-family="Inter, Arial" font-weight="700">Compare fundamentals</text>
+  <text x="1118" y="230" fill="#94a3b8" font-size="18" font-family="Inter, Arial">Economics</text>
+  <text x="1118" y="266" fill="#ffffff" font-size="28" font-family="Inter, Arial" font-weight="700">India macro signals</text>
+  <text x="908" y="412" fill="#94a3b8" font-size="18" font-family="Inter, Arial">AI Analyst</text>
+  <text x="908" y="454" fill="#ffffff" font-size="32" font-family="Inter, Arial" font-weight="700">Grounded financial explanations</text>
+  <text x="908" y="500" fill="#cbd5e1" font-size="18" font-family="Inter, Arial">Fallback mode keeps the product useful even without an API key.</text>
+</svg>
