@@ -196,12 +196,12 @@ export function FinancePage() {
           <button
             type="button"
             onClick={() => void handleResetDemo()}
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium text-slate-200 transition hover:bg-white/10"
+            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
           >
             <RefreshCcw className="h-4 w-4" />
             Load demo data
           </button>
-          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-brand-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-400">
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-blue-700 px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-blue-600">
             <Upload className="h-4 w-4" />
             {uploading ? "Uploading…" : "Upload CSV"}
             <input
@@ -224,26 +224,26 @@ export function FinancePage() {
       {finance.data ? (
         <div className="grid gap-6 2xl:grid-cols-[minmax(0,1.3fr)_390px]">
           <div className="min-w-0 space-y-6">
-            <section className="rounded-[32px] border border-white/8 bg-gradient-to-br from-brand-500/10 via-slate-900/80 to-slate-950 p-6 shadow-card">
+            <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="space-y-3">
                   <div className="flex flex-wrap items-center gap-3">
                     {finance.data.source.is_demo ? <DemoBadge /> : null}
-                    <span className="rounded-full border border-white/8 bg-white/5 px-3 py-1 text-xs font-medium text-slate-300">
+                    <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">
                       {currentDatasetLabel}
                     </span>
                   </div>
-                  <h3 className="text-2xl font-semibold text-white md:text-3xl">
+                  <h3 className="text-2xl font-semibold text-slate-900 md:text-3xl">
                     Keep the analysis view up front while editing your data.
                   </h3>
-                  <p className="max-w-3xl text-sm leading-7 text-slate-300 md:text-base">
+                  <p className="max-w-3xl text-sm leading-7 text-slate-600 md:text-base">
                     The charts and summaries stay in the main canvas, while the
                     right-side panel is dedicated to adding or adjusting
                     transactions. This keeps the page readable even when you are
                     actively entering values.
                   </p>
                 </div>
-                <div className="rounded-3xl border border-white/8 bg-slate-950/60 px-4 py-3 text-sm text-slate-300">
+                <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
                   <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
                     Current dataset stats
                   </p>
@@ -329,8 +329,8 @@ export function FinancePage() {
                 />
               </ChartCard>
 
-              <section className="rounded-3xl border border-white/8 bg-slate-900/75 p-5 shadow-card">
-                <h3 className="text-lg font-semibold text-white">
+              <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+                <h3 className="text-lg font-semibold text-slate-900">
                   Recurring expenses detected
                 </h3>
                 <p className="mt-1 text-sm text-slate-400">
@@ -342,18 +342,18 @@ export function FinancePage() {
                     finance.data.recurring_expenses.map((item) => (
                       <div
                         key={`${item.description}-${item.category}`}
-                        className="rounded-2xl border border-white/8 bg-slate-950/60 p-4"
+                        className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
                       >
                         <div className="flex items-center justify-between gap-4">
                           <div>
-                            <p className="font-medium text-white">
+                            <p className="font-medium text-slate-900">
                               {item.description}
                             </p>
                             <p className="text-sm text-slate-400">
                               {item.category}
                             </p>
                           </div>
-                          <div className="text-right text-sm text-slate-300">
+                          <div className="text-right text-sm text-slate-600">
                             <p>{item.occurrences} occurrences</p>
                             <p>
                               {formatCompactCurrency(
@@ -367,7 +367,7 @@ export function FinancePage() {
                       </div>
                     ))
                   ) : (
-                    <div className="rounded-2xl border border-dashed border-white/10 p-5 text-sm text-slate-400">
+                    <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-500">
                       No recurring patterns detected.
                     </div>
                   )}
@@ -379,17 +379,17 @@ export function FinancePage() {
           </div>
 
           <div className="space-y-6 2xl:sticky 2xl:top-24 2xl:self-start">
-            <section className="rounded-3xl border border-white/8 bg-slate-900/75 p-5 shadow-card">
+            <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
                     Manual transaction entry
                   </p>
-                  <h3 className="mt-2 text-lg font-semibold text-white">
+                  <h3 className="mt-2 text-lg font-semibold text-slate-900">
                     Add personal values directly
                   </h3>
                 </div>
-                <div className="rounded-2xl bg-brand-500/10 p-3 text-brand-200">
+                <div className="rounded-2xl bg-blue-50 p-3 text-blue-700">
                   <CalendarDays className="h-5 w-5" />
                 </div>
               </div>
@@ -401,7 +401,7 @@ export function FinancePage() {
 
               <form onSubmit={handleAddTransaction} className="mt-5 space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="text-sm text-slate-300">
+                  <label className="text-sm text-slate-600">
                     Date
                     <input
                       type="date"
@@ -412,10 +412,10 @@ export function FinancePage() {
                           date: event.target.value,
                         }))
                       }
-                      className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none"
+                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-300"
                     />
                   </label>
-                  <label className="text-sm text-slate-300">
+                  <label className="text-sm text-slate-600">
                     Type
                     <select
                       value={draft.type}
@@ -425,7 +425,7 @@ export function FinancePage() {
                           type: event.target.value as "income" | "expense",
                         }))
                       }
-                      className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none"
+                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-300"
                     >
                       <option value="expense">Expense</option>
                       <option value="income">Income</option>
@@ -433,7 +433,7 @@ export function FinancePage() {
                   </label>
                 </div>
 
-                <label className="block text-sm text-slate-300">
+                <label className="block text-sm text-slate-600">
                   Description
                   <input
                     type="text"
@@ -445,12 +445,12 @@ export function FinancePage() {
                       }))
                     }
                     placeholder="Rent, salary, groceries, freelance payment..."
-                    className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none"
+                    className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-300"
                   />
                 </label>
 
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="text-sm text-slate-300">
+                  <label className="text-sm text-slate-600">
                     Category
                     <input
                       list="finance-categories"
@@ -461,10 +461,10 @@ export function FinancePage() {
                           category: event.target.value,
                         }))
                       }
-                      className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none"
+                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-300"
                     />
                   </label>
-                  <label className="text-sm text-slate-300">
+                  <label className="text-sm text-slate-600">
                     Account
                     <input
                       list="finance-accounts"
@@ -475,12 +475,12 @@ export function FinancePage() {
                           account: event.target.value,
                         }))
                       }
-                      className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none"
+                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-300"
                     />
                   </label>
                 </div>
 
-                <label className="block text-sm text-slate-300">
+                <label className="block text-sm text-slate-600">
                   Amount
                   <input
                     type="number"
@@ -494,13 +494,13 @@ export function FinancePage() {
                       }))
                     }
                     placeholder="0.00"
-                    className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none"
+                    className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-300"
                   />
                 </label>
 
                 <button
                   type="submit"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-400"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-700 px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-blue-600"
                 >
                   <Plus className="h-4 w-4" />
                   Add transaction
@@ -519,21 +519,21 @@ export function FinancePage() {
               </datalist>
             </section>
 
-            <section className="rounded-3xl border border-white/8 bg-slate-900/75 p-5 shadow-card">
+            <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
                     Pending manual dataset
                   </p>
-                  <h3 className="mt-2 text-lg font-semibold text-white">
+                  <h3 className="mt-2 text-lg font-semibold text-slate-900">
                     {manualTransactions.length} queued transactions
                   </h3>
                 </div>
-                <div className="rounded-2xl border border-white/8 bg-slate-950/70 px-3 py-2 text-right text-sm text-slate-300">
+                <div className="rounded-2xl border border-white/8 bg-slate-950/70 px-3 py-2 text-right text-sm text-slate-600">
                   <p className="text-xs uppercase tracking-[0.22em] text-slate-500">
                     Net impact
                   </p>
-                  <p className="mt-1 font-semibold text-white">
+                  <p className="mt-1 font-semibold text-slate-900">
                     {formatCompactCurrency(manualTotal, "INR")}
                   </p>
                 </div>
@@ -557,7 +557,7 @@ export function FinancePage() {
                 <button
                   type="button"
                   onClick={() => setManualTransactions([])}
-                  className="inline-flex items-center justify-center rounded-2xl border border-white/10 px-4 py-3 text-sm font-medium text-slate-300 transition hover:bg-white/5"
+                  className="inline-flex items-center justify-center rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
                 >
                   Clear
                 </button>
@@ -568,11 +568,11 @@ export function FinancePage() {
                   manualTransactions.map((transaction, index) => (
                     <div
                       key={`${transaction.date}-${transaction.description}-${index}`}
-                      className="rounded-2xl border border-white/8 bg-slate-950/60 p-4"
+                      className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div>
-                          <p className="font-medium text-white">
+                          <p className="font-medium text-slate-900">
                             {transaction.description}
                           </p>
                           <p className="text-sm text-slate-400">
@@ -583,14 +583,14 @@ export function FinancePage() {
                           </p>
                         </div>
                         <div className="flex items-center gap-3">
-                          <p className="text-sm font-semibold text-white">
+                          <p className="text-sm font-semibold text-slate-900">
                             {transaction.type === "income" ? "+" : "-"}
                             {formatCompactCurrency(transaction.amount, "INR")}
                           </p>
                           <button
                             type="button"
                             onClick={() => removeManualTransaction(index)}
-                            className="rounded-xl border border-white/10 p-2 text-slate-400 transition hover:border-rose-400/35 hover:text-rose-200"
+                            className="rounded-xl border border-slate-200 p-2 text-slate-500 transition hover:border-rose-300 hover:text-rose-600"
                             aria-label={`Remove ${transaction.description}`}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -600,10 +600,10 @@ export function FinancePage() {
                     </div>
                   ))
                 ) : (
-                  <div className="rounded-2xl border border-dashed border-white/10 p-5 text-sm leading-7 text-slate-400">
+                  <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm leading-7 text-slate-500">
                     No manual transactions added yet. Add a few rows here, then
                     click{" "}
-                    <span className="text-slate-200">
+                    <span className="font-medium text-slate-900">
                       Analyze manual entries
                     </span>
                     to replace the current summary with your own values.

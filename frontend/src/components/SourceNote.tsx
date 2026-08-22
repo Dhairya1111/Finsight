@@ -4,17 +4,17 @@ import { DemoBadge } from "./DemoBadge";
 
 export function SourceNote({ source }: { source: SourceMeta }) {
   return (
-    <div className="rounded-2xl border border-white/8 bg-slate-950/60 p-4 text-sm text-slate-400">
+    <div className="rounded-[20px] border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
       <div className="mb-2 flex flex-wrap items-center gap-3">
         {source.is_demo ? <DemoBadge /> : null}
-        <span className="font-medium text-slate-200">
+        <span className="font-medium text-slate-800">
           Source: {source.name}
         </span>
       </div>
       <div className="space-y-1">
         {source.url ? (
           <a
-            className="text-brand-300 underline-offset-4 hover:underline"
+            className="text-sky-700 underline-offset-4 hover:underline"
             href={source.url}
             target="_blank"
             rel="noreferrer"

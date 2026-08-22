@@ -1,6 +1,6 @@
 export function DemoBadge({ label = "Demo Data" }: { label?: string }) {
   return (
-    <span className="inline-flex items-center rounded-full border border-brand-400/40 bg-brand-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-brand-200">
+    <span className="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">
       {label}
     </span>
   );

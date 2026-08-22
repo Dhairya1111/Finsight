@@ -12,7 +12,7 @@ export function AreaTrendChart({
   data,
   xKey,
   yKey,
-  color = "#22c55e",
+  color = "#16a34a",
 }: {
   data: Record<string, string | number | null>[];
   xKey: string;
@@ -27,11 +27,11 @@ export function AreaTrendChart({
       >
         <defs>
           <linearGradient id={`gradient-${yKey}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor={color} stopOpacity={0.65} />
-            <stop offset="95%" stopColor={color} stopOpacity={0.05} />
+            <stop offset="5%" stopColor={color} stopOpacity={0.35} />
+            <stop offset="95%" stopColor={color} stopOpacity={0.04} />
           </linearGradient>
         </defs>
-        <CartesianGrid stroke="rgba(148,163,184,0.12)" vertical={false} />
+        <CartesianGrid stroke="rgba(148,163,184,0.22)" vertical={false} />
         <XAxis
           dataKey={xKey}
           stroke="#64748b"
@@ -41,9 +41,10 @@ export function AreaTrendChart({
         <YAxis stroke="#64748b" tickLine={false} axisLine={false} width={56} />
         <Tooltip
           contentStyle={{
-            backgroundColor: "#020617",
-            border: "1px solid rgba(148,163,184,0.18)",
+            backgroundColor: "#ffffff",
+            border: "1px solid #e2e8f0",
             borderRadius: 16,
+            boxShadow: "0 10px 30px rgba(15, 23, 42, 0.08)",
           }}
         />
         <Area
