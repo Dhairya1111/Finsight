@@ -1,0 +1,66 @@
+[
+  {
+    "id": "covid-19-shock-2020",
+    "title": "COVID-19 Market Shock",
+    "date_range": [
+      "2020-02-15",
+      "2020-08-31"
+    ],
+    "summary": "The global spread of COVID-19 coincided with a sharp market drawdown, widespread mobility restrictions, supply disruptions, and aggressive fiscal and monetary responses.",
+    "transmission_mechanisms": [
+      "Demand shock from lockdowns and uncertainty",
+      "Supply-chain disruption across manufacturing and trade",
+      "Rapid repricing of risk and volatility expansion",
+      "Policy easing and liquidity support during the recovery phase"
+    ],
+    "relevant_indicators": [
+      "gdp_growth",
+      "cpi_inflation",
+      "unemployment",
+      "exports_gdp"
+    ],
+    "notes": "Associations shown are descriptive and educational, not causal proof."
+  },
+  {
+    "id": "inflation-surge-2021-2023",
+    "title": "Global Inflation Surge",
+    "date_range": [
+      "2021-01-01",
+      "2023-12-31"
+    ],
+    "summary": "A combination of reopening demand, supply bottlenecks, energy shocks, and policy normalization coincided with a broad inflation surge across many economies.",
+    "transmission_mechanisms": [
+      "Demand recovery outpaced supply",
+      "Commodity and shipping costs rose",
+      "Central banks tightened financial conditions",
+      "Valuation multiples became more sensitive to discount rates"
+    ],
+    "relevant_indicators": [
+      "cpi_inflation",
+      "lending_rate",
+      "exchange_rate",
+      "imports_gdp"
+    ],
+    "notes": "Charts illustrate co-movement and timing rather than definitive causation."
+  },
+  {
+    "id": "ai-boom-2023-2025",
+    "title": "AI Investment Boom",
+    "date_range": [
+      "2023-01-01",
+      "2025-12-31"
+    ],
+    "summary": "Rapid enthusiasm around generative AI coincided with elevated capex expectations, semiconductor demand optimism, and selective outperformance among platform and infrastructure firms.",
+    "transmission_mechanisms": [
+      "Expectations for productivity gains and cloud demand",
+      "Higher capex for AI infrastructure and chips",
+      "Expansion in revenue narratives for software and platform businesses"
+    ],
+    "relevant_indicators": [
+      "gdp_growth",
+      "manufacturing_share",
+      "exports_gdp"
+    ],
+    "notes": "Narratives are illustrative and should not be interpreted as investment recommendations."
+  }
+]

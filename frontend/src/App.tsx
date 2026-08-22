@@ -1,0 +1,73 @@
+import { lazy, Suspense } from "react";
+import { Route, Routes } from "react-router-dom";
+
+import { AppShell } from "./components/AppShell";
+import { LoadingState } from "./components/LoadingState";
+
+const LandingPage = lazy(() =>
+  import("./pages/LandingPage").then((module) => ({
+    default: module.LandingPage,
+  })),
+);
+const DashboardHome = lazy(() =>
+  import("./pages/DashboardHome").then((module) => ({
+    default: module.DashboardHome,
+  })),
+);
+const FinancePage = lazy(() =>
+  import("./pages/FinancePage").then((module) => ({
+    default: module.FinancePage,
+  })),
+);
+const MarketsPage = lazy(() =>
+  import("./pages/MarketsPage").then((module) => ({
+    default: module.MarketsPage,
+  })),
+);
+const EconomicsPage = lazy(() =>
+  import("./pages/EconomicsPage").then((module) => ({
+    default: module.EconomicsPage,
+  })),
+);
+const EventsPage = lazy(() =>
+  import("./pages/EventsPage").then((module) => ({
+    default: module.EventsPage,
+  })),
+);
+const SimulatorPage = lazy(() =>
+  import("./pages/SimulatorPage").then((module) => ({
+    default: module.SimulatorPage,
+  })),
+);
+const AIAnalystPage = lazy(() =>
+  import("./pages/AIAnalystPage").then((module) => ({
+    default: module.AIAnalystPage,
+  })),
+);
+const MLDemoPage = lazy(() =>
+  import("./pages/MLDemoPage").then((module) => ({
+    default: module.MLDemoPage,
+  })),
+);
+
+function App() {
+  return (
+    <Suspense fallback={<LoadingState label="Loading FinSight…" />}>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route element={<AppShell />}>
+          <Route path="/dashboard" element={<DashboardHome />} />
+          <Route path="/finance" element={<FinancePage />} />
+          <Route path="/markets" element={<MarketsPage />} />
+          <Route path="/economics" element={<EconomicsPage />} />
+          <Route path="/events" element={<EventsPage />} />
+          <Route path="/simulator" element={<SimulatorPage />} />
+          <Route path="/ai" element={<AIAnalystPage />} />
+          <Route path="/ml" element={<MLDemoPage />} />
+        </Route>
+      </Routes>
+    </Suspense>
+  );
+}
+
+export default App;

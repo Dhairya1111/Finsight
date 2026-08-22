@@ -1,0 +1,443 @@
+Date,Description,Category,Amount,Type,Account
+2024-01-01,Salary,Income,98238,income,Primary Checking
+2024-01-02,Café,Dining,-210,expense,UPI Wallet
+2024-01-03,Rent,Housing,-24386,expense,Primary Checking
+2024-01-03,Mutual Fund Dividend,Income,1809,income,Brokerage
+2024-01-05,SIP Investment,Investments,-12475,expense,Brokerage
+2024-01-07,Swiggy,Dining,-726,expense,UPI Wallet
+2024-01-07,Mutual Fund Dividend,Income,2066,income,Brokerage
+2024-01-09,Internet,Utilities,-941,expense,Credit Card
+2024-01-11,Gym Membership,Health,-2019,expense,Credit Card
+2024-01-11,Cash Withdrawal,Cash,-1069,expense,ATM
+2024-01-13,Streaming Bundle,Entertainment,-1149,expense,Credit Card
+2024-01-14,Mutual Fund Dividend,Income,1051,income,Brokerage
+2024-01-19,Electricity Board,Utilities,-1669,expense,Primary Checking
+2024-01-20,Mutual Fund Dividend,Income,654,income,Brokerage
+2024-01-23,Uber,Transport,-552,expense,UPI Wallet
+2024-01-24,Uber,Transport,-224,expense,UPI Wallet
+2024-01-25,BigBasket,Groceries,-5100,expense,Credit Card
+2024-02-01,Salary,Income,94273,income,Primary Checking
+2024-02-02,Swiggy,Dining,-716,expense,UPI Wallet
+2024-02-03,Rent,Housing,-24280,expense,Primary Checking
+2024-02-03,Café,Dining,-745,expense,UPI Wallet
+2024-02-03,Apollo Pharmacy,Health,-726,expense,Credit Card
+2024-02-04,Café,Dining,-547,expense,UPI Wallet
+2024-02-04,Mutual Fund Dividend,Income,2592,income,Brokerage
+2024-02-05,SIP Investment,Investments,-11520,expense,Brokerage
+2024-02-07,Freelance Project,Income,19543,income,Primary Checking
+2024-02-09,Internet,Utilities,-919,expense,Credit Card
+2024-02-11,Gym Membership,Health,-1956,expense,Credit Card
+2024-02-13,Streaming Bundle,Entertainment,-1295,expense,Credit Card
+2024-02-20,Amazon,Shopping,-2866,expense,Credit Card
+2024-02-24,BigBasket,Groceries,-3681,expense,Credit Card
+2024-02-27,Apollo Pharmacy,Health,-990,expense,Credit Card
+2024-02-28,Cash Withdrawal,Cash,-706,expense,ATM
+2024-03-01,Salary,Income,96113,income,Primary Checking
+2024-03-03,Rent,Housing,-24216,expense,Primary Checking
+2024-03-05,SIP Investment,Investments,-12036,expense,Brokerage
+2024-03-07,Cash Withdrawal,Cash,-2370,expense,ATM
+2024-03-08,BigBasket,Groceries,-5166,expense,Credit Card
+2024-03-09,Internet,Utilities,-1050,expense,Credit Card
+2024-03-09,Café,Dining,-247,expense,UPI Wallet
+2024-03-11,Gym Membership,Health,-1446,expense,Credit Card
+2024-03-12,Amazon,Shopping,-2416,expense,Credit Card
+2024-03-13,Streaming Bundle,Entertainment,-1026,expense,Credit Card
+2024-03-15,Uber,Transport,-508,expense,UPI Wallet
+2024-03-21,Freelance Project,Income,10803,income,Primary Checking
+2024-03-21,Apollo Pharmacy,Health,-1390,expense,Credit Card
+2024-03-22,Bookstore,Education,-1064,expense,Credit Card
+2024-03-23,Apollo Pharmacy,Health,-396,expense,Credit Card
+2024-03-24,Mutual Fund Dividend,Income,1101,income,Brokerage
+2024-03-26,BigBasket,Groceries,-3092,expense,Credit Card
+2024-04-01,Salary,Income,97646,income,Primary Checking
+2024-04-03,Rent,Housing,-23603,expense,Primary Checking
+2024-04-03,Electricity Board,Utilities,-2647,expense,Primary Checking
+2024-04-05,SIP Investment,Investments,-11765,expense,Brokerage
+2024-04-05,Bookstore,Education,-1443,expense,Credit Card
+2024-04-09,Internet,Utilities,-1378,expense,Credit Card
+2024-04-09,Uber,Transport,-262,expense,UPI Wallet
+2024-04-09,Mutual Fund Dividend,Income,2129,income,Brokerage
+2024-04-11,Gym Membership,Health,-2083,expense,Credit Card
+2024-04-13,Streaming Bundle,Entertainment,-728,expense,Credit Card
+2024-04-13,Freelance Project,Income,13930,income,Primary Checking
+2024-04-13,Café,Dining,-659,expense,UPI Wallet
+2024-04-14,Freelance Project,Income,22709,income,Primary Checking
+2024-04-17,Cash Withdrawal,Cash,-1014,expense,ATM
+2024-04-20,Café,Dining,-245,expense,UPI Wallet
+2024-04-21,Café,Dining,-649,expense,UPI Wallet
+2024-04-21,Uber,Transport,-283,expense,UPI Wallet
+2024-04-24,Bookstore,Education,-1549,expense,Credit Card
+2024-04-28,BigBasket,Groceries,-2249,expense,Credit Card
+2024-05-01,Salary,Income,97532,income,Primary Checking
+2024-05-03,Rent,Housing,-23619,expense,Primary Checking
+2024-05-04,Amazon,Shopping,-3104,expense,Credit Card
+2024-05-04,Mutual Fund Dividend,Income,2382,income,Brokerage
+2024-05-05,SIP Investment,Investments,-11535,expense,Brokerage
+2024-05-06,Café,Dining,-644,expense,UPI Wallet
+2024-05-07,Freelance Project,Income,10504,income,Primary Checking
+2024-05-09,Internet,Utilities,-1689,expense,Credit Card
+2024-05-11,Gym Membership,Health,-1604,expense,Credit Card
+2024-05-13,Streaming Bundle,Entertainment,-661,expense,Credit Card
+2024-05-17,Apollo Pharmacy,Health,-615,expense,Credit Card
+2024-05-18,Cash Withdrawal,Cash,-2452,expense,ATM
+2024-05-24,BigBasket,Groceries,-4747,expense,Credit Card
+2024-05-25,Mutual Fund Dividend,Income,1146,income,Brokerage
+2024-05-25,Amazon,Shopping,-2023,expense,Credit Card
+2024-05-27,Apollo Pharmacy,Health,-1289,expense,Credit Card
+2024-06-01,Salary,Income,97344,income,Primary Checking
+2024-06-02,Bookstore,Education,-893,expense,Credit Card
+2024-06-03,Rent,Housing,-23560,expense,Primary Checking
+2024-06-03,Freelance Project,Income,9403,income,Primary Checking
+2024-06-05,SIP Investment,Investments,-12500,expense,Brokerage
+2024-06-06,Mutual Fund Dividend,Income,1142,income,Brokerage
+2024-06-07,Café,Dining,-732,expense,UPI Wallet
+2024-06-09,Internet,Utilities,-1087,expense,Credit Card
+2024-06-11,Gym Membership,Health,-1969,expense,Credit Card
+2024-06-12,Swiggy,Dining,-879,expense,UPI Wallet
+2024-06-13,Streaming Bundle,Entertainment,-899,expense,Credit Card
+2024-06-22,Uber,Transport,-606,expense,UPI Wallet
+2024-06-25,Mutual Fund Dividend,Income,857,income,Brokerage
+2024-06-25,Cash Withdrawal,Cash,-1994,expense,ATM
+2024-06-27,Electricity Board,Utilities,-1241,expense,Primary Checking
+2024-06-28,Mutual Fund Dividend,Income,1842,income,Brokerage
+2024-07-01,Salary,Income,94647,income,Primary Checking
+2024-07-03,Rent,Housing,-23770,expense,Primary Checking
+2024-07-03,Bookstore,Education,-464,expense,Credit Card
+2024-07-03,Amazon,Shopping,-4911,expense,Credit Card
+2024-07-05,SIP Investment,Investments,-12181,expense,Brokerage
+2024-07-07,Electricity Board,Utilities,-2204,expense,Primary Checking
+2024-07-08,Swiggy,Dining,-710,expense,UPI Wallet
+2024-07-08,Freelance Project,Income,8117,income,Primary Checking
+2024-07-09,Internet,Utilities,-1292,expense,Credit Card
+2024-07-09,Bookstore,Education,-1770,expense,Credit Card
+2024-07-11,Gym Membership,Health,-1613,expense,Credit Card
+2024-07-11,Swiggy,Dining,-293,expense,UPI Wallet
+2024-07-13,Streaming Bundle,Entertainment,-734,expense,Credit Card
+2024-07-17,Electricity Board,Utilities,-2024,expense,Primary Checking
+2024-07-18,Freelance Project,Income,11770,income,Primary Checking
+2024-07-19,Cash Withdrawal,Cash,-1468,expense,ATM
+2024-07-23,Swiggy,Dining,-370,expense,UPI Wallet
+2024-07-24,Uber,Transport,-704,expense,UPI Wallet
+2024-08-01,Salary,Income,94990,income,Primary Checking
+2024-08-02,Swiggy,Dining,-1074,expense,UPI Wallet
+2024-08-03,Rent,Housing,-23697,expense,Primary Checking
+2024-08-05,SIP Investment,Investments,-12016,expense,Brokerage
+2024-08-06,Café,Dining,-465,expense,UPI Wallet
+2024-08-07,Bookstore,Education,-789,expense,Credit Card
+2024-08-09,Internet,Utilities,-874,expense,Credit Card
+2024-08-11,Gym Membership,Health,-1884,expense,Credit Card
+2024-08-13,Streaming Bundle,Entertainment,-1205,expense,Credit Card
+2024-08-14,Amazon,Shopping,-4067,expense,Credit Card
+2024-08-15,Mutual Fund Dividend,Income,887,income,Brokerage
+2024-08-15,Cash Withdrawal,Cash,-1011,expense,ATM
+2024-08-22,Swiggy,Dining,-1132,expense,UPI Wallet
+2024-08-22,BigBasket,Groceries,-4476,expense,Credit Card
+2024-08-26,Amazon,Shopping,-1595,expense,Credit Card
+2024-08-28,Electricity Board,Utilities,-2593,expense,Primary Checking
+2024-09-01,Salary,Income,93617,income,Primary Checking
+2024-09-01,Café,Dining,-579,expense,UPI Wallet
+2024-09-02,Café,Dining,-348,expense,UPI Wallet
+2024-09-03,Rent,Housing,-24047,expense,Primary Checking
+2024-09-03,BigBasket,Groceries,-4886,expense,Credit Card
+2024-09-05,SIP Investment,Investments,-11673,expense,Brokerage
+2024-09-05,Electricity Board,Utilities,-1488,expense,Primary Checking
+2024-09-06,Bookstore,Education,-1232,expense,Credit Card
+2024-09-09,Internet,Utilities,-818,expense,Credit Card
+2024-09-10,Cash Withdrawal,Cash,-945,expense,ATM
+2024-09-11,Gym Membership,Health,-1424,expense,Credit Card
+2024-09-13,Streaming Bundle,Entertainment,-836,expense,Credit Card
+2024-09-14,Apollo Pharmacy,Health,-1388,expense,Credit Card
+2024-09-16,Electricity Board,Utilities,-1537,expense,Primary Checking
+2024-09-21,BigBasket,Groceries,-4014,expense,Credit Card
+2024-09-26,Apollo Pharmacy,Health,-1181,expense,Credit Card
+2024-10-01,Salary,Income,93479,income,Primary Checking
+2024-10-02,BigBasket,Groceries,-4192,expense,Credit Card
+2024-10-03,Rent,Housing,-23907,expense,Primary Checking
+2024-10-03,Mutual Fund Dividend,Income,2343,income,Brokerage
+2024-10-03,Uber,Transport,-729,expense,UPI Wallet
+2024-10-03,Freelance Project,Income,14868,income,Primary Checking
+2024-10-04,Café,Dining,-432,expense,UPI Wallet
+2024-10-05,SIP Investment,Investments,-11747,expense,Brokerage
+2024-10-06,Mutual Fund Dividend,Income,716,income,Brokerage
+2024-10-09,Internet,Utilities,-1145,expense,Credit Card
+2024-10-09,Amazon,Shopping,-2373,expense,Credit Card
+2024-10-11,Gym Membership,Health,-2238,expense,Credit Card
+2024-10-13,Streaming Bundle,Entertainment,-634,expense,Credit Card
+2024-10-17,Electricity Board,Utilities,-2846,expense,Primary Checking
+2024-10-19,Freelance Project,Income,16565,income,Primary Checking
+2024-10-20,Freelance Project,Income,8651,income,Primary Checking
+2024-10-22,Swiggy,Dining,-731,expense,UPI Wallet
+2024-10-22,Cash Withdrawal,Cash,-1966,expense,ATM
+2024-11-01,Salary,Income,95573,income,Primary Checking
+2024-11-01,Swiggy,Dining,-1188,expense,UPI Wallet
+2024-11-03,Rent,Housing,-24256,expense,Primary Checking
+2024-11-03,Amazon,Shopping,-2701,expense,Credit Card
+2024-11-04,Swiggy,Dining,-1383,expense,UPI Wallet
+2024-11-05,SIP Investment,Investments,-12229,expense,Brokerage
+2024-11-05,Swiggy,Dining,-791,expense,UPI Wallet
+2024-11-09,Internet,Utilities,-1295,expense,Credit Card
+2024-11-09,Mutual Fund Dividend,Income,871,income,Brokerage
+2024-11-09,Uber,Transport,-408,expense,UPI Wallet
+2024-11-10,Amazon,Shopping,-1992,expense,Credit Card
+2024-11-10,Mutual Fund Dividend,Income,2508,income,Brokerage
+2024-11-11,Gym Membership,Health,-2166,expense,Credit Card
+2024-11-13,Streaming Bundle,Entertainment,-712,expense,Credit Card
+2024-11-15,Apollo Pharmacy,Health,-897,expense,Credit Card
+2024-11-18,Swiggy,Dining,-686,expense,UPI Wallet
+2024-11-19,Freelance Project,Income,9638,income,Primary Checking
+2024-11-20,Apollo Pharmacy,Health,-1333,expense,Credit Card
+2024-11-20,Cash Withdrawal,Cash,-931,expense,ATM
+2024-11-22,BigBasket,Groceries,-5146,expense,Credit Card
+2024-11-27,Electricity Board,Utilities,-2212,expense,Primary Checking
+2024-12-01,Salary,Income,95808,income,Primary Checking
+2024-12-01,BigBasket,Groceries,-3166,expense,Credit Card
+2024-12-01,Mutual Fund Dividend,Income,829,income,Brokerage
+2024-12-02,Mutual Fund Dividend,Income,2309,income,Brokerage
+2024-12-03,Rent,Housing,-24292,expense,Primary Checking
+2024-12-03,BigBasket,Groceries,-4398,expense,Credit Card
+2024-12-05,SIP Investment,Investments,-11797,expense,Brokerage
+2024-12-09,Internet,Utilities,-1051,expense,Credit Card
+2024-12-09,Electricity Board,Utilities,-2832,expense,Primary Checking
+2024-12-10,BigBasket,Groceries,-3293,expense,Credit Card
+2024-12-11,Gym Membership,Health,-1427,expense,Credit Card
+2024-12-13,Streaming Bundle,Entertainment,-1129,expense,Credit Card
+2024-12-14,Uber,Transport,-250,expense,UPI Wallet
+2024-12-19,Amazon,Shopping,-5226,expense,Credit Card
+2024-12-20,Year-end Bonus,Income,32614,income,Primary Checking
+2024-12-21,Uber,Transport,-388,expense,UPI Wallet
+2024-12-23,Mutual Fund Dividend,Income,1475,income,Brokerage
+2024-12-23,Swiggy,Dining,-555,expense,UPI Wallet
+2024-12-24,Uber,Transport,-572,expense,UPI Wallet
+2024-12-26,Cash Withdrawal,Cash,-2491,expense,ATM
+2024-12-27,Café,Dining,-463,expense,UPI Wallet
+2025-01-01,Salary,Income,95931,income,Primary Checking
+2025-01-03,Rent,Housing,-24285,expense,Primary Checking
+2025-01-05,SIP Investment,Investments,-11802,expense,Brokerage
+2025-01-06,Apollo Pharmacy,Health,-471,expense,Credit Card
+2025-01-08,Electricity Board,Utilities,-1508,expense,Primary Checking
+2025-01-08,Bookstore,Education,-448,expense,Credit Card
+2025-01-09,Internet,Utilities,-1445,expense,Credit Card
+2025-01-11,Gym Membership,Health,-1618,expense,Credit Card
+2025-01-12,Electricity Board,Utilities,-1725,expense,Primary Checking
+2025-01-13,Streaming Bundle,Entertainment,-1294,expense,Credit Card
+2025-01-14,Uber,Transport,-145,expense,UPI Wallet
+2025-01-22,Cash Withdrawal,Cash,-895,expense,ATM
+2025-01-24,Freelance Project,Income,10532,income,Primary Checking
+2025-01-24,Uber,Transport,-460,expense,UPI Wallet
+2025-01-26,Café,Dining,-434,expense,UPI Wallet
+2025-01-28,Mutual Fund Dividend,Income,1432,income,Brokerage
+2025-01-28,Bookstore,Education,-732,expense,Credit Card
+2025-01-28,Café,Dining,-219,expense,UPI Wallet
+2025-02-01,Salary,Income,96264,income,Primary Checking
+2025-02-01,Amazon,Shopping,-1644,expense,Credit Card
+2025-02-02,Apollo Pharmacy,Health,-1143,expense,Credit Card
+2025-02-03,Rent,Housing,-24164,expense,Primary Checking
+2025-02-04,BigBasket,Groceries,-4243,expense,Credit Card
+2025-02-05,SIP Investment,Investments,-12215,expense,Brokerage
+2025-02-06,Apollo Pharmacy,Health,-793,expense,Credit Card
+2025-02-09,Internet,Utilities,-815,expense,Credit Card
+2025-02-11,Gym Membership,Health,-2229,expense,Credit Card
+2025-02-11,Freelance Project,Income,18868,income,Primary Checking
+2025-02-12,Apollo Pharmacy,Health,-1293,expense,Credit Card
+2025-02-12,Café,Dining,-501,expense,UPI Wallet
+2025-02-12,Bookstore,Education,-1283,expense,Credit Card
+2025-02-13,Streaming Bundle,Entertainment,-409,expense,Credit Card
+2025-02-13,Swiggy,Dining,-639,expense,UPI Wallet
+2025-02-17,BigBasket,Groceries,-5103,expense,Credit Card
+2025-02-17,Cash Withdrawal,Cash,-1133,expense,ATM
+2025-02-20,Café,Dining,-703,expense,UPI Wallet
+2025-02-22,Café,Dining,-729,expense,UPI Wallet
+2025-02-22,Mutual Fund Dividend,Income,2073,income,Brokerage
+2025-02-22,Swiggy,Dining,-926,expense,UPI Wallet
+2025-02-24,Swiggy,Dining,-865,expense,UPI Wallet
+2025-03-01,Salary,Income,98463,income,Primary Checking
+2025-03-01,Uber,Transport,-167,expense,UPI Wallet
+2025-03-03,Rent,Housing,-24082,expense,Primary Checking
+2025-03-05,SIP Investment,Investments,-12166,expense,Brokerage
+2025-03-07,Uber,Transport,-550,expense,UPI Wallet
+2025-03-08,Apollo Pharmacy,Health,-657,expense,Credit Card
+2025-03-08,Cash Withdrawal,Cash,-1473,expense,ATM
+2025-03-09,Internet,Utilities,-1288,expense,Credit Card
+2025-03-10,Apollo Pharmacy,Health,-680,expense,Credit Card
+2025-03-11,Gym Membership,Health,-1587,expense,Credit Card
+2025-03-13,Streaming Bundle,Entertainment,-1097,expense,Credit Card
+2025-03-15,Electricity Board,Utilities,-2005,expense,Primary Checking
+2025-03-17,Bookstore,Education,-1369,expense,Credit Card
+2025-03-17,Apollo Pharmacy,Health,-936,expense,Credit Card
+2025-03-18,Café,Dining,-180,expense,UPI Wallet
+2025-03-19,Freelance Project,Income,12930,income,Primary Checking
+2025-03-22,Café,Dining,-358,expense,UPI Wallet
+2025-03-22,Uber,Transport,-206,expense,UPI Wallet
+2025-03-26,Café,Dining,-509,expense,UPI Wallet
+2025-03-27,Swiggy,Dining,-731,expense,UPI Wallet
+2025-04-01,Salary,Income,98007,income,Primary Checking
+2025-04-02,Electricity Board,Utilities,-2241,expense,Primary Checking
+2025-04-03,Rent,Housing,-23630,expense,Primary Checking
+2025-04-05,SIP Investment,Investments,-11714,expense,Brokerage
+2025-04-05,Bookstore,Education,-1743,expense,Credit Card
+2025-04-05,Electricity Board,Utilities,-2741,expense,Primary Checking
+2025-04-06,Bookstore,Education,-1460,expense,Credit Card
+2025-04-06,Cash Withdrawal,Cash,-2023,expense,ATM
+2025-04-07,Freelance Project,Income,19769,income,Primary Checking
+2025-04-09,Internet,Utilities,-1626,expense,Credit Card
+2025-04-11,Gym Membership,Health,-1834,expense,Credit Card
+2025-04-13,Streaming Bundle,Entertainment,-975,expense,Credit Card
+2025-04-14,Mutual Fund Dividend,Income,2301,income,Brokerage
+2025-04-15,Mutual Fund Dividend,Income,2437,income,Brokerage
+2025-04-16,Café,Dining,-589,expense,UPI Wallet
+2025-04-20,Mutual Fund Dividend,Income,1249,income,Brokerage
+2025-04-20,Electricity Board,Utilities,-2769,expense,Primary Checking
+2025-04-22,Electricity Board,Utilities,-2187,expense,Primary Checking
+2025-04-25,BigBasket,Groceries,-4954,expense,Credit Card
+2025-04-25,Swiggy,Dining,-1120,expense,UPI Wallet
+2025-04-28,Bookstore,Education,-648,expense,Credit Card
+2025-05-01,Salary,Income,96888,income,Primary Checking
+2025-05-03,Rent,Housing,-24040,expense,Primary Checking
+2025-05-03,Bookstore,Education,-1249,expense,Credit Card
+2025-05-05,SIP Investment,Investments,-12235,expense,Brokerage
+2025-05-05,Swiggy,Dining,-558,expense,UPI Wallet
+2025-05-08,Apollo Pharmacy,Health,-806,expense,Credit Card
+2025-05-09,Internet,Utilities,-931,expense,Credit Card
+2025-05-11,Gym Membership,Health,-2047,expense,Credit Card
+2025-05-11,Amazon,Shopping,-5124,expense,Credit Card
+2025-05-11,Café,Dining,-735,expense,UPI Wallet
+2025-05-12,BigBasket,Groceries,-3023,expense,Credit Card
+2025-05-13,Streaming Bundle,Entertainment,-539,expense,Credit Card
+2025-05-13,Bookstore,Education,-712,expense,Credit Card
+2025-05-13,Freelance Project,Income,15814,income,Primary Checking
+2025-05-14,Electricity Board,Utilities,-1227,expense,Primary Checking
+2025-05-15,Apollo Pharmacy,Health,-408,expense,Credit Card
+2025-05-21,Electricity Board,Utilities,-1589,expense,Primary Checking
+2025-05-25,Apollo Pharmacy,Health,-1317,expense,Credit Card
+2025-05-25,Café,Dining,-200,expense,UPI Wallet
+2025-05-25,Cash Withdrawal,Cash,-1298,expense,ATM
+2025-05-27,Bookstore,Education,-1260,expense,Credit Card
+2025-06-01,Salary,Income,96432,income,Primary Checking
+2025-06-01,Mutual Fund Dividend,Income,2457,income,Brokerage
+2025-06-02,Uber,Transport,-386,expense,UPI Wallet
+2025-06-03,Rent,Housing,-23949,expense,Primary Checking
+2025-06-03,BigBasket,Groceries,-4432,expense,Credit Card
+2025-06-05,SIP Investment,Investments,-11735,expense,Brokerage
+2025-06-05,Electricity Board,Utilities,-2374,expense,Primary Checking
+2025-06-05,Café,Dining,-652,expense,UPI Wallet
+2025-06-09,Internet,Utilities,-948,expense,Credit Card
+2025-06-09,Café,Dining,-611,expense,UPI Wallet
+2025-06-09,Cash Withdrawal,Cash,-2209,expense,ATM
+2025-06-11,Gym Membership,Health,-1741,expense,Credit Card
+2025-06-11,Café,Dining,-396,expense,UPI Wallet
+2025-06-11,Electricity Board,Utilities,-1791,expense,Primary Checking
+2025-06-13,Streaming Bundle,Entertainment,-580,expense,Credit Card
+2025-06-13,BigBasket,Groceries,-3176,expense,Credit Card
+2025-06-14,Apollo Pharmacy,Health,-1244,expense,Credit Card
+2025-06-16,Bookstore,Education,-849,expense,Credit Card
+2025-06-19,Café,Dining,-757,expense,UPI Wallet
+2025-06-24,Café,Dining,-349,expense,UPI Wallet
+2025-07-01,Salary,Income,93670,income,Primary Checking
+2025-07-03,Rent,Housing,-24019,expense,Primary Checking
+2025-07-04,Apollo Pharmacy,Health,-302,expense,Credit Card
+2025-07-05,SIP Investment,Investments,-12481,expense,Brokerage
+2025-07-05,Freelance Project,Income,11908,income,Primary Checking
+2025-07-06,Amazon,Shopping,-5663,expense,Credit Card
+2025-07-07,Bookstore,Education,-441,expense,Credit Card
+2025-07-09,Internet,Utilities,-933,expense,Credit Card
+2025-07-10,Cash Withdrawal,Cash,-1679,expense,ATM
+2025-07-11,Gym Membership,Health,-1748,expense,Credit Card
+2025-07-13,Streaming Bundle,Entertainment,-1346,expense,Credit Card
+2025-07-16,Uber,Transport,-805,expense,UPI Wallet
+2025-07-19,Swiggy,Dining,-696,expense,UPI Wallet
+2025-07-21,Bookstore,Education,-540,expense,Credit Card
+2025-07-23,Electricity Board,Utilities,-1624,expense,Primary Checking
+2025-07-24,Freelance Project,Income,19769,income,Primary Checking
+2025-07-25,BigBasket,Groceries,-1927,expense,Credit Card
+2025-07-25,Swiggy,Dining,-585,expense,UPI Wallet
+2025-08-01,Salary,Income,96074,income,Primary Checking
+2025-08-01,Amazon,Shopping,-4141,expense,Credit Card
+2025-08-03,Rent,Housing,-24094,expense,Primary Checking
+2025-08-03,Amazon,Shopping,-4844,expense,Credit Card
+2025-08-04,Bookstore,Education,-1017,expense,Credit Card
+2025-08-04,Electricity Board,Utilities,-1987,expense,Primary Checking
+2025-08-05,SIP Investment,Investments,-11536,expense,Brokerage
+2025-08-09,Internet,Utilities,-968,expense,Credit Card
+2025-08-11,Gym Membership,Health,-2097,expense,Credit Card
+2025-08-13,Streaming Bundle,Entertainment,-1322,expense,Credit Card
+2025-08-14,Uber,Transport,-300,expense,UPI Wallet
+2025-08-14,Electricity Board,Utilities,-2791,expense,Primary Checking
+2025-08-18,Amazon,Shopping,-4209,expense,Credit Card
+2025-08-21,Amazon,Shopping,-4466,expense,Credit Card
+2025-08-21,Mutual Fund Dividend,Income,1153,income,Brokerage
+2025-08-24,Cash Withdrawal,Cash,-1713,expense,ATM
+2025-08-25,Mutual Fund Dividend,Income,1590,income,Brokerage
+2025-08-26,Freelance Project,Income,9983,income,Primary Checking
+2025-08-26,Freelance Project,Income,8672,income,Primary Checking
+2025-08-26,Freelance Project,Income,23067,income,Primary Checking
+2025-09-01,Salary,Income,95198,income,Primary Checking
+2025-09-03,Rent,Housing,-24170,expense,Primary Checking
+2025-09-05,SIP Investment,Investments,-11628,expense,Brokerage
+2025-09-07,Mutual Fund Dividend,Income,775,income,Brokerage
+2025-09-08,Cash Withdrawal,Cash,-1974,expense,ATM
+2025-09-09,Internet,Utilities,-1449,expense,Credit Card
+2025-09-09,Amazon,Shopping,-5583,expense,Credit Card
+2025-09-11,Gym Membership,Health,-1450,expense,Credit Card
+2025-09-11,Café,Dining,-209,expense,UPI Wallet
+2025-09-13,Streaming Bundle,Entertainment,-442,expense,Credit Card
+2025-09-15,Apollo Pharmacy,Health,-749,expense,Credit Card
+2025-09-16,Uber,Transport,-337,expense,UPI Wallet
+2025-09-18,Apollo Pharmacy,Health,-270,expense,Credit Card
+2025-09-19,Electricity Board,Utilities,-2349,expense,Primary Checking
+2025-09-26,Amazon,Shopping,-2816,expense,Credit Card
+2025-09-28,Electricity Board,Utilities,-1765,expense,Primary Checking
+2025-10-01,Salary,Income,96329,income,Primary Checking
+2025-10-03,Rent,Housing,-24000,expense,Primary Checking
+2025-10-03,BigBasket,Groceries,-3005,expense,Credit Card
+2025-10-04,Bookstore,Education,-794,expense,Credit Card
+2025-10-04,Amazon,Shopping,-5089,expense,Credit Card
+2025-10-05,SIP Investment,Investments,-11932,expense,Brokerage
+2025-10-07,Uber,Transport,-341,expense,UPI Wallet
+2025-10-09,Internet,Utilities,-924,expense,Credit Card
+2025-10-09,Electricity Board,Utilities,-2583,expense,Primary Checking
+2025-10-10,Apollo Pharmacy,Health,-764,expense,Credit Card
+2025-10-11,Gym Membership,Health,-2054,expense,Credit Card
+2025-10-12,Amazon,Shopping,-4417,expense,Credit Card
+2025-10-13,Streaming Bundle,Entertainment,-692,expense,Credit Card
+2025-10-13,Bookstore,Education,-898,expense,Credit Card
+2025-10-14,Amazon,Shopping,-5208,expense,Credit Card
+2025-10-15,Electricity Board,Utilities,-2723,expense,Primary Checking
+2025-10-18,Electricity Board,Utilities,-2187,expense,Primary Checking
+2025-10-19,Cash Withdrawal,Cash,-2500,expense,ATM
+2025-10-22,Apollo Pharmacy,Health,-1005,expense,Credit Card
+2025-11-01,Salary,Income,97297,income,Primary Checking
+2025-11-01,Apollo Pharmacy,Health,-1343,expense,Credit Card
+2025-11-03,Rent,Housing,-23889,expense,Primary Checking
+2025-11-04,Electricity Board,Utilities,-2887,expense,Primary Checking
+2025-11-05,SIP Investment,Investments,-12211,expense,Brokerage
+2025-11-06,Amazon,Shopping,-1120,expense,Credit Card
+2025-11-09,Internet,Utilities,-1598,expense,Credit Card
+2025-11-09,Uber,Transport,-166,expense,UPI Wallet
+2025-11-11,Gym Membership,Health,-1448,expense,Credit Card
+2025-11-12,Bookstore,Education,-767,expense,Credit Card
+2025-11-13,Streaming Bundle,Entertainment,-1201,expense,Credit Card
+2025-11-13,Cash Withdrawal,Cash,-1507,expense,ATM
+2025-11-16,Electricity Board,Utilities,-2002,expense,Primary Checking
+2025-11-18,BigBasket,Groceries,-2996,expense,Credit Card
+2025-11-19,BigBasket,Groceries,-2964,expense,Credit Card
+2025-11-21,Uber,Transport,-890,expense,UPI Wallet
+2025-11-27,Swiggy,Dining,-383,expense,UPI Wallet
+2025-11-28,Apollo Pharmacy,Health,-1228,expense,Credit Card
+2025-12-01,Salary,Income,93606,income,Primary Checking
+2025-12-03,Rent,Housing,-23910,expense,Primary Checking
+2025-12-04,Bookstore,Education,-1542,expense,Credit Card
+2025-12-05,SIP Investment,Investments,-11856,expense,Brokerage
+2025-12-06,Cash Withdrawal,Cash,-991,expense,ATM
+2025-12-09,Internet,Utilities,-998,expense,Credit Card
+2025-12-10,Freelance Project,Income,9395,income,Primary Checking
+2025-12-10,Electricity Board,Utilities,-2861,expense,Primary Checking
+2025-12-11,Gym Membership,Health,-2246,expense,Credit Card
+2025-12-13,Streaming Bundle,Entertainment,-1244,expense,Credit Card
+2025-12-13,Mutual Fund Dividend,Income,1522,income,Brokerage
+2025-12-14,Freelance Project,Income,13003,income,Primary Checking
+2025-12-20,Café,Dining,-411,expense,UPI Wallet
+2025-12-20,Freelance Project,Income,8986,income,Primary Checking
+2025-12-20,Year-end Bonus,Income,41391,income,Primary Checking
+2025-12-21,Bookstore,Education,-832,expense,Credit Card
+2025-12-22,Apollo Pharmacy,Health,-416,expense,Credit Card
+2025-12-24,Freelance Project,Income,9625,income,Primary Checking
