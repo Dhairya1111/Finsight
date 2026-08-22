@@ -28,6 +28,15 @@ export type RecurringExpense = {
   average_amount: number;
 };
 
+export type ManualTransactionInput = {
+  date: string;
+  description: string;
+  category: string;
+  amount: number;
+  type: "income" | "expense";
+  account: string;
+};
+
 export type FinanceSummary = {
   total_income: number;
   total_expenses: number;

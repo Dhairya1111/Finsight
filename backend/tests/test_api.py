@@ -43,3 +43,34 @@ def test_ai_fallback() -> None:
     )
     assert response.status_code == 200
     assert response.json()["used_fallback"] is True
+
+
+def test_manual_finance_analysis() -> None:
+    response = client.post(
+        "/api/finance/analyze-manual",
+        json={
+            "transactions": [
+                {
+                    "date": "2025-08-01",
+                    "description": "Salary",
+                    "category": "Income",
+                    "amount": 90000,
+                    "type": "income",
+                    "account": "Primary Checking",
+                },
+                {
+                    "date": "2025-08-03",
+                    "description": "Rent",
+                    "category": "Housing",
+                    "amount": 25000,
+                    "type": "expense",
+                    "account": "Primary Checking",
+                },
+            ]
+        },
+    )
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["transaction_count"] == 2
+    assert payload["total_income"] == 90000
+    assert payload["total_expenses"] == 25000

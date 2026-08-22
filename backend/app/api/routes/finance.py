@@ -5,10 +5,14 @@ from pathlib import Path
 import pandas as pd
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
-from app.analytics.personal_finance import analyze_transactions, normalize_transactions, read_transactions_csv
+from app.analytics.personal_finance import (
+    analyze_transactions,
+    normalize_transactions,
+    read_transactions_csv,
+)
 from app.core.config import get_settings
 from app.core.exceptions import ValidationError
-from app.schemas.finance import FinanceSummary
+from app.schemas.finance import FinanceSummary, ManualTransactionRequest
 
 router = APIRouter()
 DATA_PATH = Path(__file__).resolve().parents[4] / "data" / "sample" / "transactions_demo.csv"
@@ -28,9 +32,38 @@ async def upload_transactions(file: UploadFile = File(...)) -> FinanceSummary:
         raise HTTPException(status_code=400, detail="Only CSV uploads are supported.")
     content = await file.read()
     if len(content) > settings.max_upload_mb * 1024 * 1024:
-        raise HTTPException(status_code=400, detail=f"File exceeds {settings.max_upload_mb} MB limit.")
+        raise HTTPException(
+            status_code=400,
+            detail=f"File exceeds {settings.max_upload_mb} MB limit.",
+        )
     try:
         df = read_transactions_csv(content)
     except ValidationError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return analyze_transactions(df, f"Uploaded file: {file.filename}", is_demo=False)
+
+
+@router.post("/analyze-manual", response_model=FinanceSummary)
+def analyze_manual_transactions(payload: ManualTransactionRequest) -> FinanceSummary:
+    rows = [
+        {
+            "Date": transaction.date,
+            "Description": transaction.description,
+            "Category": transaction.category,
+            "Amount": abs(transaction.amount) if transaction.type == "income" else -abs(transaction.amount),
+            "Type": transaction.type,
+            "Account": transaction.account,
+        }
+        for transaction in payload.transactions
+    ]
+
+    try:
+        normalized = normalize_transactions(pd.DataFrame(rows))
+    except ValidationError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    return analyze_transactions(
+        normalized,
+        "Manual transaction entries entered directly in the FinSight dashboard.",
+        is_demo=False,
+    )

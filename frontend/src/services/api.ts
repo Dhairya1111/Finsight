@@ -7,6 +7,7 @@ import type {
   EventAnalysisResponse,
   FinanceSummary,
   IndicatorResponse,
+  ManualTransactionInput,
   MLDemoResponse,
   ScenarioOutput,
 } from "../types/api";
@@ -31,6 +32,12 @@ export const api = {
     body.append("file", file);
     return request<FinanceSummary>("/finance/upload", { method: "POST", body });
   },
+  analyzeManualTransactions: (transactions: ManualTransactionInput[]) =>
+    request<FinanceSummary>("/finance/analyze-manual", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ transactions }),
+    }),
   listCompanies: () => request<{ symbols: string[] }>("/markets/companies"),
   companyOverview: (symbol: string) =>
     request<CompanyOverview>(`/markets/company/${symbol}`),

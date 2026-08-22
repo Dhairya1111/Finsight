@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 from app.schemas.common import SourceMeta
@@ -12,6 +14,19 @@ class TransactionRecord(BaseModel):
     amount: float
     type: str
     account: str
+
+
+class ManualTransactionInput(BaseModel):
+    date: str
+    description: str
+    category: str
+    amount: float = Field(gt=0)
+    type: Literal["income", "expense"]
+    account: str
+
+
+class ManualTransactionRequest(BaseModel):
+    transactions: list[ManualTransactionInput] = Field(min_length=1)
 
 
 class MonthlyPoint(BaseModel):
