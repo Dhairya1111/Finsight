@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useMemo, useState } from "react";
+import { ChangeEvent, FormEvent, ReactNode, useMemo, useState } from "react";
 import { CalendarDays, Plus, RefreshCcw, Trash2, Upload } from "lucide-react";
 
 import { AreaTrendChart } from "../charts/AreaTrendChart";
@@ -71,18 +71,6 @@ export function FinancePage() {
     ManualTransactionInput[]
   >([]);
 
-  const manualTotal = useMemo(
-    () =>
-      manualTransactions.reduce((sum, transaction) => {
-        const signedValue =
-          transaction.type === "income"
-            ? transaction.amount
-            : -transaction.amount;
-        return sum + signedValue;
-      }, 0),
-    [manualTransactions],
-  );
-
   const currentDatasetLabel = useMemo(() => {
     if (!finance.data) return "";
     if (finance.data.source.is_demo) return "Demo dataset loaded";
@@ -95,12 +83,22 @@ export function FinancePage() {
     return "Custom dataset in view";
   }, [finance.data]);
 
+  const manualTotal = useMemo(
+    () =>
+      manualTransactions.reduce((sum, item) => {
+        const signed = item.type === "income" ? item.amount : -item.amount;
+        return sum + signed;
+      }, 0),
+    [manualTransactions],
+  );
+
   const handleUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     setUploading(true);
     setManualError(null);
+
     try {
       const result = await api.uploadFinanceCsv(file);
       finance.setData(result);
@@ -117,25 +115,16 @@ export function FinancePage() {
     setManualError(null);
 
     const parsedAmount = Number(draft.amount);
+    if (!draft.date) return setManualError("Please choose a valid date.");
     if (!draft.description.trim()) {
-      setManualError("Please enter a description for the transaction.");
-      return;
+      return setManualError("Please enter a description.");
     }
-    if (!draft.category.trim()) {
-      setManualError("Please choose or enter a category.");
-      return;
-    }
-    if (!draft.account.trim()) {
-      setManualError("Please choose or enter an account.");
-      return;
-    }
-    if (!draft.date) {
-      setManualError("Please choose a valid date.");
-      return;
-    }
+    if (!draft.category.trim())
+      return setManualError("Please enter a category.");
+    if (!draft.account.trim())
+      return setManualError("Please enter an account.");
     if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
-      setManualError("Amount must be a positive number.");
-      return;
+      return setManualError("Amount must be a positive number.");
     }
 
     setManualTransactions((current) => [
@@ -149,17 +138,19 @@ export function FinancePage() {
       },
       ...current,
     ]);
+
     setDraft((current) => ({ ...current, description: "", amount: "" }));
   };
 
   const handleAnalyzeManual = async () => {
     if (!manualTransactions.length) {
-      setManualError("Add at least one manual transaction before analyzing.");
+      setManualError("Add at least one transaction before analyzing.");
       return;
     }
 
     setManualLoading(true);
     setManualError(null);
+
     try {
       const result = await api.analyzeManualTransactions(manualTransactions);
       finance.setData(result);
@@ -178,19 +169,13 @@ export function FinancePage() {
     finance.setData(result);
   };
 
-  const removeManualTransaction = (indexToRemove: number) => {
-    setManualTransactions((current) =>
-      current.filter((_, index) => index !== indexToRemove),
-    );
-  };
-
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <SectionHeading
-          eyebrow="Personal finance analyzer"
-          title="Upload, review, or manually enter transactions"
-          description="You can still upload a CSV, but you can now also type personal transaction values directly into the dashboard and analyze them instantly."
+          eyebrow="Ledger"
+          title="Transactions and cash flow"
+          description="Upload a CSV or enter transactions manually. The summary and charts update from whichever dataset is currently active."
         />
         <div className="flex flex-wrap items-center gap-3">
           <button
@@ -201,7 +186,7 @@ export function FinancePage() {
             <RefreshCcw className="h-4 w-4" />
             Load demo data
           </button>
-          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-blue-700 px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-blue-600">
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-blue-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-600">
             <Upload className="h-4 w-4" />
             {uploading ? "Uploading…" : "Upload CSV"}
             <input
@@ -214,45 +199,40 @@ export function FinancePage() {
         </div>
       </div>
 
-      {finance.loading ? (
-        <LoadingState label="Crunching transaction analytics…" />
+      {finance.loading && !finance.data ? (
+        <LoadingState label="Loading ledger summary…" />
       ) : null}
       {finance.error ? (
         <ErrorState message={finance.error} onRetry={finance.reload} />
       ) : null}
 
       {finance.data ? (
-        <div className="grid gap-6 2xl:grid-cols-[minmax(0,1.3fr)_390px]">
+        <div className="grid gap-6 2xl:grid-cols-[minmax(0,1.3fr)_380px]">
           <div className="min-w-0 space-y-6">
             <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex flex-wrap items-start justify-between gap-4">
-                <div className="space-y-3">
+                <div>
                   <div className="flex flex-wrap items-center gap-3">
                     {finance.data.source.is_demo ? <DemoBadge /> : null}
                     <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">
                       {currentDatasetLabel}
                     </span>
                   </div>
-                  <h3 className="text-2xl font-semibold text-slate-900 md:text-3xl">
-                    Keep the analysis view up front while editing your data.
+                  <h3 className="mt-4 text-3xl font-semibold text-slate-900">
+                    Keep the summary visible while you work.
                   </h3>
-                  <p className="max-w-3xl text-sm leading-7 text-slate-600 md:text-base">
-                    The charts and summaries stay in the main canvas, while the
-                    right-side panel is dedicated to adding or adjusting
-                    transactions. This keeps the page readable even when you are
-                    actively entering values.
+                  <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
+                    The main panel shows the current financial picture. The side
+                    panel is reserved for adding personal entries so the page
+                    behaves more like a working app than a concept dashboard.
                   </p>
                 </div>
-                <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
-                    Current dataset stats
+                <div className="rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-3 text-right text-sm text-slate-600">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                    Transactions analyzed
                   </p>
-                  <p className="mt-2">
-                    {formatNumber(finance.data.transaction_count, 0)}{" "}
-                    transactions
-                  </p>
-                  <p className="text-slate-400">
-                    Trend: {finance.data.spending_trend}
+                  <p className="mt-2 text-2xl font-semibold text-slate-900">
+                    {formatNumber(finance.data.transaction_count, 0)}
                   </p>
                 </div>
               </div>
@@ -284,39 +264,38 @@ export function FinancePage() {
               </div>
             </section>
 
-            <div className="grid min-w-0 gap-6 xl:grid-cols-2">
+            <div className="grid gap-6 xl:grid-cols-2">
               <ChartCard
-                title="Monthly income vs expenses"
-                subtitle="Negative outflows are converted to positive expense magnitudes for readability."
+                title="Monthly expenses"
+                subtitle="Converted to positive values for readability."
               >
                 <BarTrendChart
                   data={finance.data.monthly.map((item) => ({
                     month: item.month,
                     expenses: item.expenses,
-                    income: item.income,
                   }))}
                   xKey="month"
                   yKey="expenses"
-                  color="#f97316"
+                  color="#2563eb"
                 />
               </ChartCard>
               <ChartCard
-                title="Net savings trajectory"
-                subtitle="Useful for spotting improving or deteriorating cash-flow patterns over time."
+                title="Monthly net savings"
+                subtitle="Quick read on whether the monthly balance is improving."
               >
                 <AreaTrendChart
                   data={finance.data.monthly}
                   xKey="month"
                   yKey="net_savings"
-                  color="#22c55e"
+                  color="#16a34a"
                 />
               </ChartCard>
             </div>
 
-            <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.85fr)]">
+            <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
               <ChartCard
-                title="Category-wise spending"
-                subtitle="Which categories dominate the currently loaded dataset?"
+                title="Category spending"
+                subtitle="Top categories in the current dataset."
               >
                 <BarTrendChart
                   data={finance.data.categories.map((item) => ({
@@ -325,50 +304,41 @@ export function FinancePage() {
                   }))}
                   xKey="category"
                   yKey="amount"
-                  color="#38bdf8"
+                  color="#ea580c"
                 />
               </ChartCard>
 
               <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
                 <h3 className="text-lg font-semibold text-slate-900">
-                  Recurring expenses detected
+                  Recurring expenses
                 </h3>
-                <p className="mt-1 text-sm text-slate-400">
-                  Repeated descriptions can signal subscriptions or habitual
-                  spending patterns worth reviewing.
+                <p className="mt-2 text-sm leading-7 text-slate-600">
+                  Repeated descriptions can point to rent, subscriptions, or
+                  regular bills.
                 </p>
-                <div className="mt-5 space-y-3">
+                <div className="mt-4 space-y-3">
                   {finance.data.recurring_expenses.length ? (
                     finance.data.recurring_expenses.map((item) => (
                       <div
                         key={`${item.description}-${item.category}`}
                         className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
                       >
-                        <div className="flex items-center justify-between gap-4">
-                          <div>
-                            <p className="font-medium text-slate-900">
-                              {item.description}
-                            </p>
-                            <p className="text-sm text-slate-400">
-                              {item.category}
-                            </p>
-                          </div>
-                          <div className="text-right text-sm text-slate-600">
-                            <p>{item.occurrences} occurrences</p>
-                            <p>
-                              {formatCompactCurrency(
-                                item.average_amount,
-                                "INR",
-                              )}{" "}
-                              average
-                            </p>
-                          </div>
-                        </div>
+                        <p className="font-medium text-slate-900">
+                          {item.description}
+                        </p>
+                        <p className="mt-1 text-sm text-slate-500">
+                          {item.category}
+                        </p>
+                        <p className="mt-2 text-sm text-slate-600">
+                          {item.occurrences} entries ·{" "}
+                          {formatCompactCurrency(item.average_amount, "INR")}{" "}
+                          avg
+                        </p>
                       </div>
                     ))
                   ) : (
-                    <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-500">
-                      No recurring patterns detected.
+                    <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-500">
+                      No recurring pattern detected in the current dataset.
                     </div>
                   )}
                 </div>
@@ -382,11 +352,11 @@ export function FinancePage() {
             <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
-                    Manual transaction entry
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                    Manual entry
                   </p>
                   <h3 className="mt-2 text-lg font-semibold text-slate-900">
-                    Add personal values directly
+                    Add personal transactions
                   </h3>
                 </div>
                 <div className="rounded-2xl bg-blue-50 p-3 text-blue-700">
@@ -394,15 +364,14 @@ export function FinancePage() {
                 </div>
               </div>
 
-              <p className="mt-3 text-sm leading-7 text-slate-400">
-                Enter positive amounts. FinSight will automatically treat
-                expenses as outflows and income as inflows during analysis.
+              <p className="mt-3 text-sm leading-7 text-slate-600">
+                Use positive amounts. The app treats income and expense
+                differently based on the selected type.
               </p>
 
               <form onSubmit={handleAddTransaction} className="mt-5 space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="text-sm text-slate-600">
-                    Date
+                  <Field label="Date">
                     <input
                       type="date"
                       value={draft.date}
@@ -412,11 +381,10 @@ export function FinancePage() {
                           date: event.target.value,
                         }))
                       }
-                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-300"
+                      className={inputClassName}
                     />
-                  </label>
-                  <label className="text-sm text-slate-600">
-                    Type
+                  </Field>
+                  <Field label="Type">
                     <select
                       value={draft.type}
                       onChange={(event) =>
@@ -425,16 +393,15 @@ export function FinancePage() {
                           type: event.target.value as "income" | "expense",
                         }))
                       }
-                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-300"
+                      className={inputClassName}
                     >
                       <option value="expense">Expense</option>
                       <option value="income">Income</option>
                     </select>
-                  </label>
+                  </Field>
                 </div>
 
-                <label className="block text-sm text-slate-600">
-                  Description
+                <Field label="Description">
                   <input
                     type="text"
                     value={draft.description}
@@ -444,14 +411,13 @@ export function FinancePage() {
                         description: event.target.value,
                       }))
                     }
-                    placeholder="Rent, salary, groceries, freelance payment..."
-                    className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-300"
+                    placeholder="Rent, salary, groceries, freelance payment"
+                    className={inputClassName}
                   />
-                </label>
+                </Field>
 
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="text-sm text-slate-600">
-                    Category
+                  <Field label="Category">
                     <input
                       list="finance-categories"
                       value={draft.category}
@@ -461,11 +427,10 @@ export function FinancePage() {
                           category: event.target.value,
                         }))
                       }
-                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-300"
+                      className={inputClassName}
                     />
-                  </label>
-                  <label className="text-sm text-slate-600">
-                    Account
+                  </Field>
+                  <Field label="Account">
                     <input
                       list="finance-accounts"
                       value={draft.account}
@@ -475,13 +440,12 @@ export function FinancePage() {
                           account: event.target.value,
                         }))
                       }
-                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-300"
+                      className={inputClassName}
                     />
-                  </label>
+                  </Field>
                 </div>
 
-                <label className="block text-sm text-slate-600">
-                  Amount
+                <Field label="Amount">
                   <input
                     type="number"
                     min="0"
@@ -494,13 +458,13 @@ export function FinancePage() {
                       }))
                     }
                     placeholder="0.00"
-                    className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-300"
+                    className={inputClassName}
                   />
-                </label>
+                </Field>
 
                 <button
                   type="submit"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-700 px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-blue-600"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-600"
                 >
                   <Plus className="h-4 w-4" />
                   Add transaction
@@ -522,15 +486,15 @@ export function FinancePage() {
             <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
-                    Pending manual dataset
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                    Pending entries
                   </p>
                   <h3 className="mt-2 text-lg font-semibold text-slate-900">
                     {manualTransactions.length} queued transactions
                   </h3>
                 </div>
-                <div className="rounded-2xl border border-white/8 bg-slate-950/70 px-3 py-2 text-right text-sm text-slate-600">
-                  <p className="text-xs uppercase tracking-[0.22em] text-slate-500">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-right">
+                  <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
                     Net impact
                   </p>
                   <p className="mt-1 font-semibold text-slate-900">
@@ -540,7 +504,7 @@ export function FinancePage() {
               </div>
 
               {manualError ? (
-                <div className="mt-4 rounded-2xl border border-rose-500/25 bg-rose-500/5 px-4 py-3 text-sm text-rose-100">
+                <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
                   {manualError}
                 </div>
               ) : null}
@@ -550,7 +514,7 @@ export function FinancePage() {
                   type="button"
                   onClick={() => void handleAnalyzeManual()}
                   disabled={manualLoading}
-                  className="inline-flex flex-1 items-center justify-center rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex flex-1 items-center justify-center rounded-2xl bg-blue-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {manualLoading ? "Analyzing…" : "Analyze manual entries"}
                 </button>
@@ -575,21 +539,33 @@ export function FinancePage() {
                           <p className="font-medium text-slate-900">
                             {transaction.description}
                           </p>
-                          <p className="text-sm text-slate-400">
+                          <p className="mt-1 text-sm text-slate-500">
                             {transaction.category} · {transaction.account}
                           </p>
-                          <p className="mt-1 text-xs uppercase tracking-[0.22em] text-slate-500">
+                          <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-500">
                             {transaction.date} · {transaction.type}
                           </p>
                         </div>
                         <div className="flex items-center gap-3">
-                          <p className="text-sm font-semibold text-slate-900">
+                          <p
+                            className={`text-sm font-semibold ${
+                              transaction.type === "income"
+                                ? "text-emerald-700"
+                                : "text-rose-700"
+                            }`}
+                          >
                             {transaction.type === "income" ? "+" : "-"}
                             {formatCompactCurrency(transaction.amount, "INR")}
                           </p>
                           <button
                             type="button"
-                            onClick={() => removeManualTransaction(index)}
+                            onClick={() =>
+                              setManualTransactions((current) =>
+                                current.filter(
+                                  (_, itemIndex) => itemIndex !== index,
+                                ),
+                              )
+                            }
                             className="rounded-xl border border-slate-200 p-2 text-slate-500 transition hover:border-rose-300 hover:text-rose-600"
                             aria-label={`Remove ${transaction.description}`}
                           >
@@ -600,13 +576,13 @@ export function FinancePage() {
                     </div>
                   ))
                 ) : (
-                  <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm leading-7 text-slate-500">
-                    No manual transactions added yet. Add a few rows here, then
-                    click{" "}
+                  <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm leading-7 text-slate-500">
+                    No manual transactions added yet. Add entries here and click
                     <span className="font-medium text-slate-900">
+                      {" "}
                       Analyze manual entries
                     </span>
-                    to replace the current summary with your own values.
+                    to view your own summary.
                   </div>
                 )}
               </div>
@@ -617,3 +593,15 @@ export function FinancePage() {
     </div>
   );
 }
+
+function Field({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <label className="block text-sm text-slate-700">
+      {label}
+      <div className="mt-2">{children}</div>
+    </label>
+  );
+}
+
+const inputClassName =
+  "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-300";

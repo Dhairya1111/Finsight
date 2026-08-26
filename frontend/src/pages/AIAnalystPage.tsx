@@ -21,6 +21,7 @@ export function AIAnalystPage() {
     event.preventDefault();
     setLoading(true);
     setError(null);
+
     try {
       const payload: Record<string, string> = { question, domain };
       if (domain === "markets") payload.symbol = symbol;
@@ -36,28 +37,28 @@ export function AIAnalystPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <SectionHeading
-          eyebrow="AI financial analyst"
-          title="Ask context-aware questions against verified in-app data"
-          description="The AI provider abstraction supports remote LLM integration via environment variables, but the app remains usable in deterministic fallback mode when no API key is configured."
+          eyebrow="AI analyst"
+          title="Ask about your data"
+          description="This tool stays grounded in FinSight data. In demo mode, responses use a conservative fallback system instead of pretending to know extra facts."
         />
-        <DemoBadge label="Fallback mode available" />
+        <DemoBadge label="Fallback available" />
       </div>
 
       <form
         onSubmit={handleSubmit}
-        className="grid gap-6 xl:grid-cols-[0.85fr,1.15fr]"
+        className="grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]"
       >
-        <section className="rounded-3xl border border-white/8 bg-slate-900/75 p-5 shadow-card">
+        <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
           <div className="space-y-4">
-            <label className="block text-sm text-slate-300">
+            <label className="block text-sm text-slate-700">
               Domain
               <select
                 value={domain}
                 onChange={(event) => setDomain(event.target.value)}
-                className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none"
+                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-300"
               >
                 <option value="markets">Markets</option>
                 <option value="economics">Economics</option>
@@ -66,13 +67,14 @@ export function AIAnalystPage() {
                 <option value="general">General</option>
               </select>
             </label>
+
             {domain === "markets" ? (
-              <label className="block text-sm text-slate-300">
+              <label className="block text-sm text-slate-700">
                 Symbol
                 <select
                   value={symbol}
                   onChange={(event) => setSymbol(event.target.value)}
-                  className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none"
+                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-300"
                 >
                   <option value="AAPL">AAPL</option>
                   <option value="MSFT">MSFT</option>
@@ -80,42 +82,44 @@ export function AIAnalystPage() {
                 </select>
               </label>
             ) : null}
-            <label className="block text-sm text-slate-300">
+
+            <label className="block text-sm text-slate-700">
               Question
               <textarea
                 value={question}
                 onChange={(event) => setQuestion(event.target.value)}
-                rows={7}
-                className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none"
+                rows={8}
+                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-300"
               />
             </label>
+
             <button
               type="submit"
-              className="rounded-full bg-brand-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-400"
+              className="rounded-full bg-blue-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-600"
             >
-              Analyze
+              Run analysis
             </button>
           </div>
         </section>
 
-        <section className="rounded-3xl border border-white/8 bg-slate-900/75 p-5 shadow-card">
-          {loading ? (
-            <LoadingState label="Generating grounded analysis…" />
-          ) : null}
+        <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+          {loading ? <LoadingState label="Preparing analysis…" /> : null}
           {error ? <ErrorState message={error} /> : null}
+
           {answer ? (
-            <div className="space-y-5 text-sm leading-7 text-slate-300">
+            <div className="space-y-5 text-sm leading-7 text-slate-700">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-300">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                   Summary
                 </p>
-                <p className="mt-3 whitespace-pre-wrap text-base text-slate-100">
+                <p className="mt-3 whitespace-pre-wrap text-base text-slate-900">
                   {answer.answer}
                 </p>
               </div>
+
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-300">
-                  Key points
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                  Notes
                 </p>
                 <ul className="mt-3 list-disc space-y-2 pl-5">
                   {answer.bullets.map((bullet) => (
@@ -123,30 +127,33 @@ export function AIAnalystPage() {
                   ))}
                 </ul>
               </div>
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-300">
-                  Caveats
-                </p>
-                <ul className="mt-3 list-disc space-y-2 pl-5 text-slate-400">
-                  {answer.caveats.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-300">
-                  References
-                </p>
-                <ul className="mt-3 list-disc space-y-2 pl-5 text-slate-400">
-                  {answer.references.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
+
+              <div className="grid gap-4 xl:grid-cols-2">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                    Caveats
+                  </p>
+                  <ul className="mt-3 list-disc space-y-2 pl-5 text-slate-600">
+                    {answer.caveats.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                    References
+                  </p>
+                  <ul className="mt-3 list-disc space-y-2 pl-5 text-slate-600">
+                    {answer.references.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
           ) : !loading ? (
-            <div className="flex min-h-[280px] items-center justify-center rounded-3xl border border-dashed border-white/10 text-sm text-slate-400">
-              Ask a question to see the AI analyst response here.
+            <div className="flex min-h-[280px] items-center justify-center rounded-[24px] border border-dashed border-slate-300 bg-slate-50 text-sm text-slate-500">
+              Ask a question to see the analysis here.
             </div>
           ) : null}
         </section>
