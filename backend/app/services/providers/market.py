@@ -17,18 +17,19 @@ from app.schemas.markets import (
     PricePoint,
 )
 
-POPULAR_SYMBOLS = [
-    "AAPL",
-    "MSFT",
-    "NVDA",
-    "GOOGL",
-    "AMZN",
-    "META",
-    "TSLA",
-    "INFY.NS",
-    "TCS.NS",
-    "RELIANCE.NS",
+POPULAR_COMPANIES = [
+    ("AAPL", "Apple Inc."),
+    ("MSFT", "Microsoft Corporation"),
+    ("NVDA", "NVIDIA Corporation"),
+    ("GOOGL", "Alphabet Inc."),
+    ("AMZN", "Amazon.com, Inc."),
+    ("META", "Meta Platforms, Inc."),
+    ("TSLA", "Tesla, Inc."),
+    ("INFY.NS", "Infosys Limited"),
+    ("TCS.NS", "Tata Consultancy Services Limited"),
+    ("RELIANCE.NS", "Reliance Industries Limited"),
 ]
+POPULAR_SYMBOLS = [symbol for symbol, _ in POPULAR_COMPANIES]
 
 
 class MarketDataProvider(ABC):
@@ -74,16 +75,16 @@ class DemoMarketProvider(MarketDataProvider):
         return POPULAR_SYMBOLS
 
     def search_companies(self, query: str, limit: int = 8) -> list[CompanySearchResult]:
-        del query, limit
+        del query
         return [
             CompanySearchResult(
                 symbol=symbol,
-                name=symbol,
+                name=name,
                 exchange="Market",
                 sector=None,
                 industry=None,
             )
-            for symbol in POPULAR_SYMBOLS
+            for symbol, name in POPULAR_COMPANIES[:limit]
         ]
 
     def get_company(self, symbol: str) -> CompanyOverview:
@@ -100,31 +101,43 @@ class YahooFinanceMarketProvider(MarketDataProvider):
     def search_companies(self, query: str, limit: int = 8) -> list[CompanySearchResult]:
         trimmed = query.strip()
         if not trimmed:
-            return [self._build_search_result(symbol, symbol) for symbol in POPULAR_SYMBOLS[:limit]]
+            return [self._build_search_result(symbol, name) for symbol, name in POPULAR_COMPANIES[:limit]]
+
+        results: list[CompanySearchResult] = []
         try:
             search = yf.Search(query=trimmed, max_results=limit)
             quotes = search.quotes or []
-        except Exception as exc:  # pragma: no cover - upstream errors vary
-            raise ProviderError("Unable to search companies right now.") from exc
-
-        results: list[CompanySearchResult] = []
-        for item in quotes:
-            if item.get("quoteType") != "EQUITY":
-                continue
-            symbol = item.get("symbol")
-            name = item.get("longname") or item.get("shortname") or symbol
-            if not symbol or not name:
-                continue
-            results.append(
-                CompanySearchResult(
-                    symbol=symbol,
-                    name=name,
-                    exchange=item.get("exchDisp") or item.get("exchange") or "Unknown",
-                    sector=item.get("sectorDisp") or item.get("sector"),
-                    industry=item.get("industryDisp") or item.get("industry"),
+            for item in quotes:
+                if item.get("quoteType") != "EQUITY":
+                    continue
+                symbol = item.get("symbol")
+                name = item.get("longname") or item.get("shortname") or symbol
+                if not symbol or not name:
+                    continue
+                results.append(
+                    CompanySearchResult(
+                        symbol=symbol,
+                        name=name,
+                        exchange=item.get("exchDisp") or item.get("exchange") or "Unknown",
+                        sector=item.get("sectorDisp") or item.get("sector"),
+                        industry=item.get("industryDisp") or item.get("industry"),
+                    )
                 )
-            )
-        return results
+        except Exception:
+            results = []
+
+        if results:
+            return results[:limit]
+
+        fallback_matches = [
+            self._build_search_result(symbol, name)
+            for symbol, name in POPULAR_COMPANIES
+            if trimmed.lower() in symbol.lower() or trimmed.lower() in name.lower()
+        ]
+        if fallback_matches:
+            return fallback_matches[:limit]
+
+        return [self._build_search_result(symbol, name) for symbol, name in POPULAR_COMPANIES[:limit]]
 
     def get_company(self, symbol: str) -> CompanyOverview:
         info, income_stmt = self._load_company_data(symbol)
@@ -271,7 +284,7 @@ class YahooFinanceMarketProvider(MarketDataProvider):
         return CompanySearchResult(
             symbol=symbol,
             name=name,
-            exchange="Market",
+            exchange="Popular",
             sector=None,
             industry=None,
         )

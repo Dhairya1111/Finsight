@@ -1,4 +1,11 @@
-import { Building2, Plus, Search, TrendingUp, X } from "lucide-react";
+import {
+  Building2,
+  PencilLine,
+  Plus,
+  Search,
+  TrendingUp,
+  X,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { BarTrendChart } from "../charts/BarTrendChart";
@@ -41,7 +48,9 @@ function formatComparisonMetric(metric: string, value: number | null) {
 
 export function MarketsPage() {
   const [selectedSymbol, setSelectedSymbol] = useState("AAPL");
+  const [selectedCompanyName, setSelectedCompanyName] = useState("Apple Inc.");
   const [searchQuery, setSearchQuery] = useState("Apple");
+  const [searchOpen, setSearchOpen] = useState(true);
   const [comparisonSymbols, setComparisonSymbols] = useState(
     defaultComparisonSymbols,
   );
@@ -49,10 +58,10 @@ export function MarketsPage() {
   const companies = useAsyncData(api.listCompanies);
   const searchResults = useAsyncData(
     () =>
-      searchQuery.trim().length >= 1
+      searchOpen && searchQuery.trim().length >= 1
         ? api.searchCompanies(searchQuery)
         : Promise.resolve<CompanySearchResult[]>([]),
-    { deps: [searchQuery] },
+    { deps: [searchOpen, searchQuery] },
   );
   const overview = useAsyncData(() => api.companyOverview(selectedSymbol), {
     deps: [selectedSymbol],
@@ -120,86 +129,114 @@ export function MarketsPage() {
 
   const handlePickCompany = (company: CompanySearchResult) => {
     setSelectedSymbol(company.symbol);
+    setSelectedCompanyName(company.name);
     setSearchQuery(company.name);
+    setSearchOpen(false);
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <SectionHeading
-          eyebrow="Markets"
-          title="Company analysis"
-          description="Search for a listed company by name, pick the right symbol, and FinSight will load the current market data, financial metrics, and charts automatically."
-        />
-      </div>
+      <SectionHeading
+        eyebrow="Markets"
+        title="Company analysis"
+        description="Search for a listed company by name, pick the right symbol, and FinSight will load the current market data, financial metrics, and charts automatically."
+      />
 
       <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
           <div>
-            <div className="relative">
-              <label className="block text-sm font-medium text-slate-700">
-                Search company
-              </label>
-              <div className="relative mt-2">
-                <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                <input
-                  value={searchQuery}
-                  onChange={(event) => setSearchQuery(event.target.value)}
-                  placeholder="Type Apple, Infosys, Reliance, Microsoft..."
-                  className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-slate-900 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
-                />
-              </div>
-
-              {searchQuery.trim().length >= 1 ? (
-                <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                  {searchResults.loading && !searchResults.data?.length ? (
-                    <div className="px-4 py-4 text-sm text-slate-500">
-                      Searching companies...
-                    </div>
-                  ) : searchSuggestions.length ? (
-                    <div className="max-h-72 overflow-y-auto">
-                      {searchSuggestions.map((company) => (
-                        <button
-                          key={company.symbol}
-                          type="button"
-                          onClick={() => handlePickCompany(company)}
-                          className="flex w-full items-start justify-between gap-4 border-b border-slate-100 px-4 py-3 text-left transition hover:bg-slate-50"
-                        >
-                          <span>
-                            <span className="block font-medium text-slate-900">
-                              {company.name}
-                            </span>
-                            <span className="mt-1 block text-xs text-slate-500">
-                              {company.symbol} · {company.exchange}
-                              {company.sector ? ` · ${company.sector}` : ""}
-                            </span>
-                          </span>
-                          <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600">
-                            {company.symbol}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="px-4 py-4 text-sm text-slate-500">
-                      No listed company matches found.
-                    </div>
-                  )}
+            {searchOpen ? (
+              <div className="relative">
+                <label className="block text-sm font-medium text-slate-700">
+                  Search company
+                </label>
+                <div className="relative mt-2">
+                  <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <input
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
+                    placeholder="Type Apple, Nvidia, Infosys, Reliance, Microsoft..."
+                    className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-slate-900 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                  />
                 </div>
-              ) : null}
-            </div>
+
+                {searchQuery.trim().length >= 1 ? (
+                  <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                    {searchResults.loading && !searchResults.data?.length ? (
+                      <div className="px-4 py-4 text-sm text-slate-500">
+                        Searching companies...
+                      </div>
+                    ) : searchSuggestions.length ? (
+                      <div className="max-h-72 overflow-y-auto">
+                        {searchSuggestions.map((company) => (
+                          <button
+                            key={company.symbol}
+                            type="button"
+                            onClick={() => handlePickCompany(company)}
+                            className="flex w-full items-start justify-between gap-4 border-b border-slate-100 px-4 py-3 text-left transition hover:bg-slate-50"
+                          >
+                            <span>
+                              <span className="block font-medium text-slate-900">
+                                {company.name}
+                              </span>
+                              <span className="mt-1 block text-xs text-slate-500">
+                                {company.symbol} · {company.exchange}
+                                {company.sector ? ` · ${company.sector}` : ""}
+                              </span>
+                            </span>
+                            <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600">
+                              {company.symbol}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="px-4 py-4 text-sm text-slate-500">
+                        No listed company matches found.
+                      </div>
+                    )}
+                  </div>
+                ) : null}
+              </div>
+            ) : (
+              <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                  Selected company
+                </p>
+                <div className="mt-3 flex flex-wrap items-center gap-3">
+                  <span className="rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-semibold text-blue-800">
+                    {selectedSymbol}
+                  </span>
+                  <span className="text-lg font-semibold text-slate-900">
+                    {selectedCompanyName}
+                  </span>
+                </div>
+                <p className="mt-3 text-sm leading-7 text-slate-600">
+                  Search results are hidden after selection so you can focus on
+                  the company view.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setSearchOpen(true)}
+                  className="mt-4 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                >
+                  <PencilLine className="h-4 w-4" />
+                  Change company
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-              Selected company
+              Company action
             </p>
             <p className="mt-2 text-2xl font-semibold text-slate-900">
               {selectedSymbol}
             </p>
             <p className="mt-2 text-sm leading-7 text-slate-600">
-              Pick a company from the search results and FinSight will refresh
-              the current metrics, history, and comparison view automatically.
+              The selected company drives the current metrics, history, and
+              charts. You can also add it to the comparison table below.
             </p>
             <button
               type="button"
@@ -389,7 +426,8 @@ export function MarketsPage() {
               Comparison table
             </h3>
             <p className="mt-1 text-sm text-slate-600">
-              Add companies from the search box to compare current live metrics.
+              Add companies from the search flow to compare current live
+              metrics.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
