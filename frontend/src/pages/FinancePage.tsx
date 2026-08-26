@@ -1,6 +1,7 @@
 import { ChangeEvent, FormEvent, ReactNode, useMemo, useState } from "react";
 import {
   CalendarDays,
+  ChevronDown,
   PencilLine,
   RefreshCcw,
   Save,
@@ -28,28 +29,59 @@ import {
   formatPercent,
 } from "../utils/format";
 
-const categorySuggestions = [
+const expenseCategories = [
   "Housing",
   "Groceries",
   "Dining",
   "Transport",
+  "Fuel",
   "Utilities",
+  "Internet & Mobile",
   "Shopping",
   "Health",
-  "Income",
-  "Investments",
-  "Education",
-  "Travel",
+  "Insurance",
   "Entertainment",
+  "Travel",
+  "Education",
+  "Subscriptions",
+  "Bills",
+  "EMI / Loans",
+  "Taxes",
+  "Family",
+  "Gifts",
+  "Pets",
+  "Business",
+  "Savings Transfer",
+  "Investments",
+  "Charity",
+  "Other Expense",
 ];
 
-const accountSuggestions = [
+const incomeCategories = [
+  "Salary",
+  "Bonus",
+  "Freelance",
+  "Business Income",
+  "Interest",
+  "Dividend",
+  "Rental Income",
+  "Refund",
+  "Cashback",
+  "Other Income",
+];
+
+const defaultAccounts = [
   "Primary Checking",
   "Savings Account",
-  "Credit Card",
   "Cash",
-  "Brokerage",
+  "Credit Card",
   "UPI Wallet",
+  "Brokerage",
+  "Business Account",
+  "Joint Account",
+  "Emergency Fund",
+  "Loan Account",
+  "Other Account",
 ];
 
 type TransactionDraft = ManualTransactionInput;
@@ -74,6 +106,19 @@ export function FinancePage() {
   const [draft, setDraft] = useState<TransactionDraft>(initialDraft);
 
   const hasSavedTransactions = (transactions.data?.length ?? 0) > 0;
+
+  const categoryOptions = useMemo(() => {
+    const existing = (transactions.data ?? []).map((item) => item.category);
+    return Array.from(
+      new Set([...expenseCategories, ...incomeCategories, ...existing]),
+    ).sort();
+  }, [transactions.data]);
+
+  const accountOptions = useMemo(() => {
+    const existing = (transactions.data ?? []).map((item) => item.account);
+    return Array.from(new Set([...defaultAccounts, ...existing])).sort();
+  }, [transactions.data]);
+
   const topCategories = useMemo(
     () =>
       finance.data?.categories.slice(0, 6).map((item) => ({
@@ -114,8 +159,8 @@ export function FinancePage() {
   const validateDraft = () => {
     if (!draft.date) return "Please choose a date.";
     if (!draft.description.trim()) return "Please enter a description.";
-    if (!draft.category.trim()) return "Please enter a category.";
-    if (!draft.account.trim()) return "Please enter an account.";
+    if (!draft.category.trim()) return "Please choose a category.";
+    if (!draft.account.trim()) return "Please choose an account.";
     if (!Number.isFinite(draft.amount) || draft.amount <= 0) {
       return "Amount must be greater than zero.";
     }
@@ -541,8 +586,8 @@ export function FinancePage() {
               </div>
 
               <p className="mt-3 text-sm leading-7 text-slate-600">
-                Transactions saved here become the active dataset for your
-                ledger, charts, and summaries.
+                Categories and accounts now use app-style dropdowns so entry is
+                quicker and more consistent.
               </p>
 
               {formError ? (
@@ -593,26 +638,28 @@ export function FinancePage() {
                 </Field>
 
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label="Category">
-                    <input
-                      list="finance-categories"
-                      value={draft.category}
-                      onChange={(event) =>
-                        handleDraftChange("category", event.target.value)
-                      }
-                      className={inputClassName}
-                    />
-                  </Field>
-                  <Field label="Account">
-                    <input
-                      list="finance-accounts"
-                      value={draft.account}
-                      onChange={(event) =>
-                        handleDraftChange("account", event.target.value)
-                      }
-                      className={inputClassName}
-                    />
-                  </Field>
+                  <SelectField
+                    label="Category"
+                    value={draft.category}
+                    onChange={(value) => handleDraftChange("category", value)}
+                    options={categoryOptions}
+                    groups={[
+                      {
+                        label: "Expense categories",
+                        options: expenseCategories,
+                      },
+                      {
+                        label: "Income categories",
+                        options: incomeCategories,
+                      },
+                    ]}
+                  />
+                  <SelectField
+                    label="Account"
+                    value={draft.account}
+                    onChange={(value) => handleDraftChange("account", value)}
+                    options={accountOptions}
+                  />
                 </div>
 
                 <Field label="Amount">
@@ -661,17 +708,6 @@ export function FinancePage() {
                   ) : null}
                 </div>
               </form>
-
-              <datalist id="finance-categories">
-                {categorySuggestions.map((category) => (
-                  <option key={category} value={category} />
-                ))}
-              </datalist>
-              <datalist id="finance-accounts">
-                {accountSuggestions.map((account) => (
-                  <option key={account} value={account} />
-                ))}
-              </datalist>
             </section>
           </div>
         </div>
@@ -689,5 +725,55 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
+function SelectField({
+  label,
+  value,
+  onChange,
+  options,
+  groups,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: string[];
+  groups?: { label: string; options: string[] }[];
+}) {
+  const valueExists = options.includes(value);
+
+  return (
+    <label className="block text-sm text-slate-700">
+      {label}
+      <div className="relative mt-2">
+        <select
+          value={valueExists ? value : value || (options[0] ?? "")}
+          onChange={(event) => onChange(event.target.value)}
+          className={`${inputClassName} appearance-none pr-10`}
+        >
+          {groups?.map((group) => (
+            <optgroup key={group.label} label={group.label}>
+              {group.options.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+          {!groups
+            ? options.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))
+            : null}
+          {!valueExists && value ? (
+            <option value={value}>{value}</option>
+          ) : null}
+        </select>
+        <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+      </div>
+    </label>
+  );
+}
+
 const inputClassName =
-  "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-300";
+  "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100";
