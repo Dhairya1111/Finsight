@@ -83,6 +83,7 @@ export function AppShell() {
     navItems.find((item) => location.pathname.startsWith(item.to)) ??
     navItems[0];
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [headerCondensed, setHeaderCondensed] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window === "undefined") return false;
     return window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === "true";
@@ -96,6 +97,21 @@ export function AppShell() {
     if (typeof window === "undefined") return;
     window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(sidebarCollapsed));
   }, [sidebarCollapsed]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleScroll = () => {
+      setHeaderCondensed(window.scrollY > 48);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [location.pathname]);
 
   return (
     <div className="app-shell-bg min-h-screen text-slate-900">
@@ -230,16 +246,30 @@ export function AppShell() {
                   }
                   aria-expanded={!sidebarCollapsed}
                   onClick={() => setSidebarCollapsed((current) => !current)}
-                  className="hidden items-center gap-2 rounded-2xl border border-white/80 bg-gradient-to-r from-white/90 via-violet-50 to-teal-50 px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-[0_14px_30px_rgba(91,33,182,0.10)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(91,33,182,0.14)] md:inline-flex"
+                  className={cn(
+                    "hidden items-center overflow-hidden rounded-2xl border border-white/80 bg-gradient-to-r from-white/90 via-violet-50 to-teal-50 text-slate-700 shadow-[0_14px_30px_rgba(91,33,182,0.10)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(91,33,182,0.14)] md:inline-flex",
+                    headerCondensed
+                      ? "gap-0 px-2.5 py-2.5"
+                      : "gap-2 px-4 py-2.5",
+                  )}
                 >
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-teal-500 text-white shadow-[0_10px_20px_rgba(91,33,182,0.18)]">
+                  <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-teal-500 text-white shadow-[0_10px_20px_rgba(91,33,182,0.18)]">
                     {sidebarCollapsed ? (
                       <ChevronRight className="h-4 w-4" />
                     ) : (
                       <ChevronLeft className="h-4 w-4" />
                     )}
                   </span>
-                  <span>{sidebarCollapsed ? "Show menu" : "Hide menu"}</span>
+                  <span
+                    className={cn(
+                      "whitespace-nowrap text-sm font-semibold transition-all duration-200",
+                      headerCondensed
+                        ? "max-w-0 translate-x-1 opacity-0"
+                        : "max-w-[120px] translate-x-0 opacity-100",
+                    )}
+                  >
+                    {sidebarCollapsed ? "Show menu" : "Hide menu"}
+                  </span>
                 </button>
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-700">
