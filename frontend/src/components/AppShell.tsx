@@ -112,7 +112,7 @@ export function AppShell() {
         <aside
           id="app-sidebar"
           className={cn(
-            "fixed inset-y-0 left-0 z-30 overflow-hidden border-r border-slate-200 bg-white transition-all duration-300 md:sticky md:top-0 md:h-screen md:translate-x-0",
+            "fixed inset-y-0 left-0 z-30 overflow-y-auto overflow-x-hidden overscroll-contain border-r border-slate-200 bg-white transition-all duration-300 md:sticky md:top-0 md:h-screen md:translate-x-0",
             mobileSidebarOpen ? "translate-x-0" : "-translate-x-full",
             sidebarCollapsed ? "md:w-0 md:border-r-0" : "w-72 md:w-[290px]",
           )}
