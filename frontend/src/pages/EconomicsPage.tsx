@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { AreaTrendChart } from "../charts/AreaTrendChart";
 import { ChartCard } from "../components/ChartCard";
+import { DemoBadge } from "../components/DemoBadge";
 import { ErrorState } from "../components/ErrorState";
 import { LoadingState } from "../components/LoadingState";
 import { SectionHeading } from "../components/SectionHeading";
@@ -11,55 +12,59 @@ import { useAsyncData } from "../hooks/useAsyncData";
 import { api } from "../services/api";
 import { formatNumber } from "../utils/format";
 
+const headlineIds = [
+  "gdp_growth",
+  "cpi_inflation",
+  "unemployment",
+  "exchange_rate",
+];
+
 export function EconomicsPage() {
   const indicators = useAsyncData(api.indicators);
   const [selected, setSelected] = useState("gdp_growth");
-  const detail = useAsyncData(() => api.indicator(selected), false);
-
-  useEffect(() => {
-    void detail.reload();
-  }, [selected, detail]);
+  const detail = useAsyncData(() => api.indicator(selected), {
+    deps: [selected],
+  });
 
   const headline = useMemo(
     () =>
-      indicators.data?.filter((item) =>
-        [
-          "gdp_growth",
-          "cpi_inflation",
-          "unemployment",
-          "exchange_rate",
-        ].includes(item.id),
-      ) ?? [],
+      indicators.data?.filter((item) => headlineIds.includes(item.id)) ?? [],
     [indicators.data],
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <SectionHeading
-          eyebrow="Economic intelligence dashboard"
-          title="Track India-focused macro indicators with source clarity"
-          description="Each indicator includes its source, units, frequency, date, and a historical series snapshot. FinSight bundles a public-data snapshot for demo mode and supports a live World Bank provider."
+          eyebrow="Economics"
+          title="India macro dashboard"
+          description="Clean indicator views with source, frequency, units, and update notes kept visible."
         />
-        <select
-          value={selected}
-          onChange={(event) => setSelected(event.target.value)}
-          className="rounded-full border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none"
-          aria-label="Select indicator"
-        >
-          {(indicators.data ?? []).map((indicator) => (
-            <option key={indicator.id} value={indicator.id}>
-              {indicator.label}
-            </option>
-          ))}
-        </select>
+        <div className="flex items-center gap-3">
+          {detail.data?.source.is_demo ? <DemoBadge /> : null}
+          <select
+            value={selected}
+            onChange={(event) => setSelected(event.target.value)}
+            className="rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-300"
+            aria-label="Select indicator"
+          >
+            {(indicators.data ?? []).map((indicator) => (
+              <option key={indicator.id} value={indicator.id}>
+                {indicator.label}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      {indicators.loading ? (
+      {indicators.loading && !indicators.data ? (
         <LoadingState label="Loading macro dataset…" />
       ) : null}
       {indicators.error ? (
         <ErrorState message={indicators.error} onRetry={indicators.reload} />
+      ) : null}
+      {detail.error ? (
+        <ErrorState message={detail.error} onRetry={detail.reload} />
       ) : null}
 
       {headline.length ? (
@@ -75,48 +80,48 @@ export function EconomicsPage() {
         </div>
       ) : null}
 
-      {detail.loading ? (
-        <LoadingState label="Loading selected indicator…" />
-      ) : null}
-      {detail.error ? (
-        <ErrorState message={detail.error} onRetry={detail.reload} />
-      ) : null}
-
       {detail.data ? (
-        <div className="grid gap-6 xl:grid-cols-[1.2fr,0.8fr]">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_340px]">
           <ChartCard
             title={detail.data.label}
             subtitle={`${detail.data.country} · ${detail.data.frequency} · ${detail.data.units}`}
           >
-            <AreaTrendChart
-              data={detail.data.series}
-              xKey="date"
-              yKey="value"
-              color="#38bdf8"
-            />
+            {detail.loading && !detail.data ? (
+              <LoadingState label="Loading selected indicator…" />
+            ) : (
+              <AreaTrendChart
+                data={detail.data.series}
+                xKey="date"
+                yKey="value"
+                color="#2563eb"
+              />
+            )}
           </ChartCard>
+
           <div className="space-y-4">
-            <section className="rounded-3xl border border-white/8 bg-slate-900/75 p-5 shadow-card">
-              <h3 className="text-lg font-semibold text-white">
-                Indicator notes
+            <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+              <h3 className="text-lg font-semibold text-slate-900">
+                Indicator details
               </h3>
-              <div className="mt-4 space-y-2 text-sm leading-7 text-slate-400">
-                <p>
-                  <span className="text-slate-200">Latest value:</span>{" "}
-                  {formatNumber(detail.data.latest_value)}
-                </p>
-                <p>
-                  <span className="text-slate-200">Date:</span>{" "}
-                  {detail.data.latest_date}
-                </p>
-                <p>
-                  <span className="text-slate-200">Units:</span>{" "}
-                  {detail.data.units}
-                </p>
-                <p>
-                  <span className="text-slate-200">Frequency:</span>{" "}
-                  {detail.data.frequency}
-                </p>
+              <div className="mt-4 space-y-3 text-sm text-slate-600">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-slate-500">Latest value</p>
+                  <p className="mt-1 font-semibold text-slate-900">
+                    {formatNumber(detail.data.latest_value)}
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-slate-500">Latest date</p>
+                  <p className="mt-1 font-semibold text-slate-900">
+                    {detail.data.latest_date}
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-slate-500">Units / frequency</p>
+                  <p className="mt-1 font-semibold text-slate-900">
+                    {detail.data.units} · {detail.data.frequency}
+                  </p>
+                </div>
               </div>
             </section>
             <SourceNote source={detail.data.source} />
