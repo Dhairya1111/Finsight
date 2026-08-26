@@ -7,6 +7,7 @@ import type {
   EventAnalysisResponse,
   FinanceSummary,
   IndicatorResponse,
+  LedgerTransaction,
   ManualTransactionInput,
   MLDemoResponse,
   ScenarioOutput,
@@ -27,6 +28,26 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
 export const api = {
   financeSummary: () => request<FinanceSummary>("/finance/summary"),
+  financeTransactions: () =>
+    request<LedgerTransaction[]>("/finance/transactions"),
+  createTransaction: (transaction: ManualTransactionInput) =>
+    request<LedgerTransaction>("/finance/transactions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(transaction),
+    }),
+  updateTransaction: (id: number, transaction: ManualTransactionInput) =>
+    request<LedgerTransaction>(`/finance/transactions/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(transaction),
+    }),
+  deleteTransaction: (id: number) =>
+    request<{ message: string }>(`/finance/transactions/${id}`, {
+      method: "DELETE",
+    }),
+  resetTransactions: () =>
+    request<FinanceSummary>("/finance/reset", { method: "POST" }),
   uploadFinanceCsv: (file: File) => {
     const body = new FormData();
     body.append("file", file);

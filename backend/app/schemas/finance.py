@@ -16,7 +16,7 @@ class TransactionRecord(BaseModel):
     account: str
 
 
-class ManualTransactionInput(BaseModel):
+class LedgerTransactionBase(BaseModel):
     date: str
     description: str
     category: str
@@ -25,8 +25,27 @@ class ManualTransactionInput(BaseModel):
     account: str
 
 
+class ManualTransactionInput(LedgerTransactionBase):
+    pass
+
+
 class ManualTransactionRequest(BaseModel):
     transactions: list[ManualTransactionInput] = Field(min_length=1)
+
+
+class LedgerTransactionUpdate(BaseModel):
+    date: str
+    description: str
+    category: str
+    amount: float = Field(gt=0)
+    type: Literal["income", "expense"]
+    account: str
+
+
+class LedgerTransactionResponse(LedgerTransactionBase):
+    id: int
+    created_at: str
+    updated_at: str
 
 
 class MonthlyPoint(BaseModel):

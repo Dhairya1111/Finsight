@@ -37,6 +37,12 @@ export type ManualTransactionInput = {
   account: string;
 };
 
+export type LedgerTransaction = ManualTransactionInput & {
+  id: number;
+  created_at: string;
+  updated_at: string;
+};
+
 export type FinanceSummary = {
   total_income: number;
   total_expenses: number;

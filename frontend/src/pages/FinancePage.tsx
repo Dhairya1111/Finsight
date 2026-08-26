@@ -1,5 +1,13 @@
 import { ChangeEvent, FormEvent, ReactNode, useMemo, useState } from "react";
-import { CalendarDays, Plus, RefreshCcw, Trash2, Upload } from "lucide-react";
+import {
+  CalendarDays,
+  PencilLine,
+  RefreshCcw,
+  Save,
+  Trash2,
+  Upload,
+  X,
+} from "lucide-react";
 
 import { AreaTrendChart } from "../charts/AreaTrendChart";
 import { BarTrendChart } from "../charts/BarTrendChart";
@@ -12,9 +20,10 @@ import { SourceNote } from "../components/SourceNote";
 import { StatCard } from "../components/StatCard";
 import { useAsyncData } from "../hooks/useAsyncData";
 import { api } from "../services/api";
-import type { ManualTransactionInput } from "../types/api";
+import type { LedgerTransaction, ManualTransactionInput } from "../types/api";
 import {
   formatCompactCurrency,
+  formatCurrency,
   formatNumber,
   formatPercent,
 } from "../utils/format";
@@ -43,130 +52,172 @@ const accountSuggestions = [
   "UPI Wallet",
 ];
 
-type ManualTransactionDraft = {
-  date: string;
-  description: string;
-  category: string;
-  amount: string;
-  type: "income" | "expense";
-  account: string;
-};
+type TransactionDraft = ManualTransactionInput;
 
-const initialDraft: ManualTransactionDraft = {
+const initialDraft: TransactionDraft = {
   date: new Date().toISOString().slice(0, 10),
   description: "",
   category: "Groceries",
-  amount: "",
+  amount: 0,
   type: "expense",
   account: "Primary Checking",
 };
 
 export function FinancePage() {
   const finance = useAsyncData(api.financeSummary);
+  const transactions = useAsyncData(api.financeTransactions);
+
   const [uploading, setUploading] = useState(false);
-  const [manualLoading, setManualLoading] = useState(false);
-  const [manualError, setManualError] = useState<string | null>(null);
-  const [draft, setDraft] = useState(initialDraft);
-  const [manualTransactions, setManualTransactions] = useState<
-    ManualTransactionInput[]
-  >([]);
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [draft, setDraft] = useState<TransactionDraft>(initialDraft);
 
-  const currentDatasetLabel = useMemo(() => {
-    if (!finance.data) return "";
-    if (finance.data.source.is_demo) return "Demo dataset loaded";
-    if (finance.data.source.note?.includes("Uploaded file")) {
-      return "Uploaded CSV in view";
-    }
-    if (finance.data.source.note?.includes("Manual transaction entries")) {
-      return "Manual entries in view";
-    }
-    return "Custom dataset in view";
-  }, [finance.data]);
-
-  const manualTotal = useMemo(
+  const hasSavedTransactions = (transactions.data?.length ?? 0) > 0;
+  const topCategories = useMemo(
     () =>
-      manualTransactions.reduce((sum, item) => {
-        const signed = item.type === "income" ? item.amount : -item.amount;
-        return sum + signed;
-      }, 0),
-    [manualTransactions],
+      finance.data?.categories.slice(0, 6).map((item) => ({
+        category: item.category,
+        amount: item.amount,
+      })) ?? [],
+    [finance.data],
   );
+
+  const currentDatasetLabel = hasSavedTransactions
+    ? "Personal ledger active"
+    : "Demo data active";
+
+  const handleDraftChange = <K extends keyof TransactionDraft>(
+    key: K,
+    value: TransactionDraft[K],
+  ) => {
+    setDraft((current) => ({ ...current, [key]: value }));
+  };
+
+  const resetForm = () => {
+    setEditingId(null);
+    setDraft(initialDraft);
+    setFormError(null);
+  };
+
+  const refreshFinanceState = async (
+    summaryOverride?: Awaited<ReturnType<typeof api.financeSummary>>,
+  ) => {
+    if (summaryOverride) {
+      finance.setData(summaryOverride);
+    } else {
+      await finance.reload();
+    }
+    await transactions.reload();
+  };
+
+  const validateDraft = () => {
+    if (!draft.date) return "Please choose a date.";
+    if (!draft.description.trim()) return "Please enter a description.";
+    if (!draft.category.trim()) return "Please enter a category.";
+    if (!draft.account.trim()) return "Please enter an account.";
+    if (!Number.isFinite(draft.amount) || draft.amount <= 0) {
+      return "Amount must be greater than zero.";
+    }
+    return null;
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const validationError = validateDraft();
+    if (validationError) {
+      setFormError(validationError);
+      return;
+    }
+
+    setSaving(true);
+    setFormError(null);
+
+    try {
+      const payload: ManualTransactionInput = {
+        ...draft,
+        description: draft.description.trim(),
+        category: draft.category.trim(),
+        account: draft.account.trim(),
+        amount: Number(draft.amount),
+      };
+
+      if (editingId !== null) {
+        await api.updateTransaction(editingId, payload);
+      } else {
+        await api.createTransaction(payload);
+      }
+
+      await refreshFinanceState();
+      resetForm();
+    } catch (error) {
+      setFormError(
+        error instanceof Error ? error.message : "Unable to save transaction.",
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     setUploading(true);
-    setManualError(null);
-
+    setFormError(null);
     try {
-      const result = await api.uploadFinanceCsv(file);
-      finance.setData(result);
+      const summary = await api.uploadFinanceCsv(file);
+      await refreshFinanceState(summary);
+      resetForm();
     } catch (error) {
-      setManualError(error instanceof Error ? error.message : "Upload failed.");
+      setFormError(error instanceof Error ? error.message : "Upload failed.");
     } finally {
       setUploading(false);
       event.target.value = "";
     }
   };
 
-  const handleAddTransaction = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setManualError(null);
-
-    const parsedAmount = Number(draft.amount);
-    if (!draft.date) return setManualError("Please choose a valid date.");
-    if (!draft.description.trim()) {
-      return setManualError("Please enter a description.");
-    }
-    if (!draft.category.trim())
-      return setManualError("Please enter a category.");
-    if (!draft.account.trim())
-      return setManualError("Please enter an account.");
-    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
-      return setManualError("Amount must be a positive number.");
-    }
-
-    setManualTransactions((current) => [
-      {
-        date: draft.date,
-        description: draft.description.trim(),
-        category: draft.category.trim(),
-        amount: parsedAmount,
-        type: draft.type,
-        account: draft.account.trim(),
-      },
-      ...current,
-    ]);
-
-    setDraft((current) => ({ ...current, description: "", amount: "" }));
-  };
-
-  const handleAnalyzeManual = async () => {
-    if (!manualTransactions.length) {
-      setManualError("Add at least one transaction before analyzing.");
-      return;
-    }
-
-    setManualLoading(true);
-    setManualError(null);
-
+  const handleDelete = async (transactionId: number) => {
+    setFormError(null);
     try {
-      const result = await api.analyzeManualTransactions(manualTransactions);
-      finance.setData(result);
+      await api.deleteTransaction(transactionId);
+      await refreshFinanceState();
+      if (editingId === transactionId) {
+        resetForm();
+      }
     } catch (error) {
-      setManualError(
-        error instanceof Error ? error.message : "Manual analysis failed.",
+      setFormError(
+        error instanceof Error
+          ? error.message
+          : "Unable to remove transaction.",
       );
-    } finally {
-      setManualLoading(false);
     }
   };
 
-  const handleResetDemo = async () => {
-    setManualError(null);
-    const result = await api.financeSummary();
-    finance.setData(result);
+  const handleEdit = (transaction: LedgerTransaction) => {
+    setEditingId(transaction.id);
+    setFormError(null);
+    setDraft({
+      date: transaction.date,
+      description: transaction.description,
+      category: transaction.category,
+      amount: transaction.amount,
+      type: transaction.type,
+      account: transaction.account,
+    });
+  };
+
+  const handleResetToDemo = async () => {
+    setFormError(null);
+    try {
+      const summary = await api.resetTransactions();
+      await refreshFinanceState(summary);
+      resetForm();
+    } catch (error) {
+      setFormError(
+        error instanceof Error ? error.message : "Unable to restore demo data.",
+      );
+    }
   };
 
   return (
@@ -175,16 +226,16 @@ export function FinancePage() {
         <SectionHeading
           eyebrow="Ledger"
           title="Transactions and cash flow"
-          description="Upload a CSV or enter transactions manually. The summary and charts update from whichever dataset is currently active."
+          description="Add your own transactions, edit them later, upload a CSV, or start from the demo dataset. Once you begin saving your own ledger, the app automatically switches away from demo data."
         />
         <div className="flex flex-wrap items-center gap-3">
           <button
             type="button"
-            onClick={() => void handleResetDemo()}
+            onClick={() => void handleResetToDemo()}
             className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
           >
             <RefreshCcw className="h-4 w-4" />
-            Load demo data
+            Restore demo
           </button>
           <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-blue-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-600">
             <Upload className="h-4 w-4" />
@@ -200,14 +251,22 @@ export function FinancePage() {
       </div>
 
       {finance.loading && !finance.data ? (
-        <LoadingState label="Loading ledger summary…" />
+        <LoadingState label="Loading ledger…" />
       ) : null}
+
       {finance.error ? (
         <ErrorState message={finance.error} onRetry={finance.reload} />
       ) : null}
 
+      {transactions.error ? (
+        <ErrorState
+          message={transactions.error}
+          onRetry={transactions.reload}
+        />
+      ) : null}
+
       {finance.data ? (
-        <div className="grid gap-6 2xl:grid-cols-[minmax(0,1.3fr)_380px]">
+        <div className="grid gap-6 2xl:grid-cols-[minmax(0,1.3fr)_390px]">
           <div className="min-w-0 space-y-6">
             <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex flex-wrap items-start justify-between gap-4">
@@ -219,20 +278,26 @@ export function FinancePage() {
                     </span>
                   </div>
                   <h3 className="mt-4 text-3xl font-semibold text-slate-900">
-                    Keep the summary visible while you work.
+                    Track every transaction in one working ledger.
                   </h3>
                   <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
-                    The main panel shows the current financial picture. The side
-                    panel is reserved for adding personal entries so the page
-                    behaves more like a working app than a concept dashboard.
+                    Summary cards and charts use the active ledger dataset. If
+                    you save your own transactions, those become the primary
+                    dataset automatically.
                   </p>
                 </div>
                 <div className="rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-3 text-right text-sm text-slate-600">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                    Transactions analyzed
+                    Current source
                   </p>
-                  <p className="mt-2 text-2xl font-semibold text-slate-900">
-                    {formatNumber(finance.data.transaction_count, 0)}
+                  <p className="mt-2 text-lg font-semibold text-slate-900">
+                    {finance.data.source.is_demo
+                      ? "Demo sample"
+                      : "Saved ledger"}
+                  </p>
+                  <p className="mt-1">
+                    {formatNumber(finance.data.transaction_count, 0)}{" "}
+                    transactions
                   </p>
                 </div>
               </div>
@@ -267,7 +332,7 @@ export function FinancePage() {
             <div className="grid gap-6 xl:grid-cols-2">
               <ChartCard
                 title="Monthly expenses"
-                subtitle="Converted to positive values for readability."
+                subtitle="Converted to positive values for easier reading."
               >
                 <BarTrendChart
                   data={finance.data.monthly.map((item) => ({
@@ -280,8 +345,8 @@ export function FinancePage() {
                 />
               </ChartCard>
               <ChartCard
-                title="Monthly net savings"
-                subtitle="Quick read on whether the monthly balance is improving."
+                title="Net savings"
+                subtitle="Quick view of the monthly balance trend."
               >
                 <AreaTrendChart
                   data={finance.data.monthly}
@@ -295,13 +360,10 @@ export function FinancePage() {
             <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
               <ChartCard
                 title="Category spending"
-                subtitle="Top categories in the current dataset."
+                subtitle="Where most of the money is going in the active ledger."
               >
                 <BarTrendChart
-                  data={finance.data.categories.map((item) => ({
-                    category: item.category,
-                    amount: item.amount,
-                  }))}
+                  data={topCategories}
                   xKey="category"
                   yKey="amount"
                   color="#ea580c"
@@ -313,8 +375,8 @@ export function FinancePage() {
                   Recurring expenses
                 </h3>
                 <p className="mt-2 text-sm leading-7 text-slate-600">
-                  Repeated descriptions can point to rent, subscriptions, or
-                  regular bills.
+                  Repeated descriptions can highlight subscriptions, rent, or
+                  other regular commitments.
                 </p>
                 <div className="mt-4 space-y-3">
                   {finance.data.recurring_expenses.length ? (
@@ -331,19 +393,129 @@ export function FinancePage() {
                         </p>
                         <p className="mt-2 text-sm text-slate-600">
                           {item.occurrences} entries ·{" "}
-                          {formatCompactCurrency(item.average_amount, "INR")}{" "}
-                          avg
+                          {formatCurrency(item.average_amount, "INR")} average
                         </p>
                       </div>
                     ))
                   ) : (
                     <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-500">
-                      No recurring pattern detected in the current dataset.
+                      No recurring pattern detected in the active ledger yet.
                     </div>
                   )}
                 </div>
               </section>
             </div>
+
+            <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-900">
+                    Saved transactions
+                  </h3>
+                  <p className="mt-1 text-sm text-slate-600">
+                    Add, edit, and delete entries directly from the ledger.
+                  </p>
+                </div>
+                {hasSavedTransactions ? (
+                  <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">
+                    {transactions.data?.length ?? 0} saved
+                  </span>
+                ) : null}
+              </div>
+
+              {transactions.loading && !transactions.data ? (
+                <div className="mt-4">
+                  <LoadingState label="Loading saved transactions…" />
+                </div>
+              ) : null}
+
+              {hasSavedTransactions ? (
+                <div className="mt-5 overflow-x-auto">
+                  <table className="min-w-full border-separate border-spacing-y-2 text-sm">
+                    <thead>
+                      <tr className="text-left text-slate-500">
+                        <th className="px-4 py-2 font-medium">Date</th>
+                        <th className="px-4 py-2 font-medium">Description</th>
+                        <th className="px-4 py-2 font-medium">Category</th>
+                        <th className="px-4 py-2 font-medium">Account</th>
+                        <th className="px-4 py-2 font-medium">Type</th>
+                        <th className="px-4 py-2 font-medium">Amount</th>
+                        <th className="px-4 py-2 font-medium text-right">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(transactions.data ?? []).map((transaction) => (
+                        <tr key={transaction.id} className="bg-slate-50">
+                          <td className="rounded-l-2xl border-y border-l border-slate-200 px-4 py-3 text-slate-700">
+                            {transaction.date}
+                          </td>
+                          <td className="border-y border-slate-200 px-4 py-3 font-medium text-slate-900">
+                            {transaction.description}
+                          </td>
+                          <td className="border-y border-slate-200 px-4 py-3 text-slate-700">
+                            {transaction.category}
+                          </td>
+                          <td className="border-y border-slate-200 px-4 py-3 text-slate-700">
+                            {transaction.account}
+                          </td>
+                          <td className="border-y border-slate-200 px-4 py-3">
+                            <span
+                              className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+                                transaction.type === "income"
+                                  ? "bg-emerald-100 text-emerald-700"
+                                  : "bg-rose-100 text-rose-700"
+                              }`}
+                            >
+                              {transaction.type}
+                            </span>
+                          </td>
+                          <td
+                            className={`border-y border-slate-200 px-4 py-3 font-semibold ${
+                              transaction.type === "income"
+                                ? "text-emerald-700"
+                                : "text-rose-700"
+                            }`}
+                          >
+                            {transaction.type === "income" ? "+" : "-"}
+                            {formatCurrency(transaction.amount, "INR")}
+                          </td>
+                          <td className="rounded-r-2xl border-y border-r border-slate-200 px-4 py-3 text-right">
+                            <div className="inline-flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => handleEdit(transaction)}
+                                className="rounded-xl border border-slate-200 bg-white p-2 text-slate-600 transition hover:border-blue-200 hover:text-blue-700"
+                                aria-label={`Edit ${transaction.description}`}
+                              >
+                                <PencilLine className="h-4 w-4" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  void handleDelete(transaction.id)
+                                }
+                                className="rounded-xl border border-slate-200 bg-white p-2 text-slate-600 transition hover:border-rose-300 hover:text-rose-600"
+                                aria-label={`Delete ${transaction.description}`}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="mt-5 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm leading-7 text-slate-500">
+                  No saved personal transactions yet. The dashboard is currently
+                  using demo data. Add a transaction or upload a CSV to switch
+                  to your own ledger.
+                </div>
+              )}
+            </section>
 
             <SourceNote source={finance.data.source} />
           </div>
@@ -353,10 +525,14 @@ export function FinancePage() {
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                    Manual entry
+                    {editingId === null
+                      ? "Add transaction"
+                      : "Edit transaction"}
                   </p>
                   <h3 className="mt-2 text-lg font-semibold text-slate-900">
-                    Add personal transactions
+                    {editingId === null
+                      ? "Save a ledger entry"
+                      : "Update selected entry"}
                   </h3>
                 </div>
                 <div className="rounded-2xl bg-blue-50 p-3 text-blue-700">
@@ -365,21 +541,24 @@ export function FinancePage() {
               </div>
 
               <p className="mt-3 text-sm leading-7 text-slate-600">
-                Use positive amounts. The app treats income and expense
-                differently based on the selected type.
+                Transactions saved here become the active dataset for your
+                ledger, charts, and summaries.
               </p>
 
-              <form onSubmit={handleAddTransaction} className="mt-5 space-y-4">
+              {formError ? (
+                <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                  {formError}
+                </div>
+              ) : null}
+
+              <form onSubmit={handleSubmit} className="mt-5 space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <Field label="Date">
                     <input
                       type="date"
                       value={draft.date}
                       onChange={(event) =>
-                        setDraft((current) => ({
-                          ...current,
-                          date: event.target.value,
-                        }))
+                        handleDraftChange("date", event.target.value)
                       }
                       className={inputClassName}
                     />
@@ -388,10 +567,10 @@ export function FinancePage() {
                     <select
                       value={draft.type}
                       onChange={(event) =>
-                        setDraft((current) => ({
-                          ...current,
-                          type: event.target.value as "income" | "expense",
-                        }))
+                        handleDraftChange(
+                          "type",
+                          event.target.value as TransactionDraft["type"],
+                        )
                       }
                       className={inputClassName}
                     >
@@ -406,10 +585,7 @@ export function FinancePage() {
                     type="text"
                     value={draft.description}
                     onChange={(event) =>
-                      setDraft((current) => ({
-                        ...current,
-                        description: event.target.value,
-                      }))
+                      handleDraftChange("description", event.target.value)
                     }
                     placeholder="Rent, salary, groceries, freelance payment"
                     className={inputClassName}
@@ -422,10 +598,7 @@ export function FinancePage() {
                       list="finance-categories"
                       value={draft.category}
                       onChange={(event) =>
-                        setDraft((current) => ({
-                          ...current,
-                          category: event.target.value,
-                        }))
+                        handleDraftChange("category", event.target.value)
                       }
                       className={inputClassName}
                     />
@@ -435,10 +608,7 @@ export function FinancePage() {
                       list="finance-accounts"
                       value={draft.account}
                       onChange={(event) =>
-                        setDraft((current) => ({
-                          ...current,
-                          account: event.target.value,
-                        }))
+                        handleDraftChange("account", event.target.value)
                       }
                       className={inputClassName}
                     />
@@ -450,25 +620,46 @@ export function FinancePage() {
                     type="number"
                     min="0"
                     step="0.01"
-                    value={draft.amount}
+                    value={draft.amount || ""}
                     onChange={(event) =>
-                      setDraft((current) => ({
-                        ...current,
-                        amount: event.target.value,
-                      }))
+                      handleDraftChange(
+                        "amount",
+                        Number(event.target.value || 0),
+                      )
                     }
                     placeholder="0.00"
                     className={inputClassName}
                   />
                 </Field>
 
-                <button
-                  type="submit"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-600"
-                >
-                  <Plus className="h-4 w-4" />
-                  Add transaction
-                </button>
+                <div className="flex gap-3">
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-blue-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {editingId === null ? (
+                      <Save className="h-4 w-4" />
+                    ) : (
+                      <PencilLine className="h-4 w-4" />
+                    )}
+                    {saving
+                      ? "Saving…"
+                      : editingId === null
+                        ? "Save transaction"
+                        : "Update transaction"}
+                  </button>
+                  {editingId !== null ? (
+                    <button
+                      type="button"
+                      onClick={resetForm}
+                      className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+                    >
+                      <X className="h-4 w-4" />
+                      Cancel
+                    </button>
+                  ) : null}
+                </div>
               </form>
 
               <datalist id="finance-categories">
@@ -481,111 +672,6 @@ export function FinancePage() {
                   <option key={account} value={account} />
                 ))}
               </datalist>
-            </section>
-
-            <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                    Pending entries
-                  </p>
-                  <h3 className="mt-2 text-lg font-semibold text-slate-900">
-                    {manualTransactions.length} queued transactions
-                  </h3>
-                </div>
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-right">
-                  <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
-                    Net impact
-                  </p>
-                  <p className="mt-1 font-semibold text-slate-900">
-                    {formatCompactCurrency(manualTotal, "INR")}
-                  </p>
-                </div>
-              </div>
-
-              {manualError ? (
-                <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-                  {manualError}
-                </div>
-              ) : null}
-
-              <div className="mt-5 flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => void handleAnalyzeManual()}
-                  disabled={manualLoading}
-                  className="inline-flex flex-1 items-center justify-center rounded-2xl bg-blue-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {manualLoading ? "Analyzing…" : "Analyze manual entries"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setManualTransactions([])}
-                  className="inline-flex items-center justify-center rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
-                >
-                  Clear
-                </button>
-              </div>
-
-              <div className="mt-5 space-y-3">
-                {manualTransactions.length ? (
-                  manualTransactions.map((transaction, index) => (
-                    <div
-                      key={`${transaction.date}-${transaction.description}-${index}`}
-                      className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <p className="font-medium text-slate-900">
-                            {transaction.description}
-                          </p>
-                          <p className="mt-1 text-sm text-slate-500">
-                            {transaction.category} · {transaction.account}
-                          </p>
-                          <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-500">
-                            {transaction.date} · {transaction.type}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <p
-                            className={`text-sm font-semibold ${
-                              transaction.type === "income"
-                                ? "text-emerald-700"
-                                : "text-rose-700"
-                            }`}
-                          >
-                            {transaction.type === "income" ? "+" : "-"}
-                            {formatCompactCurrency(transaction.amount, "INR")}
-                          </p>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setManualTransactions((current) =>
-                                current.filter(
-                                  (_, itemIndex) => itemIndex !== index,
-                                ),
-                              )
-                            }
-                            className="rounded-xl border border-slate-200 p-2 text-slate-500 transition hover:border-rose-300 hover:text-rose-600"
-                            aria-label={`Remove ${transaction.description}`}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm leading-7 text-slate-500">
-                    No manual transactions added yet. Add entries here and click
-                    <span className="font-medium text-slate-900">
-                      {" "}
-                      Analyze manual entries
-                    </span>
-                    to view your own summary.
-                  </div>
-                )}
-              </div>
             </section>
           </div>
         </div>
