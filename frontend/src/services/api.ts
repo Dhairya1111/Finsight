@@ -12,6 +12,9 @@ import type {
   ManualTransactionInput,
   MLDemoResponse,
   ScenarioOutput,
+  ShareLinkResponse,
+  SharedLedgerResponse,
+  VoiceEntryResponse,
 } from "../types/api";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api";
@@ -47,12 +50,25 @@ export const api = {
     request<{ message: string }>(`/finance/transactions/${id}`, {
       method: "DELETE",
     }),
+  createVoiceEntry: (text: string) =>
+    request<VoiceEntryResponse>("/finance/voice-entry", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    }),
+  createShareLink: () =>
+    request<ShareLinkResponse>("/finance/share", { method: "POST" }),
+  getSharedLedger: (token: string) =>
+    request<SharedLedgerResponse>(`/finance/shared/${token}`),
   resetTransactions: () =>
     request<FinanceSummary>("/finance/reset", { method: "POST" }),
   uploadFinanceCsv: (file: File) => {
     const body = new FormData();
     body.append("file", file);
-    return request<FinanceSummary>("/finance/upload", { method: "POST", body });
+    return request<FinanceSummary>("/finance/upload", {
+      method: "POST",
+      body,
+    });
   },
   analyzeManualTransactions: (transactions: ManualTransactionInput[]) =>
     request<FinanceSummary>("/finance/analyze-manual", {

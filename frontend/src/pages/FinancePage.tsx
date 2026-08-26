@@ -1,14 +1,27 @@
-import { ChangeEvent, FormEvent, ReactNode, useMemo, useState } from "react";
 import {
   CalendarDays,
+  Check,
   ChevronDown,
+  Copy,
+  Mic,
+  MicOff,
   PencilLine,
   RefreshCcw,
   Save,
+  Share2,
   Trash2,
   Upload,
   X,
 } from "lucide-react";
+import {
+  ChangeEvent,
+  FormEvent,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { AreaTrendChart } from "../charts/AreaTrendChart";
 import { BarTrendChart } from "../charts/BarTrendChart";
@@ -21,7 +34,11 @@ import { SourceNote } from "../components/SourceNote";
 import { StatCard } from "../components/StatCard";
 import { useAsyncData } from "../hooks/useAsyncData";
 import { api } from "../services/api";
-import type { LedgerTransaction, ManualTransactionInput } from "../types/api";
+import type {
+  LedgerTransaction,
+  ManualTransactionInput,
+  VoiceEntryResponse,
+} from "../types/api";
 import {
   formatCompactCurrency,
   formatCurrency,
@@ -105,7 +122,17 @@ export function FinancePage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [draft, setDraft] = useState<TransactionDraft>(initialDraft);
 
+  const [voiceTranscript, setVoiceTranscript] = useState("");
+  const [voiceMessage, setVoiceMessage] = useState<string | null>(null);
+  const [voiceProcessing, setVoiceProcessing] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [shareLink, setShareLink] = useState("");
+  const [shareMessage, setShareMessage] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const hasSavedTransactions = (transactions.data?.length ?? 0) > 0;
+  const speechSupported = Boolean(getSpeechRecognitionConstructor());
 
   const categoryOptions = useMemo(() => {
     const existing = (transactions.data ?? []).map((item) => item.category);
@@ -131,6 +158,12 @@ export function FinancePage() {
   const currentDatasetLabel = hasSavedTransactions
     ? "Personal ledger active"
     : "Demo data active";
+
+  useEffect(() => {
+    return () => {
+      recognitionRef.current?.stop();
+    };
+  }, []);
 
   const handleDraftChange = <K extends keyof TransactionDraft>(
     key: K,
@@ -254,14 +287,138 @@ export function FinancePage() {
 
   const handleResetToDemo = async () => {
     setFormError(null);
+    setShareMessage(null);
     try {
       const summary = await api.resetTransactions();
       await refreshFinanceState(summary);
       resetForm();
+      setShareLink("");
     } catch (error) {
       setFormError(
         error instanceof Error ? error.message : "Unable to restore demo data.",
       );
+    }
+  };
+
+  const applyVoiceResultToDraft = (result: VoiceEntryResponse) => {
+    const transaction = result.parsed_transaction;
+    setDraft({
+      date: transaction.date,
+      description: transaction.description,
+      category: transaction.category,
+      amount: transaction.amount,
+      type: transaction.type,
+      account: transaction.account,
+    });
+    setVoiceMessage(
+      [result.message, ...result.warnings].filter(Boolean).join(" "),
+    );
+  };
+
+  const saveVoiceEntry = async (transcript: string) => {
+    if (!transcript.trim()) {
+      setVoiceMessage("No speech detected. Please try again.");
+      return;
+    }
+
+    setVoiceProcessing(true);
+    setVoiceMessage("Processing voice entry...");
+    setFormError(null);
+
+    try {
+      const result = await api.createVoiceEntry(transcript);
+      applyVoiceResultToDraft(result);
+      await refreshFinanceState();
+      setEditingId(null);
+    } catch (error) {
+      setVoiceMessage(
+        error instanceof Error
+          ? error.message
+          : "Unable to process the voice entry.",
+      );
+    } finally {
+      setVoiceProcessing(false);
+    }
+  };
+
+  const handleVoiceCapture = () => {
+    if (isRecording) {
+      recognitionRef.current?.stop();
+      return;
+    }
+
+    const SpeechRecognitionCtor = getSpeechRecognitionConstructor();
+    if (!SpeechRecognitionCtor) {
+      setVoiceMessage(
+        "Speech recognition is not supported in this browser preview.",
+      );
+      return;
+    }
+
+    const recognition = new SpeechRecognitionCtor();
+    recognitionRef.current = recognition;
+    recognition.lang = "en-US";
+    recognition.interimResults = true;
+    recognition.continuous = false;
+
+    let finalTranscript = "";
+
+    recognition.onstart = () => {
+      setIsRecording(true);
+      setVoiceTranscript("");
+      setVoiceMessage("Listening... say one transaction clearly.");
+    };
+
+    recognition.onresult = (event: SpeechRecognitionEventLike) => {
+      const transcript = Array.from(event.results)
+        .map((result) => result[0]?.transcript ?? "")
+        .join(" ")
+        .trim();
+      setVoiceTranscript(transcript);
+      finalTranscript = transcript;
+    };
+
+    recognition.onerror = (event: SpeechRecognitionErrorEventLike) => {
+      setIsRecording(false);
+      setVoiceMessage(`Voice input failed: ${event.error}`);
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+      if (finalTranscript.trim()) {
+        void saveVoiceEntry(finalTranscript);
+      }
+    };
+
+    recognition.start();
+  };
+
+  const handleCreateShareLink = async () => {
+    setShareMessage(null);
+    setCopied(false);
+    try {
+      const response = await api.createShareLink();
+      const absoluteUrl = new URL(
+        response.share_path,
+        window.location.origin,
+      ).toString();
+      setShareLink(absoluteUrl);
+      setShareMessage("Share link created. Anyone with the link can view it.");
+    } catch (error) {
+      setShareMessage(
+        error instanceof Error ? error.message : "Unable to create share link.",
+      );
+    }
+  };
+
+  const handleCopyShareLink = async () => {
+    if (!shareLink) return;
+    try {
+      await navigator.clipboard.writeText(shareLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1600);
+    } catch {
+      setShareMessage("Copy failed. You can still copy the link manually.");
     }
   };
 
@@ -298,11 +455,9 @@ export function FinancePage() {
       {finance.loading && !finance.data ? (
         <LoadingState label="Loading ledger…" />
       ) : null}
-
       {finance.error ? (
         <ErrorState message={finance.error} onRetry={finance.reload} />
       ) : null}
-
       {transactions.error ? (
         <ErrorState
           message={transactions.error}
@@ -556,8 +711,8 @@ export function FinancePage() {
               ) : (
                 <div className="mt-5 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm leading-7 text-slate-500">
                   No saved personal transactions yet. The dashboard is currently
-                  using demo data. Add a transaction or upload a CSV to switch
-                  to your own ledger.
+                  using demo data. Add a transaction, speak one, or upload a CSV
+                  to switch to your own ledger.
                 </div>
               )}
             </section>
@@ -566,6 +721,59 @@ export function FinancePage() {
           </div>
 
           <div className="space-y-6 2xl:sticky 2xl:top-24 2xl:self-start">
+            <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                    Voice entry
+                  </p>
+                  <h3 className="mt-2 text-lg font-semibold text-slate-900">
+                    Speak a transaction
+                  </h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleVoiceCapture}
+                  disabled={!speechSupported || voiceProcessing}
+                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
+                    isRecording
+                      ? "bg-rose-600 text-white hover:bg-rose-500"
+                      : "bg-blue-700 text-white hover:bg-blue-600"
+                  } disabled:cursor-not-allowed disabled:opacity-60`}
+                >
+                  {isRecording ? (
+                    <MicOff className="h-4 w-4" />
+                  ) : (
+                    <Mic className="h-4 w-4" />
+                  )}
+                  {isRecording ? "Stop" : "Record"}
+                </button>
+              </div>
+              <p className="mt-3 text-sm leading-7 text-slate-600">
+                Example: “Spent 500 on groceries using upi today” or “Received
+                salary 85000 in bank”. The app converts your speech to text,
+                interprets it, and saves the transaction.
+              </p>
+              <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+                  Transcript
+                </p>
+                <p className="mt-2 min-h-[48px] text-sm text-slate-700">
+                  {voiceTranscript || "Nothing recorded yet."}
+                </p>
+              </div>
+              {voiceMessage ? (
+                <div className="mt-4 rounded-2xl border border-slate-200 bg-blue-50 px-4 py-3 text-sm text-slate-700">
+                  {voiceMessage}
+                </div>
+              ) : null}
+              {!speechSupported ? (
+                <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                  Voice entry depends on browser speech recognition support.
+                </div>
+              ) : null}
+            </section>
+
             <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
               <div className="flex items-center justify-between gap-3">
                 <div>
@@ -586,8 +794,8 @@ export function FinancePage() {
               </div>
 
               <p className="mt-3 text-sm leading-7 text-slate-600">
-                Categories and accounts now use app-style dropdowns so entry is
-                quicker and more consistent.
+                Categories and accounts use app-style dropdowns so entry stays
+                fast and consistent.
               </p>
 
               {formError ? (
@@ -648,10 +856,7 @@ export function FinancePage() {
                         label: "Expense categories",
                         options: expenseCategories,
                       },
-                      {
-                        label: "Income categories",
-                        options: incomeCategories,
-                      },
+                      { label: "Income categories", options: incomeCategories },
                     ]}
                   />
                   <SelectField
@@ -709,6 +914,74 @@ export function FinancePage() {
                 </div>
               </form>
             </section>
+
+            <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                    Share ledger
+                  </p>
+                  <h3 className="mt-2 text-lg font-semibold text-slate-900">
+                    Create a view-only link
+                  </h3>
+                </div>
+                <Share2 className="h-5 w-5 text-blue-700" />
+              </div>
+              <p className="mt-3 text-sm leading-7 text-slate-600">
+                Generate a link so others can view your current saved expenses,
+                income, and summary in read-only mode.
+              </p>
+              <button
+                type="button"
+                onClick={() => void handleCreateShareLink()}
+                disabled={!hasSavedTransactions}
+                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <Share2 className="h-4 w-4" />
+                Generate share link
+              </button>
+              {!hasSavedTransactions ? (
+                <p className="mt-3 text-sm text-slate-500">
+                  Save at least one personal transaction before sharing.
+                </p>
+              ) : null}
+              {shareMessage ? (
+                <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                  {shareMessage}
+                </div>
+              ) : null}
+              {shareLink ? (
+                <div className="mt-4 space-y-3">
+                  <input
+                    readOnly
+                    value={shareLink}
+                    className={inputClassName}
+                  />
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => void handleCopyShareLink()}
+                      className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                    >
+                      {copied ? (
+                        <Check className="h-4 w-4" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                      {copied ? "Copied" : "Copy link"}
+                    </button>
+                    <a
+                      href={shareLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex flex-1 items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                    >
+                      Open shared view
+                    </a>
+                  </div>
+                </div>
+              ) : null}
+            </section>
           </div>
         </div>
       ) : null}
@@ -765,14 +1038,49 @@ function SelectField({
                 </option>
               ))
             : null}
-          {!valueExists && value ? (
-            <option value={value}>{value}</option>
-          ) : null}
         </select>
         <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
       </div>
     </label>
   );
+}
+
+function getSpeechRecognitionConstructor(): SpeechRecognitionConstructor | null {
+  if (typeof window === "undefined") return null;
+  return window.SpeechRecognition ?? window.webkitSpeechRecognition ?? null;
+}
+
+type SpeechRecognitionResultLike = {
+  0?: { transcript?: string };
+};
+
+type SpeechRecognitionEventLike = {
+  results: Iterable<SpeechRecognitionResultLike>;
+};
+
+type SpeechRecognitionErrorEventLike = {
+  error: string;
+};
+
+type SpeechRecognitionLike = {
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+  start: () => void;
+  stop: () => void;
+  onstart: (() => void) | null;
+  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEventLike) => void) | null;
+  onend: (() => void) | null;
+};
+
+type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
+
+declare global {
+  interface Window {
+    SpeechRecognition?: SpeechRecognitionConstructor;
+    webkitSpeechRecognition?: SpeechRecognitionConstructor;
+  }
 }
 
 const inputClassName =

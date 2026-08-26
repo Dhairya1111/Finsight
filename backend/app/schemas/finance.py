@@ -33,19 +33,31 @@ class ManualTransactionRequest(BaseModel):
     transactions: list[ManualTransactionInput] = Field(min_length=1)
 
 
-class LedgerTransactionUpdate(BaseModel):
-    date: str
-    description: str
-    category: str
-    amount: float = Field(gt=0)
-    type: Literal["income", "expense"]
-    account: str
+class LedgerTransactionUpdate(LedgerTransactionBase):
+    pass
 
 
 class LedgerTransactionResponse(LedgerTransactionBase):
     id: int
     created_at: str
     updated_at: str
+
+
+class VoiceNarrationRequest(BaseModel):
+    text: str = Field(min_length=3, max_length=500)
+
+
+class VoiceEntryResponse(BaseModel):
+    transcript: str
+    parsed_transaction: LedgerTransactionResponse
+    message: str
+    warnings: list[str] = Field(default_factory=list)
+
+
+class ShareLinkResponse(BaseModel):
+    token: str
+    share_path: str
+    created_at: str
 
 
 class MonthlyPoint(BaseModel):
@@ -81,3 +93,10 @@ class FinanceSummary(BaseModel):
     categories: list[CategoryPoint]
     source: SourceMeta
     budget_comparison: list[CategoryPoint] = Field(default_factory=list)
+
+
+class SharedLedgerResponse(BaseModel):
+    title: str
+    created_at: str
+    summary: FinanceSummary
+    transactions: list[LedgerTransactionResponse]

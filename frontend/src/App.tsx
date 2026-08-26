@@ -49,12 +49,18 @@ const MLDemoPage = lazy(() =>
     default: module.MLDemoPage,
   })),
 );
+const SharedLedgerPage = lazy(() =>
+  import("./pages/SharedLedgerPage").then((module) => ({
+    default: module.SharedLedgerPage,
+  })),
+);
 
 function App() {
   return (
     <Suspense fallback={<LoadingState label="Loading FinSight…" />}>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/shared/ledger/:token" element={<SharedLedgerPage />} />
         <Route element={<AppShell />}>
           <Route path="/dashboard" element={<DashboardHome />} />
           <Route path="/finance" element={<FinancePage />} />

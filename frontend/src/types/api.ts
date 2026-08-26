@@ -43,6 +43,19 @@ export type LedgerTransaction = ManualTransactionInput & {
   updated_at: string;
 };
 
+export type VoiceEntryResponse = {
+  transcript: string;
+  parsed_transaction: LedgerTransaction;
+  message: string;
+  warnings: string[];
+};
+
+export type ShareLinkResponse = {
+  token: string;
+  share_path: string;
+  created_at: string;
+};
+
 export type FinanceSummary = {
   total_income: number;
   total_expenses: number;
@@ -55,6 +68,13 @@ export type FinanceSummary = {
   categories: CategoryPoint[];
   budget_comparison: CategoryPoint[];
   source: SourceMeta;
+};
+
+export type SharedLedgerResponse = {
+  title: string;
+  created_at: string;
+  summary: FinanceSummary;
+  transactions: LedgerTransaction[];
 };
 
 export type PricePoint = { date: string; close: number };

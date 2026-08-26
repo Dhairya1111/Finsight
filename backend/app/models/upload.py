@@ -1,11 +1,15 @@
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 
 from sqlalchemy import Date, DateTime, Float, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
+
+
+def utc_now() -> datetime:
+    return datetime.now(UTC).replace(tzinfo=None)
 
 
 class TransactionUpload(Base):
@@ -14,7 +18,7 @@ class TransactionUpload(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     filename: Mapped[str] = mapped_column(String(255))
     row_count: Mapped[int] = mapped_column(Integer)
-    uploaded_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    uploaded_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
 
 
@@ -28,9 +32,18 @@ class LedgerTransaction(Base):
     amount: Mapped[float] = mapped_column(Float)
     type: Mapped[str] = mapped_column(String(20), index=True)
     account: Mapped[str] = mapped_column(String(100), index=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+        default=utc_now,
+        onupdate=utc_now,
     )
+
+
+class LedgerShare(Base):
+    __tablename__ = "ledger_shares"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    token: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    title: Mapped[str] = mapped_column(String(255), default="Shared ledger")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)

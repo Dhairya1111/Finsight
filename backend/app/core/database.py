@@ -26,6 +26,6 @@ def get_db() -> Generator[Session, None, None]:
 
 
 def init_db() -> None:
-    from app.models.upload import LedgerTransaction, TransactionUpload  # noqa: F401
+    from app.models.upload import LedgerShare, LedgerTransaction, TransactionUpload  # noqa: F401
 
     Base.metadata.create_all(bind=engine)

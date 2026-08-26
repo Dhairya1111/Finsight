@@ -70,10 +70,53 @@ def test_create_update_delete_transaction_flow() -> None:
     assert delete_response.json()["message"] == "Transaction removed."
 
 
+def test_voice_entry() -> None:
+    client.post("/api/finance/reset")
+    response = client.post(
+        "/api/finance/voice-entry",
+        json={"text": "Spent 500 on groceries using upi today"},
+    )
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["parsed_transaction"]["amount"] == 500
+    assert payload["parsed_transaction"]["type"] == "expense"
+
+
+def test_share_link_flow() -> None:
+    client.post("/api/finance/reset")
+    client.post(
+        "/api/finance/transactions",
+        json={
+            "date": "2025-08-01",
+            "description": "Salary",
+            "category": "Salary",
+            "amount": 90000,
+            "type": "income",
+            "account": "Primary Checking",
+        },
+    )
+    share_response = client.post("/api/finance/share")
+    assert share_response.status_code == 200
+    share = share_response.json()
+    public_response = client.get(f"/api/finance/shared/{share['token']}")
+    assert public_response.status_code == 200
+    payload = public_response.json()
+    assert payload["summary"]["transaction_count"] == 1
+    assert len(payload["transactions"]) == 1
+
+
 def test_markets_company() -> None:
     response = client.get("/api/markets/company/AAPL")
     assert response.status_code == 200
     assert response.json()["symbol"] == "AAPL"
+
+
+def test_market_search() -> None:
+    response = client.get("/api/markets/search?query=apple")
+    assert response.status_code == 200
+    payload = response.json()
+    assert len(payload) >= 1
+    assert payload[0]["symbol"]
 
 
 def test_simulation() -> None:
