@@ -67,7 +67,13 @@ export function DashboardHome() {
           title="Business snapshot"
           description="A cleaner, ledger-style overview with navigation kept in the sidebar and the main workspace visible at the top."
         />
-        <DemoBadge label={finance.data?.source.is_demo ? "Sample workspace" : "Live ledger workspace"} />
+        <DemoBadge
+          label={
+            finance.data?.source.is_demo
+              ? "Sample workspace"
+              : "Live ledger workspace"
+          }
+        />
       </div>
 
       {finance.loading || markets.loading || indicators.loading ? (
