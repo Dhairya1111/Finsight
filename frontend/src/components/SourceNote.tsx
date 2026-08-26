@@ -14,7 +14,7 @@ export function SourceNote({ source }: { source: SourceMeta }) {
       <div className="space-y-1">
         {source.url ? (
           <a
-            className="text-violet-700 underline-offset-4 hover:underline"
+            className="text-emerald-700 underline-offset-4 hover:underline"
             href={source.url}
             target="_blank"
             rel="noreferrer"

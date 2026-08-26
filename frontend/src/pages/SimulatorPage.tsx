@@ -61,7 +61,7 @@ export function SimulatorPage() {
               <label key={field.key} className="block">
                 <div className="mb-2 flex items-center justify-between text-sm text-slate-700">
                   <span>{field.label}</span>
-                  <span className="font-medium text-blue-700">
+                  <span className="font-medium text-emerald-700">
                     {payload[field.key]}
                   </span>
                 </div>
@@ -77,7 +77,7 @@ export function SimulatorPage() {
                       [field.key]: Number(event.target.value),
                     }))
                   }
-                  className="w-full accent-blue-700"
+                  className="w-full accent-emerald-700"
                 />
               </label>
             ))}

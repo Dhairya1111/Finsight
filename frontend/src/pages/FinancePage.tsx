@@ -469,7 +469,7 @@ export function FinancePage() {
             <RefreshCcw className="h-4 w-4" />
             Restore demo
           </button>
-          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-gradient-to-r from-violet-700 to-teal-600 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(91,33,182,0.18)] transition hover:from-violet-600 hover:to-teal-500">
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-gradient-to-r from-emerald-700 to-amber-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(6,95,70,0.18)] transition hover:from-emerald-600 hover:to-amber-400">
             <Upload className="h-4 w-4" />
             {uploading ? "Uploading…" : "Upload CSV"}
             <input
@@ -716,7 +716,7 @@ export function FinancePage() {
                               <button
                                 type="button"
                                 onClick={() => handleEdit(transaction)}
-                                className="rounded-xl border border-white/80 bg-white/80 p-2 text-slate-600 transition hover:border-violet-200 hover:text-violet-700"
+                                className="rounded-xl border border-white/80 bg-white/80 p-2 text-slate-600 transition hover:border-emerald-200 hover:text-emerald-700"
                                 aria-label={`Edit ${transaction.description}`}
                               >
                                 <PencilLine className="h-4 w-4" />
@@ -768,7 +768,7 @@ export function FinancePage() {
                   className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-white transition ${
                     isRecording
                       ? "bg-rose-600 hover:bg-rose-500"
-                      : "bg-gradient-to-r from-violet-700 to-teal-600 hover:from-violet-600 hover:to-teal-500"
+                      : "bg-gradient-to-r from-emerald-700 to-amber-500 hover:from-emerald-600 hover:to-amber-500"
                   } disabled:cursor-not-allowed disabled:opacity-60`}
                 >
                   {isRecording ? (
@@ -841,7 +841,7 @@ export function FinancePage() {
                       : "Update selected entry"}
                   </h3>
                 </div>
-                <div className="rounded-2xl bg-gradient-to-br from-violet-100 via-white to-teal-100 p-3 text-violet-700 shadow-[0_10px_24px_rgba(91,33,182,0.12)]">
+                <div className="rounded-2xl bg-gradient-to-br from-emerald-100 via-white to-amber-100 p-3 text-emerald-700 shadow-[0_10px_24px_rgba(6,95,70,0.12)]">
                   <CalendarDays className="h-5 w-5" />
                 </div>
               </div>
@@ -941,7 +941,7 @@ export function FinancePage() {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-teal-600 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(91,33,182,0.18)] transition hover:from-violet-600 hover:to-teal-500 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-700 to-amber-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(6,95,70,0.18)] transition hover:from-emerald-600 hover:to-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {editingId === null ? (
                       <Save className="h-4 w-4" />
@@ -978,7 +978,7 @@ export function FinancePage() {
                     Create a view-only link
                   </h3>
                 </div>
-                <Share2 className="h-5 w-5 text-violet-700" />
+                <Share2 className="h-5 w-5 text-emerald-700" />
               </div>
               <p className="mt-3 text-sm leading-7 text-slate-600">
                 Generate a link so others can view your current saved expenses,
@@ -988,7 +988,7 @@ export function FinancePage() {
                 type="button"
                 onClick={() => void handleCreateShareLink()}
                 disabled={!hasSavedTransactions}
-                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-teal-600 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(91,33,182,0.18)] transition hover:from-violet-600 hover:to-teal-500 disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-700 to-amber-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(6,95,70,0.18)] transition hover:from-emerald-600 hover:to-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Share2 className="h-4 w-4" />
                 Generate share link
@@ -1171,4 +1171,4 @@ declare global {
 }
 
 const inputClassName =
-  "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100";
+  "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-emerald-300 focus:ring-4 focus:ring-emerald-100";

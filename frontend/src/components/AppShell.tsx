@@ -138,7 +138,7 @@ export function AppShell() {
             <div className="app-sidebar-hero rounded-[28px] px-5 py-5 text-white">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-100">
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-100">
                     FinSight
                   </p>
                   <h1 className="mt-2 text-2xl font-semibold">
@@ -149,14 +149,14 @@ export function AppShell() {
                   <button
                     type="button"
                     onClick={() => setMobileSidebarOpen(false)}
-                    className="rounded-xl border border-white/20 bg-white/10 p-2 text-violet-50 transition hover:bg-white/20 md:hidden"
+                    className="rounded-xl border border-white/20 bg-white/10 p-2 text-emerald-50 transition hover:bg-white/20 md:hidden"
                     aria-label="Close sidebar"
                   >
                     <X className="h-4 w-4" />
                   </button>
                 </div>
               </div>
-              <p className="mt-2 text-sm leading-6 text-violet-50/90">
+              <p className="mt-2 text-sm leading-6 text-emerald-50/90">
                 Markets, ledger, macro data, and AI tools in one connected app.
               </p>
             </div>
@@ -173,14 +173,14 @@ export function AppShell() {
                     className={({ isActive }) =>
                       `group rounded-[18px] border px-4 py-3 transition ${
                         isActive
-                          ? "border-violet-200 bg-white/70 text-slate-900 shadow-[0_12px_28px_rgba(91,33,182,0.10)]"
-                          : "border-transparent bg-white/35 text-slate-700 hover:border-violet-200/70 hover:bg-white/70"
+                          ? "border-emerald-200 bg-white/70 text-slate-900 shadow-[0_12px_28px_rgba(6,95,70,0.10)]"
+                          : "border-transparent bg-white/35 text-slate-700 hover:border-emerald-200/70 hover:bg-white/70"
                       }`
                     }
                   >
                     <div className="flex items-center justify-between gap-3">
                       <span className="flex items-center gap-3">
-                        <span className="rounded-xl bg-gradient-to-br from-violet-50 to-teal-50 p-2 text-violet-700 transition group-hover:from-violet-100 group-hover:to-teal-100">
+                        <span className="rounded-xl bg-gradient-to-br from-emerald-50 to-amber-50 p-2 text-emerald-700 transition group-hover:from-emerald-100 group-hover:to-amber-100">
                           <Icon className="h-4 w-4" />
                         </span>
                         <span>
@@ -192,7 +192,7 @@ export function AppShell() {
                           </span>
                         </span>
                       </span>
-                      <ArrowUpRight className="h-4 w-4 text-slate-400 transition group-hover:rotate-6 group-hover:text-violet-600" />
+                      <ArrowUpRight className="h-4 w-4 text-slate-400 transition group-hover:rotate-6 group-hover:text-emerald-600" />
                     </div>
                   </NavLink>
                 ))}
@@ -208,7 +208,7 @@ export function AppShell() {
                   <Link
                     key={item.to}
                     to={item.to}
-                    className="rounded-2xl border border-white/80 bg-white/65 px-4 py-3 text-sm font-medium text-slate-700 transition hover:-translate-y-0.5 hover:border-violet-200 hover:text-violet-700"
+                    className="rounded-2xl border border-white/80 bg-white/65 px-4 py-3 text-sm font-medium text-slate-700 transition hover:-translate-y-0.5 hover:border-emerald-200 hover:text-emerald-700"
                   >
                     {item.label}
                   </Link>
@@ -247,13 +247,13 @@ export function AppShell() {
                   aria-expanded={!sidebarCollapsed}
                   onClick={() => setSidebarCollapsed((current) => !current)}
                   className={cn(
-                    "hidden items-center overflow-hidden rounded-2xl border border-white/80 bg-gradient-to-r from-white/90 via-violet-50 to-teal-50 text-slate-700 shadow-[0_14px_30px_rgba(91,33,182,0.10)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(91,33,182,0.14)] md:inline-flex",
+                    "hidden items-center overflow-hidden rounded-2xl border border-white/80 bg-gradient-to-r from-white/90 via-amber-50 to-amber-50 text-slate-700 shadow-[0_14px_30px_rgba(6,95,70,0.10)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(6,95,70,0.14)] md:inline-flex",
                     headerCondensed
                       ? "gap-0 px-2.5 py-2.5"
                       : "gap-2 px-4 py-2.5",
                   )}
                 >
-                  <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-teal-500 text-white shadow-[0_10px_20px_rgba(91,33,182,0.18)]">
+                  <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-600 to-amber-500 text-white shadow-[0_10px_20px_rgba(6,95,70,0.18)]">
                     {sidebarCollapsed ? (
                       <ChevronRight className="h-4 w-4" />
                     ) : (
@@ -272,7 +272,7 @@ export function AppShell() {
                   </span>
                 </button>
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-700">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">
                     {activeItem.label}
                   </p>
                   <p className="mt-1 text-sm text-slate-500">
@@ -280,7 +280,7 @@ export function AppShell() {
                   </p>
                 </div>
               </div>
-              <div className="rounded-full border border-white/70 bg-gradient-to-r from-violet-50 via-white to-teal-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-violet-700 shadow-[0_12px_28px_rgba(91,33,182,0.08)]">
+              <div className="rounded-full border border-white/70 bg-gradient-to-r from-emerald-50 via-white to-amber-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700 shadow-[0_12px_28px_rgba(6,95,70,0.08)]">
                 Live workspace
               </div>
             </div>

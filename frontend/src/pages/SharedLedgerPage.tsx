@@ -35,7 +35,7 @@ export function SharedLedgerPage() {
       <div className="mx-auto max-w-6xl space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
               Shared ledger view
             </p>
             <h1 className="mt-2 text-3xl font-semibold text-slate-900">

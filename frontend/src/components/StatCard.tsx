@@ -22,7 +22,7 @@ export function StatCard({
           ) : null}
         </div>
         {icon ? (
-          <div className="rounded-2xl bg-gradient-to-br from-violet-100 via-white to-teal-100 p-3 text-violet-700 shadow-[0_10px_24px_rgba(91,33,182,0.12)]">
+          <div className="rounded-2xl bg-gradient-to-br from-emerald-100 via-white to-amber-100 p-3 text-emerald-700 shadow-[0_10px_24px_rgba(6,95,70,0.12)]">
             {icon}
           </div>
         ) : null}

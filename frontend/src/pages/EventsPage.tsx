@@ -32,7 +32,7 @@ export function EventsPage() {
           <select
             value={selectedEvent}
             onChange={(event) => setSelectedEvent(event.target.value)}
-            className="rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-300"
+            className="rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-emerald-300"
             aria-label="Select event"
           >
             {(events.data ?? []).map((event) => (

@@ -120,7 +120,7 @@ export function DashboardHome() {
                   <Link
                     key={item.to}
                     to={item.to}
-                    className="app-subtle-panel rounded-[20px] px-4 py-3 text-sm transition hover:border-violet-200 hover:bg-white/80"
+                    className="app-subtle-panel rounded-[20px] px-4 py-3 text-sm transition hover:border-emerald-200 hover:bg-white/80"
                   >
                     <p className="font-medium text-slate-900">{item.label}</p>
                     <p className="mt-1 text-xs text-slate-500">{item.helper}</p>
