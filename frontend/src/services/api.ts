@@ -3,6 +3,7 @@ import type {
   CompanyComparisonRow,
   CompanyHistoryResponse,
   CompanyOverview,
+  CompanySearchResult,
   EconomicEvent,
   EventAnalysisResponse,
   FinanceSummary,
@@ -60,6 +61,10 @@ export const api = {
       body: JSON.stringify({ transactions }),
     }),
   listCompanies: () => request<{ symbols: string[] }>("/markets/companies"),
+  searchCompanies: (query: string) =>
+    request<CompanySearchResult[]>(
+      `/markets/search?query=${encodeURIComponent(query)}`,
+    ),
   companyOverview: (symbol: string) =>
     request<CompanyOverview>(`/markets/company/${symbol}`),
   companyHistory: (symbol: string) =>

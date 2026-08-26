@@ -66,6 +66,14 @@ export type CompanyMetricSeriesPoint = {
   profit_margin: number;
 };
 
+export type CompanySearchResult = {
+  symbol: string;
+  name: string;
+  exchange: string;
+  sector?: string | null;
+  industry?: string | null;
+};
+
 export type CompanyOverview = {
   symbol: string;
   name: string;

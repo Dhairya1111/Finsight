@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///./finsight.db"
     max_upload_mb: int = 5
 
-    market_provider: Literal["demo", "yahoo"] = "demo"
+    market_provider: Literal["demo", "yfinance"] = "yfinance"
     economic_provider: Literal["demo", "world_bank"] = "demo"
     ai_provider: Literal["fallback", "openai_compatible"] = "fallback"
 

@@ -1,9 +1,9 @@
+import { Building2, Plus, Search, TrendingUp, X } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { BarTrendChart } from "../charts/BarTrendChart";
 import { LineTrendChart } from "../charts/LineTrendChart";
 import { ChartCard } from "../components/ChartCard";
-import { DemoBadge } from "../components/DemoBadge";
 import { ErrorState } from "../components/ErrorState";
 import { LoadingState } from "../components/LoadingState";
 import { SectionHeading } from "../components/SectionHeading";
@@ -11,6 +11,7 @@ import { SourceNote } from "../components/SourceNote";
 import { StatCard } from "../components/StatCard";
 import { useAsyncData } from "../hooks/useAsyncData";
 import { api } from "../services/api";
+import type { CompanySearchResult } from "../types/api";
 import {
   formatCompactCurrency,
   formatCompactNumber,
@@ -18,7 +19,7 @@ import {
   formatPercent,
 } from "../utils/format";
 
-const defaultSymbols = ["AAPL", "MSFT", "INFY.NS"];
+const defaultComparisonSymbols = ["AAPL", "MSFT", "NVDA"];
 const percentageMetrics = new Set([
   "ROE",
   "Profit margin",
@@ -40,14 +41,29 @@ function formatComparisonMetric(metric: string, value: number | null) {
 
 export function MarketsPage() {
   const [selectedSymbol, setSelectedSymbol] = useState("AAPL");
+  const [searchQuery, setSearchQuery] = useState("Apple");
+  const [comparisonSymbols, setComparisonSymbols] = useState(
+    defaultComparisonSymbols,
+  );
+
   const companies = useAsyncData(api.listCompanies);
+  const searchResults = useAsyncData(
+    () =>
+      searchQuery.trim().length >= 1
+        ? api.searchCompanies(searchQuery)
+        : Promise.resolve<CompanySearchResult[]>([]),
+    { deps: [searchQuery] },
+  );
   const overview = useAsyncData(() => api.companyOverview(selectedSymbol), {
     deps: [selectedSymbol],
   });
   const history = useAsyncData(() => api.companyHistory(selectedSymbol), {
     deps: [selectedSymbol],
   });
-  const comparison = useAsyncData(() => api.compareCompanies(defaultSymbols));
+  const comparison = useAsyncData(
+    () => api.compareCompanies(comparisonSymbols),
+    { deps: [comparisonSymbols.join("|")] },
+  );
 
   const revenueChart = useMemo(
     () =>
@@ -67,33 +83,144 @@ export function MarketsPage() {
     [overview.data],
   );
 
+  const searchSuggestions = useMemo(() => {
+    const seen = new Set<string>();
+    const liveResults = searchResults.data ?? [];
+    const merged = [
+      ...liveResults,
+      ...(companies.data?.symbols ?? []).map((symbol) => ({
+        symbol,
+        name: symbol,
+        exchange: "Popular",
+        sector: null,
+        industry: null,
+      })),
+    ];
+
+    return merged.filter((item) => {
+      if (seen.has(item.symbol)) return false;
+      seen.add(item.symbol);
+      return true;
+    });
+  }, [companies.data, searchResults.data]);
+
+  const addSelectedToComparison = () => {
+    setComparisonSymbols((current) => {
+      if (current.includes(selectedSymbol)) return current;
+      const next = [...current, selectedSymbol];
+      return next.slice(-4);
+    });
+  };
+
+  const removeComparisonSymbol = (symbol: string) => {
+    setComparisonSymbols((current) =>
+      current.filter((item) => item !== symbol),
+    );
+  };
+
+  const handlePickCompany = (company: CompanySearchResult) => {
+    setSelectedSymbol(company.symbol);
+    setSearchQuery(company.name);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <SectionHeading
           eyebrow="Markets"
           title="Company analysis"
-          description="A straightforward view of price history, basic fundamentals, and comparison data. Data sources remain visible so demo values are never mistaken for live advisory data."
+          description="Search for a listed company by name, pick the right symbol, and FinSight will load the current market data, financial metrics, and charts automatically."
         />
-        <div className="flex items-center gap-3">
-          {overview.data?.source.is_demo ? <DemoBadge /> : null}
-          <select
-            value={selectedSymbol}
-            onChange={(event) => setSelectedSymbol(event.target.value)}
-            className="rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-300"
-            aria-label="Select company"
-          >
-            {(companies.data?.symbols ?? defaultSymbols).map((symbol) => (
-              <option key={symbol} value={symbol}>
-                {symbol}
-              </option>
-            ))}
-          </select>
-        </div>
       </div>
+
+      <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
+          <div>
+            <div className="relative">
+              <label className="block text-sm font-medium text-slate-700">
+                Search company
+              </label>
+              <div className="relative mt-2">
+                <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder="Type Apple, Infosys, Reliance, Microsoft..."
+                  className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-slate-900 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                />
+              </div>
+
+              {searchQuery.trim().length >= 1 ? (
+                <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                  {searchResults.loading && !searchResults.data?.length ? (
+                    <div className="px-4 py-4 text-sm text-slate-500">
+                      Searching companies...
+                    </div>
+                  ) : searchSuggestions.length ? (
+                    <div className="max-h-72 overflow-y-auto">
+                      {searchSuggestions.map((company) => (
+                        <button
+                          key={company.symbol}
+                          type="button"
+                          onClick={() => handlePickCompany(company)}
+                          className="flex w-full items-start justify-between gap-4 border-b border-slate-100 px-4 py-3 text-left transition hover:bg-slate-50"
+                        >
+                          <span>
+                            <span className="block font-medium text-slate-900">
+                              {company.name}
+                            </span>
+                            <span className="mt-1 block text-xs text-slate-500">
+                              {company.symbol} · {company.exchange}
+                              {company.sector ? ` · ${company.sector}` : ""}
+                            </span>
+                          </span>
+                          <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600">
+                            {company.symbol}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="px-4 py-4 text-sm text-slate-500">
+                      No listed company matches found.
+                    </div>
+                  )}
+                </div>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+              Selected company
+            </p>
+            <p className="mt-2 text-2xl font-semibold text-slate-900">
+              {selectedSymbol}
+            </p>
+            <p className="mt-2 text-sm leading-7 text-slate-600">
+              Pick a company from the search results and FinSight will refresh
+              the current metrics, history, and comparison view automatically.
+            </p>
+            <button
+              type="button"
+              onClick={addSelectedToComparison}
+              className="mt-4 inline-flex items-center gap-2 rounded-full bg-blue-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-600"
+            >
+              <Plus className="h-4 w-4" />
+              Add to comparison
+            </button>
+          </div>
+        </div>
+      </section>
 
       {companies.error ? (
         <ErrorState message={companies.error} onRetry={companies.reload} />
+      ) : null}
+      {searchResults.error ? (
+        <ErrorState
+          message={searchResults.error}
+          onRetry={searchResults.reload}
+        />
       ) : null}
       {overview.error ? (
         <ErrorState message={overview.error} onRetry={overview.reload} />
@@ -103,7 +230,7 @@ export function MarketsPage() {
       ) : null}
 
       {overview.loading && !overview.data ? (
-        <LoadingState label="Loading company summary…" />
+        <LoadingState label="Loading company data…" />
       ) : null}
 
       {overview.data ? (
@@ -111,14 +238,16 @@ export function MarketsPage() {
           <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-medium text-slate-500">
-                  {overview.data.exchange}
-                </p>
-                <h3 className="mt-1 text-3xl font-semibold text-slate-900">
+                <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">
+                  <Building2 className="h-3.5 w-3.5" />
+                  Live market data
+                </div>
+                <h3 className="mt-4 text-3xl font-semibold text-slate-900">
                   {overview.data.name}
                 </h3>
                 <p className="mt-2 text-sm text-slate-600">
-                  {overview.data.symbol} · {overview.data.sector}
+                  {overview.data.symbol} · {overview.data.exchange} ·{" "}
+                  {overview.data.sector}
                 </p>
               </div>
               <div className="rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-3 text-right">
@@ -126,7 +255,7 @@ export function MarketsPage() {
                   Latest price
                 </p>
                 <p className="mt-2 text-2xl font-semibold text-slate-900">
-                  {formatCompactCurrency(
+                  {formatCurrencyValue(
                     overview.data.latest_price,
                     overview.data.currency,
                   )}
@@ -141,6 +270,7 @@ export function MarketsPage() {
                   overview.data.market_cap,
                   overview.data.currency,
                 )}
+                hint="Auto-fetched live"
               />
               <StatCard
                 label="Revenue"
@@ -148,8 +278,13 @@ export function MarketsPage() {
                   overview.data.revenue,
                   overview.data.currency,
                 )}
+                hint="Latest available annual total"
               />
-              <StatCard label="EPS" value={formatNumber(overview.data.eps)} />
+              <StatCard
+                label="EPS"
+                value={formatNumber(overview.data.eps)}
+                hint="Trailing or latest reported EPS"
+              />
               <StatCard
                 label="ROE"
                 value={formatPercent(overview.data.roe)}
@@ -161,7 +296,7 @@ export function MarketsPage() {
           <div className="grid gap-6 xl:grid-cols-2">
             <ChartCard
               title="Price history"
-              subtitle="Monthly closes from the selected provider."
+              subtitle="Monthly market closes loaded automatically for the selected company."
             >
               {history.loading && !history.data ? (
                 <LoadingState label="Loading price history…" />
@@ -176,7 +311,7 @@ export function MarketsPage() {
             </ChartCard>
             <ChartCard
               title="Revenue trend"
-              subtitle="Revenue shown in billions for easier reading."
+              subtitle="Annual total revenue in billions for easier comparison."
             >
               <BarTrendChart
                 data={revenueChart}
@@ -190,7 +325,7 @@ export function MarketsPage() {
           <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
             <ChartCard
               title="EPS trend"
-              subtitle="Useful for reviewing earnings progress over time."
+              subtitle="Latest reported annual EPS values for the selected company."
             >
               <LineTrendChart
                 data={epsChart}
@@ -201,9 +336,10 @@ export function MarketsPage() {
             </ChartCard>
             <div className="space-y-4">
               <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
-                <h3 className="text-lg font-semibold text-slate-900">
-                  Metric notes
-                </h3>
+                <div className="flex items-center gap-2 text-slate-900">
+                  <TrendingUp className="h-4 w-4 text-blue-700" />
+                  <h3 className="text-lg font-semibold">Research snapshot</h3>
+                </div>
                 <div className="mt-4 space-y-3 text-sm text-slate-600">
                   <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                     <p className="text-slate-500">Profit margin</p>
@@ -223,6 +359,21 @@ export function MarketsPage() {
                       {formatPercent(overview.data.earnings_growth)}
                     </p>
                   </div>
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-slate-500">Cash / debt</p>
+                    <p className="mt-1 font-semibold text-slate-900">
+                      {formatCompactCurrency(
+                        overview.data.cash,
+                        overview.data.currency,
+                      )}{" "}
+                      cash ·{" "}
+                      {formatCompactCurrency(
+                        overview.data.debt,
+                        overview.data.currency,
+                      )}{" "}
+                      debt
+                    </p>
+                  </div>
                 </div>
               </section>
               <SourceNote source={overview.data.source} />
@@ -232,13 +383,35 @@ export function MarketsPage() {
       ) : null}
 
       <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
-        <div className="space-y-1">
-          <h3 className="text-lg font-semibold text-slate-900">
-            Comparison table
-          </h3>
-          <p className="text-sm text-slate-600">
-            Side-by-side demo comparison for the default watchlist.
-          </p>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h3 className="text-lg font-semibold text-slate-900">
+              Comparison table
+            </h3>
+            <p className="mt-1 text-sm text-slate-600">
+              Add companies from the search box to compare current live metrics.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {comparisonSymbols.map((symbol) => (
+              <span
+                key={symbol}
+                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm text-slate-700"
+              >
+                {symbol}
+                {comparisonSymbols.length > 1 ? (
+                  <button
+                    type="button"
+                    onClick={() => removeComparisonSymbol(symbol)}
+                    className="rounded-full text-slate-400 transition hover:text-slate-700"
+                    aria-label={`Remove ${symbol} from comparison`}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                ) : null}
+              </span>
+            ))}
+          </div>
         </div>
 
         {comparison.loading && !comparison.data ? (
@@ -254,7 +427,7 @@ export function MarketsPage() {
               <thead>
                 <tr className="text-left text-slate-500">
                   <th className="px-4 py-2 font-medium">Metric</th>
-                  {defaultSymbols.map((symbol) => (
+                  {comparisonSymbols.map((symbol) => (
                     <th
                       key={symbol}
                       className="px-4 py-2 font-medium text-slate-700"
@@ -270,11 +443,11 @@ export function MarketsPage() {
                     <td className="rounded-l-2xl border-y border-l border-slate-200 px-4 py-3 font-medium text-slate-800">
                       {row.metric}
                     </td>
-                    {defaultSymbols.map((symbol, index) => (
+                    {comparisonSymbols.map((symbol, index) => (
                       <td
                         key={symbol}
                         className={`border-y border-slate-200 px-4 py-3 text-slate-600 ${
-                          index === defaultSymbols.length - 1
+                          index === comparisonSymbols.length - 1
                             ? "rounded-r-2xl border-r"
                             : ""
                         }`}
@@ -296,4 +469,16 @@ export function MarketsPage() {
       </section>
     </div>
   );
+}
+
+function formatCurrencyValue(
+  value: number | null | undefined,
+  currency: string,
+) {
+  if (value === null || value === undefined) return "—";
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 2,
+  }).format(value);
 }

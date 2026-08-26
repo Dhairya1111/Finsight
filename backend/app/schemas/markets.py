@@ -17,6 +17,14 @@ class CompanyMetricSeriesPoint(BaseModel):
     profit_margin: float
 
 
+class CompanySearchResult(BaseModel):
+    symbol: str
+    name: str
+    exchange: str
+    sector: str | None = None
+    industry: str | None = None
+
+
 class CompanyOverview(BaseModel):
     symbol: str
     name: str

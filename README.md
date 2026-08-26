@@ -206,7 +206,7 @@ See [`.env.example`](.env.example).
 
 Important values:
 - `DEMO_MODE=true` — keeps the app functional without external credentials
-- `MARKET_PROVIDER=demo|yahoo`
+- `MARKET_PROVIDER=demo|yfinance`
 - `ECONOMIC_PROVIDER=demo|world_bank`
 - `AI_PROVIDER=fallback|openai_compatible`
 - `OPENAI_API_KEY` / `OPENAI_BASE_URL` — only needed for remote LLM integration
