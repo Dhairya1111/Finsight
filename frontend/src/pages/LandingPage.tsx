@@ -69,7 +69,7 @@ export function LandingPage() {
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-8">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-red-700">
               FinSight
             </p>
             <p className="mt-1 text-sm text-slate-500">
@@ -78,7 +78,7 @@ export function LandingPage() {
           </div>
           <Link
             to="/dashboard"
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-700 to-amber-500 px-5 py-2 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(6,95,70,0.18)] transition hover:from-emerald-600 hover:to-amber-400"
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-900 to-rose-500 px-5 py-2 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(30,58,138,0.16)] transition hover:from-blue-700 hover:to-red-500"
           >
             Open app
             <ArrowRight className="h-4 w-4" />
@@ -103,7 +103,7 @@ export function LandingPage() {
             <div className="flex flex-wrap gap-3">
               <Link
                 to="/dashboard"
-                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-700 to-amber-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(6,95,70,0.18)] transition hover:from-emerald-600 hover:to-amber-400"
+                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-900 to-rose-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(30,58,138,0.16)] transition hover:from-blue-700 hover:to-red-500"
               >
                 Explore dashboard
               </Link>
@@ -161,10 +161,8 @@ export function LandingPage() {
                   </p>
                 </div>
               </div>
-              <div className="rounded-[22px] border border-slate-200 bg-amber-50 p-5">
-                <p className="text-sm text-emerald-700">
-                  Economic intelligence
-                </p>
+              <div className="rounded-[22px] border border-slate-200 bg-red-50 p-5">
+                <p className="text-sm text-red-700">Economic intelligence</p>
                 <p className="mt-2 text-xl font-semibold text-slate-900">
                   Indicator views with dates, units, and source notes
                 </p>
@@ -191,7 +189,7 @@ export function LandingPage() {
                 key={title}
                 className="app-card app-card-tilt rounded-[24px] p-6"
               >
-                <div className="inline-flex rounded-2xl bg-amber-50 p-3 text-emerald-700">
+                <div className="inline-flex rounded-2xl bg-red-50 p-3 text-red-700">
                   <Icon className="h-5 w-5" />
                 </div>
                 <h3 className="mt-4 text-lg font-semibold text-slate-900">
@@ -207,7 +205,7 @@ export function LandingPage() {
 
         <section className="mx-auto grid max-w-7xl gap-6 px-6 py-14 lg:grid-cols-[1fr,1fr] lg:px-8">
           <div className="app-card app-card-tilt rounded-[24px] p-6">
-            <div className="flex items-center gap-3 text-emerald-700">
+            <div className="flex items-center gap-3 text-red-700">
               <Database className="h-5 w-5" />
               <h3 className="text-lg font-semibold text-slate-900">
                 Tech stack
@@ -226,7 +224,7 @@ export function LandingPage() {
           </div>
 
           <div className="app-card app-card-tilt rounded-[24px] p-6">
-            <div className="flex items-center gap-3 text-emerald-700">
+            <div className="flex items-center gap-3 text-red-700">
               <ShieldCheck className="h-5 w-5" />
               <h3 className="text-lg font-semibold text-slate-900">
                 Important note

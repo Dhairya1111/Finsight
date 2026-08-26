@@ -61,7 +61,7 @@ export function SimulatorPage() {
               <label key={field.key} className="block">
                 <div className="mb-2 flex items-center justify-between text-sm text-slate-700">
                   <span>{field.label}</span>
-                  <span className="font-medium text-emerald-700">
+                  <span className="font-medium text-red-700">
                     {payload[field.key]}
                   </span>
                 </div>
@@ -77,7 +77,7 @@ export function SimulatorPage() {
                       [field.key]: Number(event.target.value),
                     }))
                   }
-                  className="w-full accent-emerald-700"
+                  className="w-full accent-red-700"
                 />
               </label>
             ))}
@@ -141,8 +141,8 @@ export function SimulatorPage() {
                 />
               </ChartCard>
 
-              <section className="rounded-[24px] border border-amber-200 bg-amber-50 p-5 text-sm leading-7 text-amber-900 shadow-sm">
-                <h3 className="text-lg font-semibold text-amber-900">
+              <section className="rounded-[24px] border border-red-200 bg-red-50 p-5 text-sm leading-7 text-blue-950 shadow-sm">
+                <h3 className="text-lg font-semibold text-blue-950">
                   Model assumptions
                 </h3>
                 <ul className="mt-3 list-disc space-y-2 pl-5">

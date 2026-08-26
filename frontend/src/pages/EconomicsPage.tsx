@@ -45,7 +45,7 @@ export function EconomicsPage() {
           <select
             value={selected}
             onChange={(event) => setSelected(event.target.value)}
-            className="rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-emerald-300"
+            className="rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-red-300"
             aria-label="Select indicator"
           >
             {(indicators.data ?? []).map((indicator) => (

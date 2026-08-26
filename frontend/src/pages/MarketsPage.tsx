@@ -156,7 +156,7 @@ export function MarketsPage() {
                     value={searchQuery}
                     onChange={(event) => setSearchQuery(event.target.value)}
                     placeholder="Type Apple, Nvidia, Infosys, Reliance, Microsoft..."
-                    className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-slate-900 outline-none transition focus:border-emerald-300 focus:ring-4 focus:ring-emerald-100"
+                    className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-slate-900 outline-none transition focus:border-red-300 focus:ring-4 focus:ring-red-100"
                   />
                 </div>
 
@@ -204,7 +204,7 @@ export function MarketsPage() {
                   Selected company
                 </p>
                 <div className="mt-3 flex flex-wrap items-center gap-3">
-                  <span className="rounded-full border border-emerald-200 bg-amber-50 px-3 py-1 text-sm font-semibold text-amber-800">
+                  <span className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-sm font-semibold text-blue-900">
                     {selectedSymbol}
                   </span>
                   <span className="text-lg font-semibold text-slate-900">
@@ -241,7 +241,7 @@ export function MarketsPage() {
             <button
               type="button"
               onClick={addSelectedToComparison}
-              className="mt-4 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-700 to-amber-500 px-4 py-2 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(6,95,70,0.18)] transition hover:from-emerald-600 hover:to-amber-500"
+              className="mt-4 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-900 to-rose-500 px-4 py-2 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(30,58,138,0.16)] transition hover:from-blue-700 hover:to-rose-500"
             >
               <Plus className="h-4 w-4" />
               Add to comparison
@@ -374,7 +374,7 @@ export function MarketsPage() {
             <div className="space-y-4">
               <section className="app-card app-card-tilt rounded-[24px] p-5">
                 <div className="flex items-center gap-2 text-slate-900">
-                  <TrendingUp className="h-4 w-4 text-emerald-700" />
+                  <TrendingUp className="h-4 w-4 text-red-700" />
                   <h3 className="text-lg font-semibold">Research snapshot</h3>
                 </div>
                 <div className="mt-4 space-y-3 text-sm text-slate-600">

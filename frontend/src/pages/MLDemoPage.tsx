@@ -70,7 +70,7 @@ export function MLDemoPage() {
                   True positive: {ml.data.confusion_matrix.true_positive}
                 </div>
               </div>
-              <p className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 leading-7 text-amber-800">
+              <p className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 leading-7 text-blue-900">
                 {ml.data.note}
               </p>
             </section>

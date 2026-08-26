@@ -57,7 +57,7 @@ export function AIAnalystPage() {
               <select
                 value={domain}
                 onChange={(event) => setDomain(event.target.value)}
-                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-emerald-300"
+                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-red-300"
               >
                 <option value="markets">Markets</option>
                 <option value="economics">Economics</option>
@@ -73,7 +73,7 @@ export function AIAnalystPage() {
                 <select
                   value={symbol}
                   onChange={(event) => setSymbol(event.target.value)}
-                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-emerald-300"
+                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-red-300"
                 >
                   <option value="AAPL">AAPL</option>
                   <option value="MSFT">MSFT</option>
@@ -88,13 +88,13 @@ export function AIAnalystPage() {
                 value={question}
                 onChange={(event) => setQuestion(event.target.value)}
                 rows={8}
-                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-emerald-300"
+                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-red-300"
               />
             </label>
 
             <button
               type="submit"
-              className="rounded-full bg-gradient-to-r from-emerald-700 to-amber-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(6,95,70,0.18)] transition hover:from-emerald-600 hover:to-amber-400"
+              className="rounded-full bg-gradient-to-r from-blue-900 to-rose-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(30,58,138,0.16)] transition hover:from-blue-700 hover:to-red-500"
             >
               Run analysis
             </button>
