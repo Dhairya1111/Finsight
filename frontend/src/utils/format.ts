@@ -3,7 +3,7 @@ export const formatCurrency = (
   currency = "USD",
 ) => {
   if (value === null || value === undefined) return "—";
-  return new Intl.NumberFormat("en-IN", {
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency,
     maximumFractionDigits: Math.abs(value) >= 100 ? 0 : 2,
@@ -15,11 +15,11 @@ export const formatCompactCurrency = (
   currency = "USD",
 ) => {
   if (value === null || value === undefined) return "—";
-  return new Intl.NumberFormat("en-IN", {
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency,
     notation: "compact",
-    maximumFractionDigits: 2,
+    maximumFractionDigits: 1,
   }).format(value);
 };
 
@@ -36,7 +36,18 @@ export const formatNumber = (
   maximumFractionDigits = 2,
 ) => {
   if (value === null || value === undefined) return "—";
-  return new Intl.NumberFormat("en-IN", { maximumFractionDigits }).format(
+  return new Intl.NumberFormat("en-US", { maximumFractionDigits }).format(
     value,
   );
+};
+
+export const formatCompactNumber = (
+  value: number | null | undefined,
+  maximumFractionDigits = 1,
+) => {
+  if (value === null || value === undefined) return "—";
+  return new Intl.NumberFormat("en-US", {
+    notation: "compact",
+    maximumFractionDigits,
+  }).format(value);
 };

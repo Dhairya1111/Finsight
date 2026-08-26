@@ -13,11 +13,30 @@ import { useAsyncData } from "../hooks/useAsyncData";
 import { api } from "../services/api";
 import {
   formatCompactCurrency,
+  formatCompactNumber,
   formatNumber,
   formatPercent,
 } from "../utils/format";
 
 const defaultSymbols = ["AAPL", "MSFT", "INFY.NS"];
+const percentageMetrics = new Set([
+  "ROE",
+  "Profit margin",
+  "Revenue growth",
+  "Earnings growth",
+]);
+const ratioMetrics = new Set(["Latest price", "EPS", "P/E", "P/B"]);
+const sizeMetrics = new Set(["Market cap", "Revenue", "Debt", "Cash"]);
+
+function formatComparisonMetric(metric: string, value: number | null) {
+  if (value === null) return "—";
+  if (percentageMetrics.has(metric)) return formatPercent(value);
+  if (sizeMetrics.has(metric)) return formatCompactNumber(value);
+  if (ratioMetrics.has(metric)) return formatNumber(value);
+  return Math.abs(value) >= 1000
+    ? formatCompactNumber(value)
+    : formatNumber(value);
+}
 
 export function MarketsPage() {
   const [selectedSymbol, setSelectedSymbol] = useState("AAPL");
@@ -261,7 +280,10 @@ export function MarketsPage() {
                         }`}
                       >
                         {typeof row.values[symbol] === "number"
-                          ? formatNumber(row.values[symbol])
+                          ? formatComparisonMetric(
+                              row.metric,
+                              row.values[symbol],
+                            )
                           : "—"}
                       </td>
                     ))}

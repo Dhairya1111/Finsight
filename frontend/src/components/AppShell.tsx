@@ -157,7 +157,7 @@ export function AppShell() {
                 </p>
               </div>
               <div className="rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">
-                Educational use only
+                Live workspace
               </div>
             </div>
           </header>

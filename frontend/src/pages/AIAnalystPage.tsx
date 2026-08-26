@@ -25,7 +25,6 @@ export function AIAnalystPage() {
     try {
       const payload: Record<string, string> = { question, domain };
       if (domain === "markets") payload.symbol = symbol;
-      if (domain === "economics") payload.indicator_id = "gdp_growth";
       if (domain === "events") payload.event_id = "covid-19-shock-2020";
       const response = await api.askAI(payload);
       setAnswer(response);

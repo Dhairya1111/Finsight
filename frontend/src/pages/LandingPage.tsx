@@ -5,7 +5,6 @@ import {
   BrainCircuit,
   ChartCandlestick,
   Database,
-  GitBranch,
   Landmark,
   ShieldCheck,
 } from "lucide-react";
@@ -13,10 +12,6 @@ import { Link } from "react-router-dom";
 
 import { DemoBadge } from "../components/DemoBadge";
 import { SectionHeading } from "../components/SectionHeading";
-
-const githubUrl =
-  import.meta.env.VITE_GITHUB_URL ??
-  "https://github.com/your-username/finsight";
 
 const features = [
   {
@@ -50,10 +45,10 @@ const features = [
       "Ask plain-language questions grounded in verified app data with a safe fallback mode.",
   },
   {
-    title: "Open-source build quality",
-    icon: GitBranch,
+    title: "Reliable data workflows",
+    icon: Database,
     description:
-      "Structured backend, typed frontend, tests, provider abstractions, and deployment setup.",
+      "Typed APIs, traceable sources, saved ledger records, and structured analytics across the platform.",
   },
 ];
 
@@ -78,41 +73,31 @@ export function LandingPage() {
               FinSight
             </p>
             <p className="mt-1 text-sm text-slate-500">
-              Explore markets. Understand economies. Analyze your finances.
+              Explore markets. Understand economies. Track your finances.
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <a
-              href={githubUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="hidden rounded-full border border-slate-200 bg-white px-5 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 md:inline-flex"
-            >
-              View on GitHub
-            </a>
-            <Link
-              to="/dashboard"
-              className="inline-flex items-center gap-2 rounded-full bg-blue-700 px-5 py-2 text-sm font-semibold text-white transition hover:bg-blue-600"
-            >
-              Open App
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center gap-2 rounded-full bg-blue-700 px-5 py-2 text-sm font-semibold text-white transition hover:bg-blue-600"
+          >
+            Open app
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </header>
 
       <main>
         <section className="mx-auto grid max-w-7xl gap-8 px-6 py-12 lg:grid-cols-[1.1fr,0.9fr] lg:px-8 lg:py-16">
           <div className="space-y-6">
-            <DemoBadge label="Demo mode included" />
+            <DemoBadge label="Starts with demo data" />
             <div className="space-y-4">
               <h1 className="max-w-4xl text-4xl font-semibold tracking-tight text-slate-900 md:text-5xl lg:text-6xl">
-                Financial intelligence without the spreadsheet chaos.
+                A personal finance and market intelligence workspace.
               </h1>
               <p className="max-w-3xl text-lg leading-8 text-slate-600">
-                FinSight brings together transaction analysis, market research,
-                economic indicators, scenario modelling, and AI-assisted notes
-                in one clean workspace.
+                FinSight combines transaction tracking, company analysis,
+                economic indicators, event context, scenario modelling, and AI
+                assistance in one clean product experience.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -122,20 +107,12 @@ export function LandingPage() {
               >
                 Explore dashboard
               </Link>
-              <a
-                href={githubUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-              >
-                Repository
-              </a>
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
               {[
-                ["Works offline", "Bundled demo datasets"],
-                ["Finance tools", "Manual entry + CSV upload"],
-                ["Architecture", "Frontend + backend + providers"],
+                ["Saved ledger", "Add and manage your own transactions"],
+                ["Market data", "Readable numbers in K / M / B / T format"],
+                ["Traceable data", "Sources stay visible across modules"],
               ].map(([label, value]) => (
                 <div
                   key={label}
@@ -155,7 +132,7 @@ export function LandingPage() {
               <div>
                 <p className="text-sm text-slate-500">Product snapshot</p>
                 <h2 className="mt-1 text-xl font-semibold text-slate-900">
-                  Built like a practical finance app
+                  Built to be used, not just showcased
                 </h2>
               </div>
               <DemoBadge />
@@ -166,32 +143,33 @@ export function LandingPage() {
                 <div className="rounded-[22px] border border-slate-200 bg-slate-50 p-5">
                   <p className="text-sm text-slate-500">Ledger</p>
                   <p className="mt-2 text-xl font-semibold text-slate-900">
-                    Manual entries, upload, and summaries
+                    Add, edit, delete, and upload transactions
                   </p>
                   <p className="mt-2 text-sm leading-7 text-slate-600">
-                    Start with demo data or add your own transactions directly
-                    in the finance module.
+                    Start with demo data, then move into your own saved ledger
+                    without clutter or fake dashboard noise.
                   </p>
                 </div>
                 <div className="rounded-[22px] border border-slate-200 bg-slate-50 p-5">
-                  <p className="text-sm text-slate-500">Market data</p>
+                  <p className="text-sm text-slate-500">Markets</p>
                   <p className="mt-2 text-xl font-semibold text-slate-900">
-                    Comparison and historical context
+                    Price history and comparable metrics
                   </p>
                   <p className="mt-2 text-sm leading-7 text-slate-600">
-                    Track price history, EPS, revenue trends, and demo or
-                    live-like providers.
+                    Review market cap, revenue, EPS, margins, and trends in a
+                    more readable analyst layout.
                   </p>
                 </div>
               </div>
               <div className="rounded-[22px] border border-slate-200 bg-blue-50 p-5">
                 <p className="text-sm text-blue-700">Economic intelligence</p>
                 <p className="mt-2 text-xl font-semibold text-slate-900">
-                  India-focused indicators with dates, units, and source notes
+                  Indicator views with dates, units, and source notes
                 </p>
                 <p className="mt-2 text-sm leading-7 text-slate-700">
-                  GDP growth, inflation, unemployment, exchange rate, and other
-                  macro indicators are shown with traceable metadata.
+                  Macroeconomic data stays tied to clear metadata, and the AI
+                  layer is expected to say when data is unavailable instead of
+                  inventing an answer.
                 </p>
               </div>
             </div>
@@ -202,7 +180,7 @@ export function LandingPage() {
           <SectionHeading
             eyebrow="Features"
             title="A cleaner product direction"
-            description="The UI is intentionally simpler and more useful, taking cues from practical bookkeeping and finance tools rather than flashy concept dashboards."
+            description="The interface is intentionally simpler and more useful, taking cues from practical finance and bookkeeping products rather than flashy concept dashboards."
           />
 
           <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -253,9 +231,9 @@ export function LandingPage() {
               </h3>
             </div>
             <p className="mt-4 text-sm leading-7 text-slate-600">
-              FinSight is an educational and research-oriented project. It does
-              not provide personalized financial advice, lending decisions, or
-              reliable real-world forecasting.
+              FinSight is built for serious analysis workflows. It does not use
+              your data to generate personalized financial advice, and source
+              notes remain visible so figures can be verified.
             </p>
           </div>
         </section>

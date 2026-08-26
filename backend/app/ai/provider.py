@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from abc import ABC, abstractmethod
 
 import httpx
@@ -16,7 +17,7 @@ class AIProvider(ABC):
 
 class FallbackAIProvider(AIProvider):
     def analyze(self, question: str, context: str, references: list[str]) -> AIAnalysisResponse:
-        sentences = [segment.strip() for segment in context.split(".") if segment.strip()]
+        sentences = [segment.strip() for segment in re.split(r"(?<=[A-Za-z%])\.\s+", context) if segment.strip()]
         summary = ". ".join(sentences[:3]) if sentences else "No verified context was available for this request."
         bullets = sentences[:4] if sentences else ["No structured facts were available."]
         caveats = [
@@ -24,7 +25,7 @@ class FallbackAIProvider(AIProvider):
             "Only data already available inside the application should be treated as evidence.",
         ]
         return AIAnalysisResponse(
-            answer=f"Question: {question}\\n\\n{summary}",
+            answer=summary,
             bullets=bullets,
             caveats=caveats,
             references=references,

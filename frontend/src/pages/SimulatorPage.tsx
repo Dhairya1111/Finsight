@@ -46,7 +46,7 @@ export function SimulatorPage() {
       <SectionHeading
         eyebrow="Simulator"
         title="What-if scenario tool"
-        description="A simple educational model for exploring directional changes in growth, inflation, sentiment, and currency pressure."
+        description="A simplified scenario model for exploring directional changes in growth, inflation, sentiment, and currency pressure."
       />
 
       <div className="grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">

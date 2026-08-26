@@ -67,7 +67,7 @@ export function DashboardHome() {
           title="Business snapshot"
           description="A cleaner, ledger-style overview with navigation kept in the sidebar and the main workspace visible at the top."
         />
-        <DemoBadge />
+        <DemoBadge label={finance.data?.source.is_demo ? "Sample workspace" : "Live ledger workspace"} />
       </div>
 
       {finance.loading || markets.loading || indicators.loading ? (
@@ -89,7 +89,13 @@ export function DashboardHome() {
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <div className="flex flex-wrap items-center gap-3">
-                  <DemoBadge label="Current workspace" />
+                  <DemoBadge
+                    label={
+                      finance.data.source.is_demo
+                        ? "Current workspace"
+                        : "Using your saved transactions"
+                    }
+                  />
                   <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">
                     Main content fixed in the primary canvas
                   </span>
