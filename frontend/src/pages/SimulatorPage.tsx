@@ -50,7 +50,7 @@ export function SimulatorPage() {
       />
 
       <div className="grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
-        <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+        <section className="app-card app-card-tilt rounded-[24px] p-5">
           <h3 className="text-lg font-semibold text-slate-900">Assumptions</h3>
           <p className="mt-2 text-sm leading-7 text-slate-600">
             Adjust values below. The result refreshes automatically and remains

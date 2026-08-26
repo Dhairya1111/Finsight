@@ -50,7 +50,7 @@ export function AIAnalystPage() {
         onSubmit={handleSubmit}
         className="grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]"
       >
-        <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+        <section className="app-card app-card-tilt rounded-[24px] p-5">
           <div className="space-y-4">
             <label className="block text-sm text-slate-700">
               Domain
@@ -94,14 +94,14 @@ export function AIAnalystPage() {
 
             <button
               type="submit"
-              className="rounded-full bg-blue-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-600"
+              className="rounded-full bg-gradient-to-r from-violet-700 to-teal-600 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(91,33,182,0.18)] transition hover:from-violet-600 hover:to-teal-500"
             >
               Run analysis
             </button>
           </div>
         </section>
 
-        <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+        <section className="app-card app-card-tilt rounded-[24px] p-5">
           {loading ? <LoadingState label="Preparing analysis…" /> : null}
           {error ? <ErrorState message={error} /> : null}
 

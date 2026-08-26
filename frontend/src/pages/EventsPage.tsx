@@ -93,7 +93,7 @@ export function EventsPage() {
               )}
             </ChartCard>
 
-            <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+            <section className="app-card app-card-tilt rounded-[24px] p-5">
               <h3 className="text-lg font-semibold text-slate-900">
                 Interpretation notes
               </h3>

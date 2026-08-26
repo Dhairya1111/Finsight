@@ -142,7 +142,7 @@ export function MarketsPage() {
         description="Search for a listed company by name, pick the right symbol, and FinSight will load the current market data, financial metrics, and charts automatically."
       />
 
-      <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="app-card app-card-tilt rounded-[28px] p-6">
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
           <div>
             {searchOpen ? (
@@ -199,7 +199,7 @@ export function MarketsPage() {
                 ) : null}
               </div>
             ) : (
-              <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-5">
+              <div className="app-subtle-panel rounded-[24px] p-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                   Selected company
                 </p>
@@ -227,7 +227,7 @@ export function MarketsPage() {
             )}
           </div>
 
-          <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-5">
+          <div className="app-subtle-panel rounded-[24px] p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
               Company action
             </p>
@@ -241,7 +241,7 @@ export function MarketsPage() {
             <button
               type="button"
               onClick={addSelectedToComparison}
-              className="mt-4 inline-flex items-center gap-2 rounded-full bg-blue-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-600"
+              className="mt-4 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-700 to-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(91,33,182,0.18)] transition hover:from-violet-600 hover:to-teal-500"
             >
               <Plus className="h-4 w-4" />
               Add to comparison
@@ -272,7 +272,7 @@ export function MarketsPage() {
 
       {overview.data ? (
         <>
-          <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+          <section className="app-card app-card-tilt rounded-[28px] p-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">
@@ -287,7 +287,7 @@ export function MarketsPage() {
                   {overview.data.sector}
                 </p>
               </div>
-              <div className="rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-3 text-right">
+              <div className="app-subtle-panel rounded-[20px] px-4 py-3 text-right">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                   Latest price
                 </p>
@@ -372,7 +372,7 @@ export function MarketsPage() {
               />
             </ChartCard>
             <div className="space-y-4">
-              <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+              <section className="app-card app-card-tilt rounded-[24px] p-5">
                 <div className="flex items-center gap-2 text-slate-900">
                   <TrendingUp className="h-4 w-4 text-blue-700" />
                   <h3 className="text-lg font-semibold">Research snapshot</h3>
@@ -419,7 +419,7 @@ export function MarketsPage() {
         </>
       ) : null}
 
-      <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="app-card app-card-tilt rounded-[24px] p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h3 className="text-lg font-semibold text-slate-900">

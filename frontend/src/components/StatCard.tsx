@@ -12,7 +12,7 @@ export function StatCard({
   icon?: ReactNode;
 }) {
   return (
-    <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="app-card app-card-tilt rounded-[24px] p-5">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-slate-500">{label}</p>
@@ -22,7 +22,9 @@ export function StatCard({
           ) : null}
         </div>
         {icon ? (
-          <div className="rounded-2xl bg-sky-50 p-3 text-sky-700">{icon}</div>
+          <div className="rounded-2xl bg-gradient-to-br from-violet-100 via-white to-teal-100 p-3 text-violet-700 shadow-[0_10px_24px_rgba(91,33,182,0.12)]">
+            {icon}
+          </div>
         ) : null}
       </div>
     </div>

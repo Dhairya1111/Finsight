@@ -78,7 +78,7 @@ export function LandingPage() {
           </div>
           <Link
             to="/dashboard"
-            className="inline-flex items-center gap-2 rounded-full bg-blue-700 px-5 py-2 text-sm font-semibold text-white transition hover:bg-blue-600"
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-700 to-teal-600 px-5 py-2 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(91,33,182,0.18)] transition hover:from-violet-600 hover:to-teal-500"
           >
             Open app
             <ArrowRight className="h-4 w-4" />
@@ -103,7 +103,7 @@ export function LandingPage() {
             <div className="flex flex-wrap gap-3">
               <Link
                 to="/dashboard"
-                className="inline-flex items-center gap-2 rounded-full bg-blue-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-600"
+                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-700 to-teal-600 px-6 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(91,33,182,0.18)] transition hover:from-violet-600 hover:to-teal-500"
               >
                 Explore dashboard
               </Link>
@@ -116,7 +116,7 @@ export function LandingPage() {
               ].map(([label, value]) => (
                 <div
                   key={label}
-                  className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm"
+                  className="app-card app-card-tilt rounded-[24px] p-5"
                 >
                   <p className="text-sm text-slate-500">{label}</p>
                   <p className="mt-2 text-lg font-semibold text-slate-900">
@@ -127,7 +127,7 @@ export function LandingPage() {
             </div>
           </div>
 
-          <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="app-card app-card-tilt rounded-[28px] p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-500">Product snapshot</p>
@@ -140,7 +140,7 @@ export function LandingPage() {
 
             <div className="mt-6 grid gap-4">
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-[22px] border border-slate-200 bg-slate-50 p-5">
+                <div className="app-subtle-panel rounded-[22px] p-5">
                   <p className="text-sm text-slate-500">Ledger</p>
                   <p className="mt-2 text-xl font-semibold text-slate-900">
                     Add, edit, delete, and upload transactions
@@ -150,7 +150,7 @@ export function LandingPage() {
                     without clutter or fake dashboard noise.
                   </p>
                 </div>
-                <div className="rounded-[22px] border border-slate-200 bg-slate-50 p-5">
+                <div className="app-subtle-panel rounded-[22px] p-5">
                   <p className="text-sm text-slate-500">Markets</p>
                   <p className="mt-2 text-xl font-semibold text-slate-900">
                     Price history and comparable metrics
@@ -187,7 +187,7 @@ export function LandingPage() {
             {features.map(({ title, icon: Icon, description }) => (
               <article
                 key={title}
-                className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm"
+                className="app-card app-card-tilt rounded-[24px] p-6"
               >
                 <div className="inline-flex rounded-2xl bg-blue-50 p-3 text-blue-700">
                   <Icon className="h-5 w-5" />
@@ -204,7 +204,7 @@ export function LandingPage() {
         </section>
 
         <section className="mx-auto grid max-w-7xl gap-6 px-6 py-14 lg:grid-cols-[1fr,1fr] lg:px-8">
-          <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="app-card app-card-tilt rounded-[24px] p-6">
             <div className="flex items-center gap-3 text-blue-700">
               <Database className="h-5 w-5" />
               <h3 className="text-lg font-semibold text-slate-900">
@@ -223,7 +223,7 @@ export function LandingPage() {
             </div>
           </div>
 
-          <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="app-card app-card-tilt rounded-[24px] p-6">
             <div className="flex items-center gap-3 text-blue-700">
               <ShieldCheck className="h-5 w-5" />
               <h3 className="text-lg font-semibold text-slate-900">

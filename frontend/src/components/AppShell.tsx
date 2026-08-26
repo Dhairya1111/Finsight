@@ -98,12 +98,12 @@ export function AppShell() {
   }, [sidebarCollapsed]);
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900">
+    <div className="app-shell-bg min-h-screen text-slate-900">
       {mobileSidebarOpen ? (
         <button
           type="button"
           aria-label="Close sidebar overlay"
-          className="fixed inset-0 z-20 bg-slate-900/30 md:hidden"
+          className="fixed inset-0 z-20 bg-slate-900/25 backdrop-blur-[2px] md:hidden"
           onClick={() => setMobileSidebarOpen(false)}
         />
       ) : null}
@@ -112,28 +112,28 @@ export function AppShell() {
         <aside
           id="app-sidebar"
           className={cn(
-            "fixed inset-y-0 left-0 z-30 overflow-y-auto overflow-x-hidden overscroll-contain border-r border-slate-200 bg-white transition-all duration-300 md:sticky md:top-0 md:h-screen md:translate-x-0",
+            "app-sidebar-shell fixed inset-y-0 left-0 z-30 overflow-y-auto overflow-x-hidden overscroll-contain border-r border-white/70 transition-all duration-300 md:sticky md:top-0 md:h-screen md:translate-x-0",
             mobileSidebarOpen ? "translate-x-0" : "-translate-x-full",
             sidebarCollapsed ? "md:w-0 md:border-r-0" : "w-72 md:w-[290px]",
           )}
           aria-hidden={sidebarCollapsed && !mobileSidebarOpen}
         >
-          <div className="flex h-full w-72 flex-col px-5 py-5 md:w-[290px] md:px-5 md:py-6">
-            <div className="rounded-[24px] bg-blue-700 px-5 py-5 text-white shadow-sm">
+          <div className="flex min-h-full w-72 flex-col px-5 py-5 pb-8 md:w-[290px] md:px-5 md:py-6 md:pb-8">
+            <div className="app-sidebar-hero rounded-[28px] px-5 py-5 text-white">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-blue-100">
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-100">
                     FinSight
                   </p>
                   <h1 className="mt-2 text-2xl font-semibold">
-                    Business dashboard
+                    Smart finance workspace
                   </h1>
                 </div>
                 <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={() => setSidebarCollapsed(true)}
-                    className="hidden rounded-xl border border-white/20 p-2 text-blue-100 transition hover:bg-white/10 md:inline-flex"
+                    className="hidden rounded-xl border border-white/20 bg-white/10 p-2 text-violet-50 transition hover:bg-white/20 md:inline-flex"
                     aria-label="Collapse sidebar"
                     title="Collapse sidebar"
                   >
@@ -142,16 +142,15 @@ export function AppShell() {
                   <button
                     type="button"
                     onClick={() => setMobileSidebarOpen(false)}
-                    className="rounded-xl border border-white/20 p-2 text-blue-100 transition hover:bg-white/10 md:hidden"
+                    className="rounded-xl border border-white/20 bg-white/10 p-2 text-violet-50 transition hover:bg-white/20 md:hidden"
                     aria-label="Close sidebar"
                   >
                     <X className="h-4 w-4" />
                   </button>
                 </div>
               </div>
-              <p className="mt-2 text-sm leading-6 text-blue-100">
-                Ledger-style financial workspace inspired by practical business
-                apps.
+              <p className="mt-2 text-sm leading-6 text-violet-50/90">
+                Markets, ledger, macro data, and AI tools in one connected app.
               </p>
             </div>
 
@@ -167,14 +166,14 @@ export function AppShell() {
                     className={({ isActive }) =>
                       `group rounded-[18px] border px-4 py-3 transition ${
                         isActive
-                          ? "border-blue-200 bg-blue-50 text-blue-900"
-                          : "border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50"
+                          ? "border-violet-200 bg-white/70 text-slate-900 shadow-[0_12px_28px_rgba(91,33,182,0.10)]"
+                          : "border-transparent bg-white/35 text-slate-700 hover:border-violet-200/70 hover:bg-white/70"
                       }`
                     }
                   >
                     <div className="flex items-center justify-between gap-3">
                       <span className="flex items-center gap-3">
-                        <span className="rounded-xl bg-slate-100 p-2 text-slate-600 group-hover:bg-white">
+                        <span className="rounded-xl bg-gradient-to-br from-violet-50 to-teal-50 p-2 text-violet-700 transition group-hover:from-violet-100 group-hover:to-teal-100">
                           <Icon className="h-4 w-4" />
                         </span>
                         <span>
@@ -186,14 +185,14 @@ export function AppShell() {
                           </span>
                         </span>
                       </span>
-                      <ArrowUpRight className="h-4 w-4 text-slate-400" />
+                      <ArrowUpRight className="h-4 w-4 text-slate-400 transition group-hover:rotate-6 group-hover:text-violet-600" />
                     </div>
                   </NavLink>
                 ))}
               </nav>
             </div>
 
-            <div className="mt-6 rounded-[22px] border border-slate-200 bg-slate-50 p-4">
+            <div className="app-subtle-panel mt-6 rounded-[22px] p-4">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                 Quick actions
               </p>
@@ -202,7 +201,7 @@ export function AppShell() {
                   <Link
                     key={item.to}
                     to={item.to}
-                    className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-blue-200 hover:text-blue-800"
+                    className="rounded-2xl border border-white/80 bg-white/65 px-4 py-3 text-sm font-medium text-slate-700 transition hover:-translate-y-0.5 hover:border-violet-200 hover:text-violet-700"
                   >
                     {item.label}
                   </Link>
@@ -213,7 +212,7 @@ export function AppShell() {
         </aside>
 
         <div className="min-w-0 flex-1">
-          <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/95 backdrop-blur">
+          <header className="app-topbar sticky top-0 z-10 border-b border-white/70 bg-white/65 backdrop-blur-xl">
             <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 md:px-8 lg:px-10">
               <div className="flex items-center gap-3">
                 <button
@@ -224,7 +223,7 @@ export function AppShell() {
                   }
                   aria-expanded={mobileSidebarOpen}
                   onClick={() => setMobileSidebarOpen((current) => !current)}
-                  className="inline-flex rounded-xl border border-slate-200 bg-white p-2 text-slate-600 transition hover:bg-slate-50 md:hidden"
+                  className="inline-flex rounded-xl border border-white/70 bg-white/70 p-2 text-slate-600 shadow-[0_10px_24px_rgba(15,23,42,0.05)] transition hover:bg-white md:hidden"
                 >
                   {mobileSidebarOpen ? (
                     <X className="h-4 w-4" />
@@ -240,7 +239,7 @@ export function AppShell() {
                   }
                   aria-expanded={!sidebarCollapsed}
                   onClick={() => setSidebarCollapsed((current) => !current)}
-                  className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 md:inline-flex"
+                  className="hidden items-center gap-2 rounded-xl border border-white/70 bg-white/70 px-3 py-2 text-sm font-medium text-slate-700 shadow-[0_10px_24px_rgba(15,23,42,0.05)] transition hover:bg-white md:inline-flex"
                 >
                   {sidebarCollapsed ? (
                     <>
@@ -255,7 +254,7 @@ export function AppShell() {
                   )}
                 </button>
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-700">
                     {activeItem.label}
                   </p>
                   <p className="mt-1 text-sm text-slate-500">
@@ -263,7 +262,7 @@ export function AppShell() {
                   </p>
                 </div>
               </div>
-              <div className="rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">
+              <div className="rounded-full border border-white/70 bg-gradient-to-r from-violet-50 via-white to-teal-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-violet-700 shadow-[0_12px_28px_rgba(91,33,182,0.08)]">
                 Live workspace
               </div>
             </div>

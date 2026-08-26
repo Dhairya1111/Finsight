@@ -62,7 +62,7 @@ export function SharedLedgerPage() {
 
         {shared.data ? (
           <>
-            <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+            <section className="app-card app-card-tilt rounded-[28px] p-6">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <h2 className="text-2xl font-semibold text-slate-900">
@@ -118,7 +118,7 @@ export function SharedLedgerPage() {
               <SourceNote source={shared.data.summary.source} />
             </div>
 
-            <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+            <section className="app-card app-card-tilt rounded-[24px] p-5">
               <h3 className="text-lg font-semibold text-slate-900">
                 Transactions
               </h3>

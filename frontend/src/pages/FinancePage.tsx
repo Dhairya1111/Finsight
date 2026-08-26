@@ -439,7 +439,7 @@ export function FinancePage() {
             <RefreshCcw className="h-4 w-4" />
             Restore demo
           </button>
-          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-blue-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-600">
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-gradient-to-r from-violet-700 to-teal-600 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(91,33,182,0.18)] transition hover:from-violet-600 hover:to-teal-500">
             <Upload className="h-4 w-4" />
             {uploading ? "Uploading…" : "Upload CSV"}
             <input
@@ -468,7 +468,7 @@ export function FinancePage() {
       {finance.data ? (
         <div className="grid gap-6 2xl:grid-cols-[minmax(0,1.3fr)_390px]">
           <div className="min-w-0 space-y-6">
-            <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+            <section className="app-card app-card-tilt rounded-[28px] p-6">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <div className="flex flex-wrap items-center gap-3">
@@ -486,7 +486,7 @@ export function FinancePage() {
                     dataset automatically.
                   </p>
                 </div>
-                <div className="rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-3 text-right text-sm text-slate-600">
+                <div className="app-subtle-panel rounded-[20px] px-4 py-3 text-right text-sm text-slate-600">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                     Current source
                   </p>
@@ -570,7 +570,7 @@ export function FinancePage() {
                 />
               </ChartCard>
 
-              <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+              <section className="app-card app-card-tilt rounded-[24px] p-5">
                 <h3 className="text-lg font-semibold text-slate-900">
                   Recurring expenses
                 </h3>
@@ -606,7 +606,7 @@ export function FinancePage() {
               </section>
             </div>
 
-            <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+            <section className="app-card app-card-tilt rounded-[24px] p-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <h3 className="text-lg font-semibold text-slate-900">
@@ -721,7 +721,7 @@ export function FinancePage() {
           </div>
 
           <div className="space-y-6 2xl:sticky 2xl:top-24 2xl:self-start">
-            <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+            <section className="app-card app-card-tilt rounded-[24px] p-5">
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
@@ -738,7 +738,7 @@ export function FinancePage() {
                   className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
                     isRecording
                       ? "bg-rose-600 text-white hover:bg-rose-500"
-                      : "bg-blue-700 text-white hover:bg-blue-600"
+                      : "bg-gradient-to-r from-violet-700 to-teal-600 text-white hover:from-violet-600 hover:to-teal-500"
                   } disabled:cursor-not-allowed disabled:opacity-60`}
                 >
                   {isRecording ? (
@@ -774,7 +774,7 @@ export function FinancePage() {
               ) : null}
             </section>
 
-            <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+            <section className="app-card app-card-tilt rounded-[24px] p-5">
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
@@ -888,7 +888,7 @@ export function FinancePage() {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-blue-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-teal-600 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(91,33,182,0.18)] transition hover:from-violet-600 hover:to-teal-500 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {editingId === null ? (
                       <Save className="h-4 w-4" />
@@ -915,7 +915,7 @@ export function FinancePage() {
               </form>
             </section>
 
-            <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+            <section className="app-card app-card-tilt rounded-[24px] p-5">
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
@@ -935,7 +935,7 @@ export function FinancePage() {
                 type="button"
                 onClick={() => void handleCreateShareLink()}
                 disabled={!hasSavedTransactions}
-                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-teal-600 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(91,33,182,0.18)] transition hover:from-violet-600 hover:to-teal-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Share2 className="h-4 w-4" />
                 Generate share link

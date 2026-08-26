@@ -91,7 +91,7 @@ export function DashboardHome() {
 
       {finance.data && markets.data && inflation && gdp ? (
         <>
-          <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+          <section className="app-card app-card-tilt rounded-[28px] p-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <div className="flex flex-wrap items-center gap-3">
@@ -120,7 +120,7 @@ export function DashboardHome() {
                   <Link
                     key={item.to}
                     to={item.to}
-                    className="rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm transition hover:border-blue-200 hover:bg-blue-50"
+                    className="app-subtle-panel rounded-[20px] px-4 py-3 text-sm transition hover:border-violet-200 hover:bg-white/80"
                   >
                     <p className="font-medium text-slate-900">{item.label}</p>
                     <p className="mt-1 text-xs text-slate-500">{item.helper}</p>
@@ -183,7 +183,7 @@ export function DashboardHome() {
                     color="#2563eb"
                   />
                 </ChartCard>
-                <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+                <section className="app-card app-card-tilt rounded-[24px] p-5">
                   <h3 className="text-lg font-semibold text-slate-900">
                     Quick summary
                   </h3>
