@@ -345,6 +345,6 @@ textarea {
       rgba(15, 118, 110, 0.08) 100%
     );
     background-size: 220% 100%;
-    animation: shimmer 2.4s linear infinite;
+    animation: shimmer 1.6s linear infinite;
   }
 }

@@ -1,6 +1,6 @@
 export function LoadingState({ label = "Loading data…" }: { label?: string }) {
   return (
-    <div className="app-card app-loader-shell flex min-h-[260px] items-center justify-center rounded-[28px] px-6 py-8 text-slate-700">
+    <div className="app-card app-loader-shell flex min-h-[220px] items-center justify-center rounded-[28px] px-6 py-7 text-slate-700">
       <div className="w-full max-w-md text-center">
         <div className="mx-auto flex justify-center">
           <div className="app-loader-orbit">

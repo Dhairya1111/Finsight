@@ -132,15 +132,6 @@ export function AppShell() {
                 <div className="flex gap-2">
                   <button
                     type="button"
-                    onClick={() => setSidebarCollapsed(true)}
-                    className="hidden rounded-xl border border-white/20 bg-white/10 p-2 text-violet-50 transition hover:bg-white/20 md:inline-flex"
-                    aria-label="Collapse sidebar"
-                    title="Collapse sidebar"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </button>
-                  <button
-                    type="button"
                     onClick={() => setMobileSidebarOpen(false)}
                     className="rounded-xl border border-white/20 bg-white/10 p-2 text-violet-50 transition hover:bg-white/20 md:hidden"
                     aria-label="Close sidebar"
@@ -239,19 +230,16 @@ export function AppShell() {
                   }
                   aria-expanded={!sidebarCollapsed}
                   onClick={() => setSidebarCollapsed((current) => !current)}
-                  className="hidden items-center gap-2 rounded-xl border border-white/70 bg-white/70 px-3 py-2 text-sm font-medium text-slate-700 shadow-[0_10px_24px_rgba(15,23,42,0.05)] transition hover:bg-white md:inline-flex"
+                  className="hidden items-center gap-2 rounded-2xl border border-white/80 bg-gradient-to-r from-white/90 via-violet-50 to-teal-50 px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-[0_14px_30px_rgba(91,33,182,0.10)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(91,33,182,0.14)] md:inline-flex"
                 >
-                  {sidebarCollapsed ? (
-                    <>
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-teal-500 text-white shadow-[0_10px_20px_rgba(91,33,182,0.18)]">
+                    {sidebarCollapsed ? (
                       <ChevronRight className="h-4 w-4" />
-                      <span>Show menu</span>
-                    </>
-                  ) : (
-                    <>
+                    ) : (
                       <ChevronLeft className="h-4 w-4" />
-                      <span>Hide menu</span>
-                    </>
-                  )}
+                    )}
+                  </span>
+                  <span>{sidebarCollapsed ? "Show menu" : "Hide menu"}</span>
                 </button>
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-700">

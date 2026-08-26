@@ -123,16 +123,18 @@ export function FinancePage() {
   const [draft, setDraft] = useState<TransactionDraft>(initialDraft);
 
   const [voiceTranscript, setVoiceTranscript] = useState("");
+  const [voiceNarrationText, setVoiceNarrationText] = useState("");
   const [voiceMessage, setVoiceMessage] = useState<string | null>(null);
   const [voiceProcessing, setVoiceProcessing] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+
   const [shareLink, setShareLink] = useState("");
   const [shareMessage, setShareMessage] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
-  const hasSavedTransactions = (transactions.data?.length ?? 0) > 0;
   const speechSupported = Boolean(getSpeechRecognitionConstructor());
+  const hasSavedTransactions = (transactions.data?.length ?? 0) > 0;
 
   const categoryOptions = useMemo(() => {
     const existing = (transactions.data ?? []).map((item) => item.category);
@@ -310,6 +312,7 @@ export function FinancePage() {
       type: transaction.type,
       account: transaction.account,
     });
+    setVoiceNarrationText(result.transcript);
     setVoiceMessage(
       [result.message, ...result.warnings].filter(Boolean).join(" "),
     );
@@ -327,6 +330,7 @@ export function FinancePage() {
 
     try {
       const result = await api.createVoiceEntry(transcript);
+      setVoiceTranscript(transcript);
       applyVoiceResultToDraft(result);
       await refreshFinanceState();
       setEditingId(null);
@@ -341,7 +345,7 @@ export function FinancePage() {
     }
   };
 
-  const handleVoiceCapture = () => {
+  const handleVoiceCapture = async () => {
     if (isRecording) {
       recognitionRef.current?.stop();
       return;
@@ -350,22 +354,33 @@ export function FinancePage() {
     const SpeechRecognitionCtor = getSpeechRecognitionConstructor();
     if (!SpeechRecognitionCtor) {
       setVoiceMessage(
-        "Speech recognition is not supported in this browser preview.",
+        "Speech recognition is not supported in this browser. You can still type a narration below and let FinSight convert it into a transaction.",
+      );
+      return;
+    }
+
+    const hasMicrophoneAccess = await requestMicrophonePermission();
+    if (!hasMicrophoneAccess) {
+      setVoiceMessage(
+        "Microphone access is blocked in this browser or preview. Please allow microphone permission and try again, or use the narration box below.",
       );
       return;
     }
 
     const recognition = new SpeechRecognitionCtor();
     recognitionRef.current = recognition;
-    recognition.lang = "en-US";
+    recognition.lang = "en-IN";
     recognition.interimResults = true;
     recognition.continuous = false;
+    recognition.maxAlternatives = 1;
 
     let finalTranscript = "";
+    let hadRecognitionError = false;
 
     recognition.onstart = () => {
       setIsRecording(true);
       setVoiceTranscript("");
+      setVoiceNarrationText("");
       setVoiceMessage("Listening... say one transaction clearly.");
     };
 
@@ -375,22 +390,37 @@ export function FinancePage() {
         .join(" ")
         .trim();
       setVoiceTranscript(transcript);
+      setVoiceNarrationText(transcript);
       finalTranscript = transcript;
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEventLike) => {
+      hadRecognitionError = true;
       setIsRecording(false);
-      setVoiceMessage(`Voice input failed: ${event.error}`);
+      setVoiceMessage(getVoiceErrorMessage(event.error));
     };
 
     recognition.onend = () => {
       setIsRecording(false);
       if (finalTranscript.trim()) {
         void saveVoiceEntry(finalTranscript);
+        return;
+      }
+      if (!hadRecognitionError) {
+        setVoiceMessage(
+          "No speech was captured. Try again, speak a little slower, or use the narration box below.",
+        );
       }
     };
 
-    recognition.start();
+    try {
+      recognition.start();
+    } catch {
+      setIsRecording(false);
+      setVoiceMessage(
+        "Could not start voice recording right now. Please try again, or use the narration box below.",
+      );
+    }
   };
 
   const handleCreateShareLink = async () => {
@@ -473,7 +503,7 @@ export function FinancePage() {
                 <div>
                   <div className="flex flex-wrap items-center gap-3">
                     {finance.data.source.is_demo ? <DemoBadge /> : null}
-                    <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">
+                    <span className="app-subtle-panel rounded-full px-3 py-1 text-xs font-medium text-slate-600">
                       {currentDatasetLabel}
                     </span>
                   </div>
@@ -541,7 +571,7 @@ export function FinancePage() {
                   }))}
                   xKey="month"
                   yKey="expenses"
-                  color="#2563eb"
+                  color="#7c3aed"
                 />
               </ChartCard>
               <ChartCard
@@ -552,7 +582,7 @@ export function FinancePage() {
                   data={finance.data.monthly}
                   xKey="month"
                   yKey="net_savings"
-                  color="#16a34a"
+                  color="#0f766e"
                 />
               </ChartCard>
             </div>
@@ -566,7 +596,7 @@ export function FinancePage() {
                   data={topCategories}
                   xKey="category"
                   yKey="amount"
-                  color="#ea580c"
+                  color="#f97316"
                 />
               </ChartCard>
 
@@ -583,7 +613,7 @@ export function FinancePage() {
                     finance.data.recurring_expenses.map((item) => (
                       <div
                         key={`${item.description}-${item.category}`}
-                        className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                        className="app-subtle-panel rounded-2xl p-4"
                       >
                         <p className="font-medium text-slate-900">
                           {item.description}
@@ -598,7 +628,7 @@ export function FinancePage() {
                       </div>
                     ))
                   ) : (
-                    <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-500">
+                    <div className="app-subtle-panel rounded-2xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">
                       No recurring pattern detected in the active ledger yet.
                     </div>
                   )}
@@ -617,7 +647,7 @@ export function FinancePage() {
                   </p>
                 </div>
                 {hasSavedTransactions ? (
-                  <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">
+                  <span className="app-subtle-panel rounded-full px-3 py-1 text-xs font-medium text-slate-600">
                     {transactions.data?.length ?? 0} saved
                   </span>
                 ) : null}
@@ -647,20 +677,20 @@ export function FinancePage() {
                     </thead>
                     <tbody>
                       {(transactions.data ?? []).map((transaction) => (
-                        <tr key={transaction.id} className="bg-slate-50">
-                          <td className="rounded-l-2xl border-y border-l border-slate-200 px-4 py-3 text-slate-700">
+                        <tr key={transaction.id} className="bg-white/70">
+                          <td className="rounded-l-2xl border-y border-l border-white/80 px-4 py-3 text-slate-700">
                             {transaction.date}
                           </td>
-                          <td className="border-y border-slate-200 px-4 py-3 font-medium text-slate-900">
+                          <td className="border-y border-white/80 px-4 py-3 font-medium text-slate-900">
                             {transaction.description}
                           </td>
-                          <td className="border-y border-slate-200 px-4 py-3 text-slate-700">
+                          <td className="border-y border-white/80 px-4 py-3 text-slate-700">
                             {transaction.category}
                           </td>
-                          <td className="border-y border-slate-200 px-4 py-3 text-slate-700">
+                          <td className="border-y border-white/80 px-4 py-3 text-slate-700">
                             {transaction.account}
                           </td>
-                          <td className="border-y border-slate-200 px-4 py-3">
+                          <td className="border-y border-white/80 px-4 py-3">
                             <span
                               className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
                                 transaction.type === "income"
@@ -672,7 +702,7 @@ export function FinancePage() {
                             </span>
                           </td>
                           <td
-                            className={`border-y border-slate-200 px-4 py-3 font-semibold ${
+                            className={`border-y border-white/80 px-4 py-3 font-semibold ${
                               transaction.type === "income"
                                 ? "text-emerald-700"
                                 : "text-rose-700"
@@ -681,12 +711,12 @@ export function FinancePage() {
                             {transaction.type === "income" ? "+" : "-"}
                             {formatCurrency(transaction.amount, "INR")}
                           </td>
-                          <td className="rounded-r-2xl border-y border-r border-slate-200 px-4 py-3 text-right">
+                          <td className="rounded-r-2xl border-y border-r border-white/80 px-4 py-3 text-right">
                             <div className="inline-flex items-center gap-2">
                               <button
                                 type="button"
                                 onClick={() => handleEdit(transaction)}
-                                className="rounded-xl border border-slate-200 bg-white p-2 text-slate-600 transition hover:border-blue-200 hover:text-blue-700"
+                                className="rounded-xl border border-white/80 bg-white/80 p-2 text-slate-600 transition hover:border-violet-200 hover:text-violet-700"
                                 aria-label={`Edit ${transaction.description}`}
                               >
                                 <PencilLine className="h-4 w-4" />
@@ -696,7 +726,7 @@ export function FinancePage() {
                                 onClick={() =>
                                   void handleDelete(transaction.id)
                                 }
-                                className="rounded-xl border border-slate-200 bg-white p-2 text-slate-600 transition hover:border-rose-300 hover:text-rose-600"
+                                className="rounded-xl border border-white/80 bg-white/80 p-2 text-slate-600 transition hover:border-rose-300 hover:text-rose-600"
                                 aria-label={`Delete ${transaction.description}`}
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -709,7 +739,7 @@ export function FinancePage() {
                   </table>
                 </div>
               ) : (
-                <div className="mt-5 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm leading-7 text-slate-500">
+                <div className="mt-5 app-subtle-panel rounded-2xl border border-dashed border-slate-300 p-4 text-sm leading-7 text-slate-500">
                   No saved personal transactions yet. The dashboard is currently
                   using demo data. Add a transaction, speak one, or upload a CSV
                   to switch to your own ledger.
@@ -733,12 +763,12 @@ export function FinancePage() {
                 </div>
                 <button
                   type="button"
-                  onClick={handleVoiceCapture}
-                  disabled={!speechSupported || voiceProcessing}
-                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
+                  onClick={() => void handleVoiceCapture()}
+                  disabled={voiceProcessing}
+                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-white transition ${
                     isRecording
-                      ? "bg-rose-600 text-white hover:bg-rose-500"
-                      : "bg-gradient-to-r from-violet-700 to-teal-600 text-white hover:from-violet-600 hover:to-teal-500"
+                      ? "bg-rose-600 hover:bg-rose-500"
+                      : "bg-gradient-to-r from-violet-700 to-teal-600 hover:from-violet-600 hover:to-teal-500"
                   } disabled:cursor-not-allowed disabled:opacity-60`}
                 >
                   {isRecording ? (
@@ -754,7 +784,7 @@ export function FinancePage() {
                 salary 85000 in bank”. The app converts your speech to text,
                 interprets it, and saves the transaction.
               </p>
-              <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <div className="mt-4 app-subtle-panel rounded-2xl p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
                   Transcript
                 </p>
@@ -762,14 +792,37 @@ export function FinancePage() {
                   {voiceTranscript || "Nothing recorded yet."}
                 </p>
               </div>
+              <Field label="Narration">
+                <textarea
+                  rows={4}
+                  value={voiceNarrationText}
+                  onChange={(event) =>
+                    setVoiceNarrationText(event.target.value)
+                  }
+                  placeholder="Example: Spent 500 on groceries using UPI today"
+                  className={inputClassName}
+                />
+              </Field>
+              <button
+                type="button"
+                onClick={() => void saveVoiceEntry(voiceNarrationText)}
+                disabled={voiceProcessing || !voiceNarrationText.trim()}
+                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/80 bg-white/80 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <Mic className="h-4 w-4" />
+                {voiceProcessing
+                  ? "Processing narration…"
+                  : "Create from narration"}
+              </button>
               {voiceMessage ? (
-                <div className="mt-4 rounded-2xl border border-slate-200 bg-blue-50 px-4 py-3 text-sm text-slate-700">
+                <div className="mt-4 app-subtle-panel rounded-2xl px-4 py-3 text-sm text-slate-700">
                   {voiceMessage}
                 </div>
               ) : null}
               {!speechSupported ? (
                 <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                  Voice entry depends on browser speech recognition support.
+                  Speech recognition is unavailable here, but narration text
+                  still works.
                 </div>
               ) : null}
             </section>
@@ -788,7 +841,7 @@ export function FinancePage() {
                       : "Update selected entry"}
                   </h3>
                 </div>
-                <div className="rounded-2xl bg-blue-50 p-3 text-blue-700">
+                <div className="rounded-2xl bg-gradient-to-br from-violet-100 via-white to-teal-100 p-3 text-violet-700 shadow-[0_10px_24px_rgba(91,33,182,0.12)]">
                   <CalendarDays className="h-5 w-5" />
                 </div>
               </div>
@@ -925,7 +978,7 @@ export function FinancePage() {
                     Create a view-only link
                   </h3>
                 </div>
-                <Share2 className="h-5 w-5 text-blue-700" />
+                <Share2 className="h-5 w-5 text-violet-700" />
               </div>
               <p className="mt-3 text-sm leading-7 text-slate-600">
                 Generate a link so others can view your current saved expenses,
@@ -946,7 +999,7 @@ export function FinancePage() {
                 </p>
               ) : null}
               {shareMessage ? (
-                <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                <div className="mt-4 app-subtle-panel rounded-2xl px-4 py-3 text-sm text-slate-700">
                   {shareMessage}
                 </div>
               ) : null}
@@ -961,7 +1014,7 @@ export function FinancePage() {
                     <button
                       type="button"
                       onClick={() => void handleCopyShareLink()}
-                      className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                      className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl border border-white/80 bg-white/80 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-white"
                     >
                       {copied ? (
                         <Check className="h-4 w-4" />
@@ -1050,6 +1103,39 @@ function getSpeechRecognitionConstructor(): SpeechRecognitionConstructor | null 
   return window.SpeechRecognition ?? window.webkitSpeechRecognition ?? null;
 }
 
+async function requestMicrophonePermission() {
+  if (
+    typeof navigator === "undefined" ||
+    !navigator.mediaDevices?.getUserMedia
+  ) {
+    return true;
+  }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    stream.getTracks().forEach((track) => track.stop());
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function getVoiceErrorMessage(error: string) {
+  if (error === "not-allowed" || error === "service-not-allowed") {
+    return "Microphone access was blocked. Please allow microphone permission and try again, or use the narration box below.";
+  }
+  if (error === "no-speech") {
+    return "No speech was detected. Try again and speak a little closer to the microphone.";
+  }
+  if (error === "audio-capture") {
+    return "No working microphone was detected. Check your microphone settings and try again.";
+  }
+  if (error === "network") {
+    return "Speech recognition could not reach the browser service right now. Try again, or use the narration box below.";
+  }
+  return "Voice input could not be completed right now. Please try again, or use the narration box below.";
+}
+
 type SpeechRecognitionResultLike = {
   0?: { transcript?: string };
 };
@@ -1066,6 +1152,7 @@ type SpeechRecognitionLike = {
   lang: string;
   interimResults: boolean;
   continuous: boolean;
+  maxAlternatives?: number;
   start: () => void;
   stop: () => void;
   onstart: (() => void) | null;
@@ -1084,4 +1171,4 @@ declare global {
 }
 
 const inputClassName =
-  "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100";
+  "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100";
