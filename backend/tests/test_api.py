@@ -51,6 +51,7 @@ def test_register_and_me() -> None:
 
 
 def test_finance_summary_requires_auth() -> None:
+    client.cookies.clear()
     response = client.get("/api/finance/summary")
     assert response.status_code == 401
 
@@ -205,6 +206,7 @@ def test_ai_oil_question_returns_relevant_context() -> None:
 
 
 def test_finance_ai_requires_auth() -> None:
+    client.cookies.clear()
     response = client.post(
         "/api/ai/analyze",
         json={"question": "Summarize my spending.", "domain": "finance"},

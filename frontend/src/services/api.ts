@@ -39,7 +39,11 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     headers.set("Authorization", `Bearer ${token}`);
   }
 
-  const response = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  const response = await fetch(`${API_BASE}${path}`, {
+    ...options,
+    headers,
+    credentials: "same-origin",
+  });
   if (!response.ok) {
     const payload = await response
       .json()
@@ -63,6 +67,8 @@ export const api = {
       body: JSON.stringify(payload),
     }),
   me: () => request<AuthUser>("/auth/me"),
+  logout: () =>
+    request<{ message: string }>("/auth/logout", { method: "POST" }),
   financeSummary: () => request<FinanceSummary>("/finance/summary"),
   financeTransactions: () =>
     request<LedgerTransaction[]>("/finance/transactions"),

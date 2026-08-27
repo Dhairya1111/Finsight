@@ -9,13 +9,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const refreshUser = async () => {
-    const token = authStorage.getToken();
-    if (!token) {
-      setUser(null);
-      setLoading(false);
-      return;
-    }
-
     try {
       const profile = await api.me();
       setUser(profile);
@@ -48,6 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
+    void api.logout().catch(() => undefined);
     authStorage.clearToken();
     setUser(null);
   };
