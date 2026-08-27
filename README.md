@@ -298,6 +298,22 @@ make lint
 
 ---
 
+## Authentication
+
+FinSight now includes:
+- account registration
+- login
+- JWT bearer authentication
+- per-user saved ledger data
+- public read-only shared ledger links
+
+## Render Deployment
+
+A Render blueprint is included at [`render.yaml`](render.yaml).
+
+Detailed instructions:
+- [`docs/render-deployment.md`](docs/render-deployment.md)
+
 ## Docker
 
 ### Development with Docker Compose
