@@ -1,3 +1,4 @@
+import { Eye, EyeOff, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
@@ -13,11 +14,13 @@ export function LoginPage() {
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const redirectTo =
     (location.state as { from?: string } | null)?.from ?? "/dashboard";
+  const googleConfigured = Boolean(import.meta.env.VITE_GOOGLE_CLIENT_ID);
 
   if (loading) {
     return <LoadingState label="Loading account access…" />;
@@ -64,7 +67,7 @@ export function LoginPage() {
             {[
               ["Secure login", "JWT-based account access"],
               ["Personal ledger", "Your own saved transactions"],
-              ["Deployment-ready", "Prepared for Render + PostgreSQL"],
+              ["Cross-device", "Ready for mobile, tablet, and desktop use"],
             ].map(([label, value]) => (
               <div key={label} className="app-subtle-panel rounded-[22px] p-4">
                 <p className="text-sm text-slate-500">{label}</p>
@@ -104,12 +107,37 @@ export function LoginPage() {
             <SectionHeading
               eyebrow={mode === "login" ? "Welcome back" : "New account"}
               title={mode === "login" ? "Sign in" : "Create your account"}
-              description="Once authenticated, the app loads your personal ledger data and protected finance features."
+              description="Your account unlocks personal ledger storage, protected routes, and shareable finance views."
             />
           </div>
 
+          <div className="mt-6 grid gap-3">
+            <button
+              type="button"
+              disabled={!googleConfigured}
+              className="inline-flex items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-red-50 text-red-600">
+                G
+              </span>
+              Continue with Google
+            </button>
+            {!googleConfigured ? (
+              <p className="text-xs text-slate-500">
+                Google sign-in can be enabled later by adding a Google client ID
+                in deployment settings.
+              </p>
+            ) : null}
+          </div>
+
+          <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-slate-400">
+            <div className="h-px flex-1 bg-slate-200" />
+            <span>or continue with email</span>
+            <div className="h-px flex-1 bg-slate-200" />
+          </div>
+
           {error ? (
-            <div className="mt-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+            <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
               {error}
             </div>
           ) : null}
@@ -130,28 +158,57 @@ export function LoginPage() {
 
             <label className="block text-sm text-slate-700">
               Email
-              <input
-                type="email"
-                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-red-300 focus:ring-4 focus:ring-red-100"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="you@example.com"
-                required
-              />
+              <div className="relative mt-2">
+                <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="email"
+                  className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-slate-900 outline-none transition focus:border-red-300 focus:ring-4 focus:ring-red-100"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                  required
+                />
+              </div>
             </label>
 
             <label className="block text-sm text-slate-700">
               Password
-              <input
-                type="password"
-                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-red-300 focus:ring-4 focus:ring-red-100"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder="Minimum 8 characters"
-                required
-                minLength={8}
-              />
+              <div className="relative mt-2">
+                <LockKeyhole className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-12 text-slate-900 outline-none transition focus:border-red-300 focus:ring-4 focus:ring-red-100"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  placeholder="Minimum 8 characters"
+                  autoComplete={
+                    mode === "login" ? "current-password" : "new-password"
+                  }
+                  required
+                  minLength={8}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((current) => !current)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-2 text-slate-500 transition hover:bg-slate-50 hover:text-slate-700"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
             </label>
+
+            <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white/70 px-4 py-3 text-sm text-slate-600">
+              <div className="inline-flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 text-red-600" />
+                <span>Your session is kept on this device after sign-in.</span>
+              </div>
+            </div>
 
             <button
               type="submit"
