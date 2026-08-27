@@ -77,7 +77,7 @@ export function LandingPage() {
             </p>
           </div>
           <Link
-            to="/dashboard"
+            to="/login"
             className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-900 to-rose-500 px-5 py-2 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(30,58,138,0.16)] transition hover:from-blue-700 hover:to-red-500"
           >
             Open app

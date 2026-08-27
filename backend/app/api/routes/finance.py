@@ -10,15 +10,13 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.analytics.personal_finance import (
-    analyze_transactions,
-    normalize_transactions,
-    read_transactions_csv,
-)
+from app.analytics.personal_finance import analyze_transactions, normalize_transactions, read_transactions_csv
 from app.core.config import get_settings
 from app.core.database import get_db
 from app.core.exceptions import ValidationError
+from app.core.security import get_current_user
 from app.models.upload import LedgerShare, LedgerTransaction
+from app.models.user import User
 from app.schemas.common import ApiMessage
 from app.schemas.finance import (
     FinanceSummary,
@@ -106,39 +104,27 @@ ACCOUNT_KEYWORDS = {
     "checking": "Primary Checking",
 }
 
-INCOME_HINTS = [
-    "income",
-    "received",
-    "credited",
-    "salary",
-    "bonus",
-    "refund",
-    "cashback",
-    "earned",
-]
-EXPENSE_HINTS = [
-    "spent",
-    "paid",
-    "debited",
-    "bought",
-    "purchase",
-    "expense",
-    "recharge",
-    "bill",
-]
+INCOME_HINTS = ["income", "received", "credited", "salary", "bonus", "refund", "cashback", "earned"]
+EXPENSE_HINTS = ["spent", "paid", "debited", "bought", "purchase", "expense", "recharge", "bill"]
 
 
 @router.get("/summary", response_model=FinanceSummary)
-def get_finance_summary(db: Session = Depends(get_db)) -> FinanceSummary:
-    stored = _stored_summary(db)
+def get_finance_summary(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> FinanceSummary:
+    stored = _stored_summary(db, current_user.id)
     if stored is not None:
         return stored
     return _load_demo_summary()
 
 
 @router.get("/transactions", response_model=list[LedgerTransactionResponse])
-def list_transactions(db: Session = Depends(get_db)) -> list[LedgerTransactionResponse]:
-    transactions = db.execute(_ledger_transactions_query()).scalars().all()
+def list_transactions(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> list[LedgerTransactionResponse]:
+    transactions = db.execute(_ledger_transactions_query(current_user.id)).scalars().all()
     return [_ledger_transaction_to_response(transaction) for transaction in transactions]
 
 
@@ -150,8 +136,9 @@ def list_transactions(db: Session = Depends(get_db)) -> list[LedgerTransactionRe
 def create_transaction(
     payload: LedgerTransactionBase,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ) -> LedgerTransactionResponse:
-    transaction = _create_transaction_record(payload, db)
+    transaction = _create_transaction_record(payload, db, current_user.id)
     return _ledger_transaction_to_response(transaction)
 
 
@@ -160,9 +147,10 @@ def update_transaction(
     transaction_id: int,
     payload: LedgerTransactionUpdate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ) -> LedgerTransactionResponse:
     transaction = db.get(LedgerTransaction, transaction_id)
-    if transaction is None:
+    if transaction is None or transaction.owner_id != current_user.id:
         raise HTTPException(status_code=404, detail="Transaction not found.")
 
     transaction.transaction_date = _parse_transaction_date(payload.date)
@@ -182,9 +170,10 @@ def update_transaction(
 def delete_transaction(
     transaction_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ) -> ApiMessage:
     transaction = db.get(LedgerTransaction, transaction_id)
-    if transaction is None:
+    if transaction is None or transaction.owner_id != current_user.id:
         raise HTTPException(status_code=404, detail="Transaction not found.")
     db.delete(transaction)
     db.commit()
@@ -195,9 +184,10 @@ def delete_transaction(
 def create_voice_entry(
     payload: VoiceNarrationRequest,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ) -> VoiceEntryResponse:
     parsed_input, warnings = _parse_voice_narration(payload.text)
-    transaction = _create_transaction_record(parsed_input, db)
+    transaction = _create_transaction_record(parsed_input, db, current_user.id)
     response = _ledger_transaction_to_response(transaction)
     message = (
         f"Added {response.type} entry for {response.description} worth {response.amount:.2f} in {response.account}."
@@ -211,16 +201,16 @@ def create_voice_entry(
 
 
 @router.post("/share", response_model=ShareLinkResponse)
-def create_share_link(db: Session = Depends(get_db)) -> ShareLinkResponse:
-    transactions = db.execute(_ledger_transactions_query()).scalars().all()
+def create_share_link(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> ShareLinkResponse:
+    transactions = db.execute(_ledger_transactions_query(current_user.id)).scalars().all()
     if not transactions:
-        raise HTTPException(
-            status_code=400,
-            detail="Add at least one saved transaction before sharing your ledger.",
-        )
+        raise HTTPException(status_code=400, detail="Add at least one saved transaction before sharing your ledger.")
 
     token = secrets.token_urlsafe(12)
-    share = LedgerShare(token=token, title="Shared ledger")
+    share = LedgerShare(token=token, title=f"{current_user.full_name}'s ledger", owner_id=current_user.id)
     db.add(share)
     db.commit()
     db.refresh(share)
@@ -237,11 +227,11 @@ def get_shared_ledger(token: str, db: Session = Depends(get_db)) -> SharedLedger
     if share is None:
         raise HTTPException(status_code=404, detail="Shared ledger not found.")
 
-    transactions = db.execute(_ledger_transactions_query()).scalars().all()
+    transactions = db.execute(_ledger_transactions_query(share.owner_id)).scalars().all()
     if not transactions:
         raise HTTPException(status_code=404, detail="No ledger data is available for this share.")
 
-    summary = _stored_summary(db)
+    summary = _stored_summary(db, share.owner_id)
     if summary is None:
         raise HTTPException(status_code=404, detail="No ledger data is available for this share.")
 
@@ -254,8 +244,11 @@ def get_shared_ledger(token: str, db: Session = Depends(get_db)) -> SharedLedger
 
 
 @router.post("/reset", response_model=FinanceSummary)
-def reset_transactions(db: Session = Depends(get_db)) -> FinanceSummary:
-    db.query(LedgerTransaction).delete()
+def reset_transactions(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> FinanceSummary:
+    db.query(LedgerTransaction).filter(LedgerTransaction.owner_id == current_user.id).delete()
     db.commit()
     return _load_demo_summary()
 
@@ -264,6 +257,7 @@ def reset_transactions(db: Session = Depends(get_db)) -> FinanceSummary:
 async def upload_transactions(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ) -> FinanceSummary:
     settings = get_settings()
     if not file.filename or not file.filename.lower().endswith(".csv"):
@@ -271,18 +265,15 @@ async def upload_transactions(
 
     content = await file.read()
     if len(content) > settings.max_upload_mb * 1024 * 1024:
-        raise HTTPException(
-            status_code=400,
-            detail=f"File exceeds {settings.max_upload_mb} MB limit.",
-        )
+        raise HTTPException(status_code=400, detail=f"File exceeds {settings.max_upload_mb} MB limit.")
 
     try:
         df = read_transactions_csv(content)
     except ValidationError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-    _persist_dataframe_as_transactions(df, db)
-    stored = _stored_summary(db)
+    _persist_dataframe_as_transactions(df, db, current_user.id)
+    stored = _stored_summary(db, current_user.id)
     if stored is None:
         raise HTTPException(status_code=500, detail="Failed to store uploaded transactions.")
     return stored
@@ -292,6 +283,7 @@ async def upload_transactions(
 def analyze_manual_transactions(
     payload: ManualTransactionRequest,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ) -> FinanceSummary:
     rows = [
         {
@@ -310,15 +302,16 @@ def analyze_manual_transactions(
     except ValidationError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-    _persist_dataframe_as_transactions(normalized, db)
-    stored = _stored_summary(db)
+    _persist_dataframe_as_transactions(normalized, db, current_user.id)
+    stored = _stored_summary(db, current_user.id)
     if stored is None:
         raise HTTPException(status_code=500, detail="Failed to analyze manual transactions.")
     return stored
 
 
-def _create_transaction_record(payload: LedgerTransactionBase, db: Session) -> LedgerTransaction:
+def _create_transaction_record(payload: LedgerTransactionBase, db: Session, owner_id: int) -> LedgerTransaction:
     transaction = LedgerTransaction(
+        owner_id=owner_id,
         transaction_date=_parse_transaction_date(payload.date),
         description=payload.description.strip(),
         category=payload.category.strip(),
@@ -352,10 +345,14 @@ def _load_demo_summary() -> FinanceSummary:
     return analyze_transactions(normalized, "Bundled demo transaction dataset.", is_demo=True)
 
 
-def _ledger_transactions_query() -> select:
-    return select(LedgerTransaction).order_by(
-        LedgerTransaction.transaction_date.desc(),
-        LedgerTransaction.id.desc(),
+def _ledger_transactions_query(owner_id: int):
+    return (
+        select(LedgerTransaction)
+        .where(LedgerTransaction.owner_id == owner_id)
+        .order_by(
+            LedgerTransaction.transaction_date.desc(),
+            LedgerTransaction.id.desc(),
+        )
     )
 
 
@@ -381,11 +378,12 @@ def _parse_transaction_date(value: str) -> date:
         raise HTTPException(status_code=400, detail="Invalid transaction date.") from exc
 
 
-def _persist_dataframe_as_transactions(df: pd.DataFrame, db: Session) -> list[LedgerTransaction]:
-    db.query(LedgerTransaction).delete()
+def _persist_dataframe_as_transactions(df: pd.DataFrame, db: Session, owner_id: int) -> list[LedgerTransaction]:
+    db.query(LedgerTransaction).filter(LedgerTransaction.owner_id == owner_id).delete()
     transactions: list[LedgerTransaction] = []
     for row in df.to_dict(orient="records"):
         transaction = LedgerTransaction(
+            owner_id=owner_id,
             transaction_date=_parse_transaction_date(str(row["Date"])[:10]),
             description=str(row["Description"]).strip(),
             category=str(row["Category"]).strip(),
@@ -401,8 +399,8 @@ def _persist_dataframe_as_transactions(df: pd.DataFrame, db: Session) -> list[Le
     return transactions
 
 
-def _stored_summary(db: Session) -> FinanceSummary | None:
-    transactions = db.execute(_ledger_transactions_query()).scalars().all()
+def _stored_summary(db: Session, owner_id: int) -> FinanceSummary | None:
+    transactions = db.execute(_ledger_transactions_query(owner_id)).scalars().all()
     if not transactions:
         return None
     df = _db_transactions_to_dataframe(transactions)
@@ -421,8 +419,7 @@ def _parse_voice_narration(text: str) -> tuple[LedgerTransactionBase, list[str]]
     amount = _extract_amount(lower_text)
     if amount is None:
         raise HTTPException(
-            status_code=400,
-            detail="Could not detect an amount in the spoken entry. Please mention a number.",
+            status_code=400, detail="Could not detect an amount in the spoken entry. Please mention a number."
         )
 
     transaction_type = _infer_transaction_type(lower_text)

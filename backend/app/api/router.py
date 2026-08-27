@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from app.api.routes import ai, economics, events, finance, health, markets, ml, simulation
+from app.api.routes import ai, auth, economics, events, finance, health, markets, ml, simulation
 
 api_router = APIRouter(prefix="/api")
 api_router.include_router(health.router, tags=["health"])
+api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
 api_router.include_router(finance.router, prefix="/finance", tags=["finance"])
 api_router.include_router(markets.router, prefix="/markets", tags=["markets"])
 api_router.include_router(economics.router, prefix="/economics", tags=["economics"])

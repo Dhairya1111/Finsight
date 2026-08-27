@@ -31,6 +31,10 @@ class Settings(BaseSettings):
     openai_base_url: str | None = None
     model_temperature: float = Field(default=0.2, ge=0.0, le=1.0)
 
+    auth_secret_key: str = "change-me-in-production-with-at-least-32-characters"
+    auth_algorithm: str = "HS256"
+    access_token_expire_minutes: int = 60 * 24 * 7
+
     github_url: str = "https://github.com/your-username/finsight"
 
     @property

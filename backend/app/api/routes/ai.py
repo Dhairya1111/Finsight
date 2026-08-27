@@ -14,6 +14,8 @@ from app.api.routes.markets import market_provider
 from app.core.config import Settings, get_settings
 from app.core.database import get_db
 from app.core.exceptions import ProviderError
+from app.core.security import get_optional_current_user
+from app.models.user import User
 from app.schemas.ai import AIAnalysisRequest, AIAnalysisResponse
 from app.services.providers.economic import EconomicDataProvider
 from app.services.providers.market import MarketDataProvider
@@ -77,6 +79,7 @@ def analyze_with_ai(
     market: MarketDataProvider = Depends(market_provider),
     economics: EconomicDataProvider = Depends(economic_provider),
     db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_optional_current_user),
 ) -> AIAnalysisResponse:
     references: list[str] = []
     context_parts: list[str] = []
@@ -116,7 +119,9 @@ def analyze_with_ai(
                     f"No exact dataset match was identified for this economics question. Available indicator ids are: {available}. The answer should say when the requested data is not available instead of guessing."
                 )
         elif payload.domain == "finance":
-            summary = get_finance_summary(db)
+            if current_user is None:
+                raise HTTPException(status_code=401, detail="Log in to analyze your personal finance data.")
+            summary = get_finance_summary(db, current_user)
             context_parts.append(
                 f"Total income is {summary.total_income}. Total expenses are {summary.total_expenses}. Net savings are {summary.net_savings}. Savings rate is {summary.savings_rate}. Spending trend is {summary.spending_trend}. Transaction count is {summary.transaction_count}."
             )

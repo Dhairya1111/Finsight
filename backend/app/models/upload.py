@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import UTC, date, datetime
 
-from sqlalchemy import Date, DateTime, Float, Integer, String, Text
+from sqlalchemy import Date, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
@@ -26,6 +26,7 @@ class LedgerTransaction(Base):
     __tablename__ = "ledger_transactions"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     transaction_date: Mapped[date] = mapped_column(Date, index=True)
     description: Mapped[str] = mapped_column(String(255))
     category: Mapped[str] = mapped_column(String(100), index=True)
@@ -44,6 +45,7 @@ class LedgerShare(Base):
     __tablename__ = "ledger_shares"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     token: Mapped[str] = mapped_column(String(64), unique=True, index=True)
     title: Mapped[str] = mapped_column(String(255), default="Shared ledger")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)

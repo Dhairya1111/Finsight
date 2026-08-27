@@ -3,11 +3,15 @@ import { Route, Routes } from "react-router-dom";
 
 import { AppShell } from "./components/AppShell";
 import { LoadingState } from "./components/LoadingState";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const LandingPage = lazy(() =>
   import("./pages/LandingPage").then((module) => ({
     default: module.LandingPage,
   })),
+);
+const LoginPage = lazy(() =>
+  import("./pages/LoginPage").then((module) => ({ default: module.LoginPage })),
 );
 const DashboardHome = lazy(() =>
   import("./pages/DashboardHome").then((module) => ({
@@ -60,16 +64,19 @@ function App() {
     <Suspense fallback={<LoadingState label="Loading FinSight…" />}>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/shared/ledger/:token" element={<SharedLedgerPage />} />
-        <Route element={<AppShell />}>
-          <Route path="/dashboard" element={<DashboardHome />} />
-          <Route path="/finance" element={<FinancePage />} />
-          <Route path="/markets" element={<MarketsPage />} />
-          <Route path="/economics" element={<EconomicsPage />} />
-          <Route path="/events" element={<EventsPage />} />
-          <Route path="/simulator" element={<SimulatorPage />} />
-          <Route path="/ai" element={<AIAnalystPage />} />
-          <Route path="/ml" element={<MLDemoPage />} />
+        <Route element={<ProtectedRoute />}>
+          <Route element={<AppShell />}>
+            <Route path="/dashboard" element={<DashboardHome />} />
+            <Route path="/finance" element={<FinancePage />} />
+            <Route path="/markets" element={<MarketsPage />} />
+            <Route path="/economics" element={<EconomicsPage />} />
+            <Route path="/events" element={<EventsPage />} />
+            <Route path="/simulator" element={<SimulatorPage />} />
+            <Route path="/ai" element={<AIAnalystPage />} />
+            <Route path="/ml" element={<MLDemoPage />} />
+          </Route>
         </Route>
       </Routes>
     </Suspense>

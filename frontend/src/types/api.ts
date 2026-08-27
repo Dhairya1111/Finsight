@@ -1,3 +1,16 @@
+export type AuthUser = {
+  id: number;
+  email: string;
+  full_name: string;
+  created_at: string;
+};
+
+export type AuthResponse = {
+  access_token: string;
+  token_type: string;
+  user: AuthUser;
+};
+
 export type SourceMeta = {
   name: string;
   url?: string | null;

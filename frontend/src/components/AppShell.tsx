@@ -16,6 +16,7 @@ import {
 import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 
+import { useAuth } from "../context/useAuth";
 import { cn } from "../utils/cn";
 
 const SIDEBAR_STORAGE_KEY = "finsight-sidebar-collapsed";
@@ -78,6 +79,7 @@ const shortcuts = [
 ];
 
 export function AppShell() {
+  const { user, logout } = useAuth();
   const location = useLocation();
   const activeItem =
     navItems.find((item) => location.pathname.startsWith(item.to)) ??
@@ -280,8 +282,19 @@ export function AppShell() {
                   </p>
                 </div>
               </div>
-              <div className="rounded-full border border-white/70 bg-gradient-to-r from-blue-50 via-white to-rose-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-red-700 shadow-[0_12px_28px_rgba(30,58,138,0.08)]">
-                Live workspace
+              <div className="flex items-center gap-3">
+                {user ? (
+                  <div className="rounded-full border border-white/70 bg-gradient-to-r from-blue-50 via-white to-rose-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-red-700 shadow-[0_12px_28px_rgba(30,58,138,0.08)]">
+                    {user.full_name}
+                  </div>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="rounded-full border border-white/70 bg-white/75 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-700 shadow-[0_10px_24px_rgba(15,23,42,0.05)] transition hover:bg-white"
+                >
+                  Log out
+                </button>
               </div>
             </div>
           </header>
