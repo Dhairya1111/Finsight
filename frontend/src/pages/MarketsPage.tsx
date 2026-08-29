@@ -413,6 +413,13 @@ export function MarketsPage() {
                           )}`
                         : ""}
                     </p>
+                    {overview.data.price_change_percent !== null &&
+                    overview.data.price_change_percent !== undefined ? (
+                      <p className="mt-1 text-xs text-slate-500">
+                        {formatPercent(overview.data.price_change_percent)} from
+                        previous close
+                      </p>
+                    ) : null}
                   </div>
                   <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                     <p className="text-slate-500">Cash / debt</p>

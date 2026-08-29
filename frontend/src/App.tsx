@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 import { AppShell } from "./components/AppShell";
 import { LoadingState } from "./components/LoadingState";
@@ -63,7 +63,8 @@ function App() {
   return (
     <Suspense fallback={<LoadingState label="Loading FinSight…" />}>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/welcome" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/shared/ledger/:token" element={<SharedLedgerPage />} />
         <Route element={<ProtectedRoute />}>
