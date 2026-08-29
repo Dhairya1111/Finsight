@@ -9,7 +9,8 @@ import { useAuth } from "../context/useAuth";
 export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated, loading, login, register } = useAuth();
+  const { isAuthenticated, loading, login, register, signInWithGoogle } =
+    useAuth();
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
@@ -114,20 +115,40 @@ export function LoginPage() {
           <div className="mt-6 grid gap-3">
             <button
               type="button"
-              disabled={!googleConfigured}
+              disabled={!googleConfigured || submitting}
+              onClick={async () => {
+                setError(null);
+                setSubmitting(true);
+                try {
+                  await signInWithGoogle();
+                } catch (err) {
+                  setError(
+                    err instanceof Error
+                      ? err.message
+                      : "Google sign-in could not be started.",
+                  );
+                } finally {
+                  setSubmitting(false);
+                }
+              }}
               className="inline-flex items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-red-50 text-red-600">
                 G
               </span>
-              Continue with Google
+              {submitting ? "Connecting to Google…" : "Continue with Google"}
             </button>
             {!googleConfigured ? (
               <p className="text-xs text-slate-500">
-                Google sign-in can be enabled later by adding a Google client ID
-                in deployment settings.
+                Supabase client settings are missing, so Google sign-in is not
+                available yet.
               </p>
-            ) : null}
+            ) : (
+              <p className="text-xs text-slate-500">
+                If Google sign-in does not open, enable the Google provider in
+                Supabase Authentication and add its OAuth credentials there.
+              </p>
+            )}
           </div>
 
           <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-slate-400">

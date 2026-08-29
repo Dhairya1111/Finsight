@@ -397,6 +397,24 @@ export function MarketsPage() {
                     </p>
                   </div>
                   <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-slate-500">
+                      Previous close / price move
+                    </p>
+                    <p className="mt-1 font-semibold text-slate-900">
+                      {formatCurrencyValue(
+                        overview.data.previous_close,
+                        overview.data.currency,
+                      )}
+                      {overview.data.price_change !== null &&
+                      overview.data.price_change !== undefined
+                        ? ` · ${overview.data.price_change >= 0 ? "+" : ""}${formatCurrencyValue(
+                            overview.data.price_change,
+                            overview.data.currency,
+                          )}`
+                        : ""}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                     <p className="text-slate-500">Cash / debt</p>
                     <p className="mt-1 font-semibold text-slate-900">
                       {formatCompactCurrency(

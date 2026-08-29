@@ -12,6 +12,7 @@ export type AuthContextValue = {
     full_name: string;
     password: string;
   }) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 };

@@ -15,7 +15,7 @@ class LoginRequest(BaseModel):
 
 
 class UserResponse(BaseModel):
-    id: int
+    id: int | str
     email: EmailStr
     full_name: str
     created_at: str

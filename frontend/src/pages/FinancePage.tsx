@@ -781,8 +781,9 @@ export function FinancePage() {
               </div>
               <p className="mt-3 text-sm leading-7 text-slate-600">
                 Example: “Spent 500 on groceries using upi today” or “Received
-                salary 85000 in bank”. The app converts your speech to text,
-                interprets it, and saves the transaction.
+                salary 85000 in bank”. The app tries live browser speech
+                recognition first and falls back to typed narration if the
+                browser blocks or does not support that service.
               </p>
               <div className="mt-4 app-subtle-panel rounded-2xl p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">

@@ -1,7 +1,5 @@
 import type {
   AIAnalysisResponse,
-  AuthResponse,
-  AuthUser,
   CompanyComparisonRow,
   CompanyHistoryResponse,
   CompanyOverview,
@@ -18,31 +16,27 @@ import type {
   SharedLedgerResponse,
   VoiceEntryResponse,
 } from "../types/api";
+import { supabase } from "../lib/supabase";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api";
-const AUTH_TOKEN_STORAGE_KEY = "finsight-auth-token";
-
-export const authStorage = {
-  getToken: () =>
-    typeof window === "undefined"
-      ? null
-      : window.localStorage.getItem(AUTH_TOKEN_STORAGE_KEY),
-  setToken: (token: string) =>
-    window.localStorage.setItem(AUTH_TOKEN_STORAGE_KEY, token),
-  clearToken: () => window.localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY),
-};
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const token = authStorage.getToken();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
   const headers = new Headers(options?.headers ?? {});
+  const token = session?.access_token;
+
   if (token) {
     headers.set("Authorization", `Bearer ${token}`);
+    headers.set("X-FinSight-Auth", token);
   }
 
   const response = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers,
-    credentials: "same-origin",
+    credentials: "include",
   });
   if (!response.ok) {
     const payload = await response
@@ -54,21 +48,6 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  register: (payload: { email: string; full_name: string; password: string }) =>
-    request<AuthResponse>("/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    }),
-  login: (payload: { email: string; password: string }) =>
-    request<AuthResponse>("/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    }),
-  me: () => request<AuthUser>("/auth/me"),
-  logout: () =>
-    request<{ message: string }>("/auth/logout", { method: "POST" }),
   financeSummary: () => request<FinanceSummary>("/finance/summary"),
   financeTransactions: () =>
     request<LedgerTransaction[]>("/finance/transactions"),
@@ -103,7 +82,10 @@ export const api = {
   uploadFinanceCsv: (file: File) => {
     const body = new FormData();
     body.append("file", file);
-    return request<FinanceSummary>("/finance/upload", { method: "POST", body });
+    return request<FinanceSummary>("/finance/upload", {
+      method: "POST",
+      body,
+    });
   },
   analyzeManualTransactions: (transactions: ManualTransactionInput[]) =>
     request<FinanceSummary>("/finance/analyze-manual", {

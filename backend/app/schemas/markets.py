@@ -32,6 +32,10 @@ class CompanyOverview(BaseModel):
     exchange: str
     currency: str
     latest_price: float | None = None
+    previous_close: float | None = None
+    price_change: float | None = None
+    price_change_percent: float | None = None
+    price_as_of: str | None = None
     market_cap: float | None = None
     revenue: float | None = None
     eps: float | None = None

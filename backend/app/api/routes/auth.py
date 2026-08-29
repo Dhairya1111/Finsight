@@ -1,18 +1,10 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
-from sqlalchemy import select
-from sqlalchemy.orm import Session
+import httpx
 
 from app.core.config import Settings, get_settings
-from app.core.database import get_db
-from app.core.security import (
-    AUTH_COOKIE_NAME,
-    create_access_token,
-    get_current_user,
-    hash_password,
-    verify_password,
-)
+from app.core.security import AUTH_COOKIE_NAME, get_current_user
 from app.models.user import User
 from app.schemas.auth import AuthResponse, LoginRequest, RegisterRequest, UserResponse
 from app.schemas.common import ApiMessage
@@ -24,35 +16,35 @@ router = APIRouter()
 def register(
     payload: RegisterRequest,
     response: Response,
-    db: Session = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ) -> AuthResponse:
-    existing_user = db.execute(select(User).where(User.email == payload.email.lower())).scalar_one_or_none()
-    if existing_user is not None:
-        raise HTTPException(status_code=400, detail="An account with this email already exists.")
-
-    user = User(
-        email=payload.email.lower(),
-        full_name=payload.full_name.strip(),
-        password_hash=hash_password(payload.password),
+    supabase_response = _supabase_request(
+        settings,
+        "/auth/v1/signup",
+        {
+            "email": payload.email.lower(),
+            "password": payload.password,
+            "data": {"full_name": payload.full_name.strip()},
+        },
     )
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return _build_auth_response(user, settings, response)
+    return _build_auth_response_from_supabase(supabase_response, response, created=True)
 
 
 @router.post("/login", response_model=AuthResponse)
 def login(
     payload: LoginRequest,
     response: Response,
-    db: Session = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ) -> AuthResponse:
-    user = db.execute(select(User).where(User.email == payload.email.lower())).scalar_one_or_none()
-    if user is None or not verify_password(payload.password, user.password_hash):
-        raise HTTPException(status_code=401, detail="Invalid email or password.")
-    return _build_auth_response(user, settings, response)
+    supabase_response = _supabase_request(
+        settings,
+        "/auth/v1/token?grant_type=password",
+        {
+            "email": payload.email.lower(),
+            "password": payload.password,
+        },
+    )
+    return _build_auth_response_from_supabase(supabase_response, response, created=False)
 
 
 @router.post("/logout", response_model=ApiMessage)
@@ -63,26 +55,80 @@ def logout(response: Response) -> ApiMessage:
 
 @router.get("/me", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)) -> UserResponse:
-    return _serialize_user(current_user)
+    return UserResponse(
+        id=current_user.id,
+        email=current_user.email,
+        full_name=current_user.full_name,
+        created_at=current_user.created_at.isoformat(),
+    )
 
 
-def _build_auth_response(user: User, settings: Settings, response: Response) -> AuthResponse:
-    token = create_access_token(subject=user.email, user_id=user.id, settings=settings)
+def _supabase_request(settings: Settings, path: str, payload: dict) -> dict:
+    if not settings.supabase_url or not settings.supabase_anon_key:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Supabase authentication is not configured.",
+        )
+
+    try:
+        response = httpx.post(
+            f"{settings.supabase_url}{path}",
+            json=payload,
+            headers={
+                "apikey": settings.supabase_anon_key,
+                "Content-Type": "application/json",
+            },
+            timeout=20.0,
+        )
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Could not reach Supabase authentication right now.",
+        ) from exc
+
+    data = response.json()
+    if response.status_code >= 400:
+        detail = data.get("msg") or data.get("error_description") or data.get("message") or "Authentication request failed."
+        raise HTTPException(status_code=response.status_code, detail=detail)
+    return data
+
+
+def _build_auth_response_from_supabase(data: dict, response: Response, created: bool) -> AuthResponse:
+    access_token = data.get("access_token")
+    user = data.get("user")
+    if not access_token or not isinstance(user, dict):
+        detail = (
+            "Supabase did not return a session. Check whether email confirmation is disabled for testing."
+            if created
+            else "Supabase did not return a session."
+        )
+        raise HTTPException(status_code=400, detail=detail)
+
+    email = user.get("email")
+    if not email:
+        raise HTTPException(status_code=400, detail="Supabase user email was missing.")
+
+    full_name = (
+        user.get("user_metadata", {}).get("full_name")
+        or user.get("user_metadata", {}).get("name")
+        or email.split("@")[0]
+    )
+
     response.set_cookie(
         key=AUTH_COOKIE_NAME,
-        value=token,
+        value=access_token,
         httponly=True,
         samesite="lax",
-        secure=settings.app_env == "production",
-        max_age=settings.access_token_expire_minutes * 60,
+        secure=False,
+        max_age=60 * 60 * 24 * 7,
     )
-    return AuthResponse(access_token=token, user=_serialize_user(user))
 
-
-def _serialize_user(user: User) -> UserResponse:
-    return UserResponse(
-        id=user.id,
-        email=user.email,
-        full_name=user.full_name,
-        created_at=user.created_at.isoformat(),
+    return AuthResponse(
+        access_token=access_token,
+        user=UserResponse(
+            id=user.get("id", email),
+            email=email,
+            full_name=full_name,
+            created_at=user.get("created_at") or "",
+        ),
     )

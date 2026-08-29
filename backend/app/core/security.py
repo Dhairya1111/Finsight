@@ -4,8 +4,10 @@ import hashlib
 import os
 from datetime import UTC, datetime, timedelta
 
+import httpx
 import jwt
 from fastapi import Cookie, Depends, HTTPException, Request, status
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.config import Settings, get_settings
@@ -59,10 +61,14 @@ def get_current_user(
     db: Session = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ) -> User:
-    token = _extract_token(request.headers.get("authorization"), cookie_token)
+    token = _extract_token(
+        request.headers.get("authorization"),
+        request.headers.get("x-finsight-auth"),
+        cookie_token,
+    )
     if not token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated.")
-    return _user_from_token(token, db, settings)
+    return _user_from_supabase_token(token, db, settings)
 
 
 def get_optional_current_user(
@@ -71,35 +77,92 @@ def get_optional_current_user(
     db: Session = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ) -> User | None:
-    token = _extract_token(request.headers.get("authorization"), cookie_token)
+    token = _extract_token(
+        request.headers.get("authorization"),
+        request.headers.get("x-finsight-auth"),
+        cookie_token,
+    )
     if not token:
         return None
     try:
-        return _user_from_token(token, db, settings)
+        return _user_from_supabase_token(token, db, settings)
     except HTTPException:
         return None
 
 
-def _extract_token(authorization: str | None, cookie_token: str | None) -> str | None:
+def _extract_token(
+    authorization: str | None,
+    fallback_header_token: str | None,
+    cookie_token: str | None,
+) -> str | None:
     if authorization and authorization.lower().startswith("bearer "):
         return authorization.split(" ", maxsplit=1)[1].strip()
+    if fallback_header_token:
+        return fallback_header_token.strip()
     if cookie_token:
         return cookie_token
     return None
 
 
-def _user_from_token(token: str, db: Session, settings: Settings) -> User:
-    payload = decode_access_token(token, settings)
-    user_id = payload.get("user_id")
-    if not isinstance(user_id, int):
+def _user_from_supabase_token(token: str, db: Session, settings: Settings) -> User:
+    if not settings.supabase_url or not settings.supabase_anon_key:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Supabase authentication is not configured on the backend.",
+        )
+
+    try:
+        response = httpx.get(
+            f"{settings.supabase_url}/auth/v1/user",
+            headers={
+                "Authorization": f"Bearer {token}",
+                "apikey": settings.supabase_anon_key,
+            },
+            timeout=15.0,
+        )
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Could not verify Supabase session right now.",
+        ) from exc
+
+    if response.status_code >= 400:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication token payload.",
+            detail="Not authenticated.",
         )
-    user = db.get(User, user_id)
+
+    payload = response.json()
+    email = payload.get("email")
+    if not isinstance(email, str) or not email:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Supabase user email was missing.",
+        )
+
+    full_name = (
+        payload.get("user_metadata", {}).get("full_name")
+        or payload.get("user_metadata", {}).get("name")
+        or email.split("@")[0]
+    )
+
+    user = db.execute(select(User).where(User.email == email.lower())).scalar_one_or_none()
+
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authenticated user no longer exists.",
+        user = User(
+            email=email.lower(),
+            full_name=full_name,
+            password_hash="supabase-managed",
         )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        return user
+
+    if full_name and user.full_name != full_name:
+        user.full_name = full_name
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
     return user

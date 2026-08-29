@@ -1,5 +1,5 @@
 export type AuthUser = {
-  id: number;
+  id: string | number;
   email: string;
   full_name: string;
   created_at: string;
@@ -114,6 +114,10 @@ export type CompanyOverview = {
   exchange: string;
   currency: string;
   latest_price?: number | null;
+  previous_close?: number | null;
+  price_change?: number | null;
+  price_change_percent?: number | null;
+  price_as_of?: string | null;
   market_cap?: number | null;
   revenue?: number | null;
   eps?: number | null;
