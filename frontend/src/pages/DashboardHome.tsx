@@ -15,9 +15,11 @@ import { useAsyncData } from "../hooks/useAsyncData";
 import { api } from "../services/api";
 import {
   formatCompactCurrency,
+  formatCurrency,
   formatNumber,
   formatPercent,
 } from "../utils/format";
+import { getSelectedMarketCompany } from "../utils/marketSelection";
 
 const quickLinks = [
   {
@@ -38,8 +40,14 @@ const quickLinks = [
 ];
 
 export function DashboardHome() {
+  const selectedCompany = getSelectedMarketCompany();
   const finance = useAsyncData(api.financeSummary);
-  const markets = useAsyncData(() => api.companyOverview("AAPL"));
+  const markets = useAsyncData(
+    () => api.companyOverview(selectedCompany.symbol),
+    {
+      deps: [selectedCompany.symbol],
+    },
+  );
   const indicators = useAsyncData(api.indicators);
 
   const inflation = useMemo(
@@ -143,9 +151,16 @@ export function DashboardHome() {
                 icon={<Sparkles className="h-5 w-5" />}
               />
               <StatCard
-                label="Apple price"
-                value={`${markets.data.latest_price?.toFixed(2) ?? "—"} ${markets.data.currency}`}
-                hint="Market module snapshot"
+                label={`${selectedCompany.name} share price`}
+                value={formatCurrency(
+                  markets.data.latest_price,
+                  markets.data.currency,
+                )}
+                hint={
+                  markets.data.price_as_of
+                    ? `As of ${new Date(markets.data.price_as_of).toLocaleString()}`
+                    : "Live market module snapshot"
+                }
                 icon={<Activity className="h-5 w-5" />}
               />
               <StatCard

@@ -56,17 +56,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         password: payload.password,
       });
 
-      if (error) {
-        throw new Error(error.message);
-      }
-
+      if (error) throw new Error(error.message);
       applySession(data.session);
     },
     [applySession],
   );
 
   const register = useCallback(
-    async (payload: { email: string; full_name: string; password: string }) => {
+    async (payload: {
+      email: string;
+      full_name: string;
+      password: string;
+    }) => {
       const { data, error } = await supabase.auth.signUp({
         email: payload.email,
         password: payload.password,
@@ -76,10 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         },
       });
 
-      if (error) {
-        throw new Error(error.message);
-      }
-
+      if (error) throw new Error(error.message);
       applySession(data.session ?? null);
     },
     [applySession],
@@ -93,9 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
     });
 
-    if (error) {
-      throw new Error(error.message);
-    }
+    if (error) throw new Error(error.message);
   }, []);
 
   const logout = useCallback(() => {

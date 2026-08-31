@@ -21,7 +21,9 @@ export function LoginPage() {
 
   const redirectTo =
     (location.state as { from?: string } | null)?.from ?? "/dashboard";
-  const googleConfigured = Boolean(import.meta.env.VITE_GOOGLE_CLIENT_ID);
+  const googleConfigured = Boolean(
+    import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY,
+  );
 
   if (loading) {
     return <LoadingState label="Loading account access…" />;
@@ -64,18 +66,6 @@ export function LoginPage() {
             Use your account to access your saved ledger, voice entries, company
             watchlists, and shared finance views on any device.
           </p>
-          <div className="mt-8 grid gap-4 sm:grid-cols-3">
-            {[
-              ["Secure login", "JWT-based account access"],
-              ["Personal ledger", "Your own saved transactions"],
-              ["Cross-device", "Ready for mobile, tablet, and desktop use"],
-            ].map(([label, value]) => (
-              <div key={label} className="app-subtle-panel rounded-[22px] p-4">
-                <p className="text-sm text-slate-500">{label}</p>
-                <p className="mt-2 font-semibold text-slate-900">{value}</p>
-              </div>
-            ))}
-          </div>
         </section>
 
         <section className="app-card app-card-tilt rounded-[30px] p-8">
@@ -138,6 +128,7 @@ export function LoginPage() {
               </span>
               {submitting ? "Connecting to Google…" : "Continue with Google"}
             </button>
+
             {!googleConfigured ? (
               <p className="text-xs text-slate-500">
                 Supabase client settings are missing, so Google sign-in is not

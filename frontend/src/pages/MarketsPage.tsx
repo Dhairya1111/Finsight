@@ -25,6 +25,10 @@ import {
   formatNumber,
   formatPercent,
 } from "../utils/format";
+import {
+  getSelectedMarketCompany,
+  setSelectedMarketCompany,
+} from "../utils/marketSelection";
 
 const defaultComparisonSymbols = ["AAPL", "MSFT", "NVDA"];
 const percentageMetrics = new Set([
@@ -47,9 +51,14 @@ function formatComparisonMetric(metric: string, value: number | null) {
 }
 
 export function MarketsPage() {
-  const [selectedSymbol, setSelectedSymbol] = useState("AAPL");
-  const [selectedCompanyName, setSelectedCompanyName] = useState("Apple Inc.");
-  const [searchQuery, setSearchQuery] = useState("Apple");
+  const initialCompany = getSelectedMarketCompany();
+  const [selectedSymbol, setSelectedSymbol] = useState(initialCompany.symbol);
+  const [selectedCompanyName, setSelectedCompanyName] = useState(
+    initialCompany.name,
+  );
+  const [searchQuery, setSearchQuery] = useState(
+    initialCompany.name.replace(/ Inc\.$/, ""),
+  );
   const [searchOpen, setSearchOpen] = useState(true);
   const [comparisonSymbols, setComparisonSymbols] = useState(
     defaultComparisonSymbols,
@@ -130,6 +139,7 @@ export function MarketsPage() {
   const handlePickCompany = (company: CompanySearchResult) => {
     setSelectedSymbol(company.symbol);
     setSelectedCompanyName(company.name);
+    setSelectedMarketCompany({ symbol: company.symbol, name: company.name });
     setSearchQuery(company.name);
     setSearchOpen(false);
   };

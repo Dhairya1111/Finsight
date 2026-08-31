@@ -6,8 +6,8 @@ export type SelectedMarketCompany = {
 };
 
 const fallbackSelection: SelectedMarketCompany = {
-  symbol: "AAPL",
-  name: "Apple Inc.",
+  symbol: "NVDA",
+  name: "NVIDIA Corporation",
 };
 
 export function getSelectedMarketCompany(): SelectedMarketCompany {
