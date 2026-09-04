@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
 import httpx
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 
 from app.core.config import Settings, get_settings
 from app.core.security import AUTH_COOKIE_NAME, get_current_user
@@ -88,7 +88,9 @@ def _supabase_request(settings: Settings, path: str, payload: dict) -> dict:
 
     data = response.json()
     if response.status_code >= 400:
-        detail = data.get("msg") or data.get("error_description") or data.get("message") or "Authentication request failed."
+        detail = (
+            data.get("msg") or data.get("error_description") or data.get("message") or "Authentication request failed."
+        )
         raise HTTPException(status_code=response.status_code, detail=detail)
     return data
 

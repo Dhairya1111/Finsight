@@ -32,7 +32,9 @@ class Settings(BaseSettings):
     model_temperature: float = Field(default=0.2, ge=0.0, le=1.0)
 
     supabase_url: str | None = "https://gcwbrvdjnrovzlwbitwz.supabase.co"
-    supabase_anon_key: str | None = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdjd2JydmRqbnJvdnpsd2JpdHd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc4MjcyOTUsImV4cCI6MjEwMzQwMzI5NX0.0lJ5Na8ekgOiCmD7dGKfgW54ZWMi5pjtXf43niwD21w"
+    supabase_anon_key: str | None = (
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdjd2JydmRqbnJvdnpsd2JpdHd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc4MjcyOTUsImV4cCI6MjEwMzQwMzI5NX0.0lJ5Na8ekgOiCmD7dGKfgW54ZWMi5pjtXf43niwD21w"
+    )
 
     auth_secret_key: str = "change-me-in-production-with-at-least-32-characters"
     auth_algorithm: str = "HS256"

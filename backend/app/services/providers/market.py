@@ -151,9 +151,7 @@ class YahooFinanceMarketProvider(MarketDataProvider):
         market_cap = info.get("marketCap")
         revenue = info.get("totalRevenue") or self._latest_series_value(metrics_series, "revenue")
         eps = info.get("trailingEps") or self._latest_series_value(metrics_series, "eps")
-        previous_close = self._safe_float(
-            info.get("regularMarketPreviousClose") or info.get("previousClose")
-        )
+        previous_close = self._safe_float(info.get("regularMarketPreviousClose") or info.get("previousClose"))
         latest_price_value = self._safe_float(latest_price)
         price_change = None
         price_change_percent = None
@@ -163,9 +161,7 @@ class YahooFinanceMarketProvider(MarketDataProvider):
         price_as_of = None
         regular_market_time = info.get("regularMarketTime")
         if regular_market_time:
-            price_as_of = __import__("datetime").datetime.fromtimestamp(
-                regular_market_time
-            ).isoformat()
+            price_as_of = __import__("datetime").datetime.fromtimestamp(regular_market_time).isoformat()
 
         return CompanyOverview(
             symbol=symbol.upper(),
